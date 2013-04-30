@@ -8,13 +8,14 @@
 						<a href="<?php echo base_url('panel'); ?>">Inicio</a> <span class="divider">/</span>
 					</li>
 					<li>
-						<a href="<?php echo base_url('panel/proveedores/'); ?>">Proveedores</a> <span class="divider">/</span>
+						<a href="<?php echo base_url('panel/productores/'); ?>">Productores</a> <span class="divider">/</span>
 					</li>
-					<li>Modificar Proveedor</li>
+					<li>Modificar Productores</li>
 				</ul>
 			</div>
 
-			<form action="<?php echo base_url('panel/proveedores/modificar/?'.String::getVarsLink(array('msg'))); ?>" method="post" class="form-horizontal">
+			<form action="<?php echo base_url('panel/productores/modificar/?'.String::getVarsLink(array('msg'))); ?>" method="post" 
+					class="form-horizontal" enctype="multipart/form-data">
 				<div class="row-fluid">
 					<div class="box span12">
 						<div class="box-header well" data-original-title>
@@ -28,7 +29,17 @@
 									<legend></legend>
 
 									<div class="span6 mquit">
-										<div class="control-group">
+										<div class="control-group tipo3">
+										  <label class="control-label" for="dtipo">Tipo </label>
+										  <div class="controls">
+												<select name="dtipo" id="dtipo">
+													<option value="r" <?php echo set_select('dtipo', 'r', false, (isset($info['info']->tipo)? $info['info']->tipo: '')); ?>>Facturan fruta</option>
+													<option value="f" <?php echo set_select('dtipo', 'f', false, (isset($info['info']->tipo)? $info['info']->tipo: '')); ?>>Facturan gastos</option>
+												</select>
+										  </div>
+										</div>
+
+										<div class="control-group req_field">
 											<label class="control-label" for="dnombre_fiscal">*Nombre Fiscal:</label>
 											<div class="controls">
 												<input type="text" name="dnombre_fiscal" id="dnombre_fiscal" class="span12" 
@@ -36,7 +47,7 @@
 											</div>
 										</div>
 
-										<div class="control-group">
+										<div class="control-group req_field">
 											<label class="control-label" for="drfc">RFC:</label>
 											<div class="controls">
 												<input type="text" name="drfc" id="drfc" class="span12" 
@@ -44,7 +55,7 @@
 											</div>
 										</div>
 
-										<div class="control-group">
+										<div class="control-group req_field">
 											<label class="control-label" for="dcalle">Calle:</label>
 											<div class="controls">
 												<input type="text" name="dcalle" id="dcalle" class="span12" 
@@ -52,7 +63,7 @@
 											</div>
 										</div>
 
-										<div class="control-group">
+										<div class="control-group req_field">
 											<label class="control-label" for="dno_exterior">No exterior:</label>
 											<div class="controls">
 												<input type="text" name="dno_exterior" id="dno_exterior" class="span12" 
@@ -68,7 +79,7 @@
 											</div>
 										</div>
 
-										<div class="control-group">
+										<div class="control-group req_field">
 											<label class="control-label" for="dcolonia">Colonia:</label>
 											<div class="controls">
 												<input type="text" name="dcolonia" id="dcolonia" class="span12" 
@@ -76,7 +87,7 @@
 											</div>
 										</div>
 
-										<div class="control-group">
+										<div class="control-group req_field">
 											<label class="control-label" for="dmunicipio">Municipio / Delegación:</label>
 											<div class="controls">
 												<input type="text" name="dmunicipio" id="dmunicipio" class="span12" 
@@ -84,7 +95,7 @@
 											</div>
 										</div>
 
-										<div class="control-group">
+										<div class="control-group req_field">
 											<label class="control-label" for="destado">Estado:</label>
 											<div class="controls">
 												<input type="text" name="destado" id="destado" class="span12" 
@@ -92,6 +103,9 @@
 											</div>
 										</div>
 
+									</div> <!--/span-->
+
+									<div class="span6 mquit">
 										<div class="control-group">
 											<label class="control-label" for="dcp">CP:</label>
 											<div class="controls">
@@ -100,22 +114,19 @@
 											</div>
 										</div>
 
-									</div> <!--/span-->
-
-									<div class="span6 mquit">
-										<div class="control-group">
-											<label class="control-label" for="dtelefono1">Teléfono 1:</label>
+										<div class="control-group req_field">
+											<label class="control-label" for="dregimen_fiscal">Regimen fiscal:</label>
 											<div class="controls">
-												<input type="text" name="dtelefono1" id="dtelefono1" class="span12" 
-													value="<?php echo (isset($info['info']->telefono1)? $info['info']->telefono1: ''); ?>" maxlength="20">
+												<input type="text" name="dregimen_fiscal" id="dregimen_fiscal" class="span12" 
+													value="<?php echo (isset($info['info']->regimen_fiscal)? $info['info']->regimen_fiscal: ''); ?>" maxlength="200">
 											</div>
 										</div>
 
 										<div class="control-group">
-											<label class="control-label" for="dtelefono2">Teléfono 2:</label>
+											<label class="control-label" for="dtelefono">Teléfono:</label>
 											<div class="controls">
-												<input type="text" name="dtelefono2" id="dtelefono2" class="span12" 
-													value="<?php echo (isset($info['info']->telefono2)? $info['info']->telefono2: ''); ?>" maxlength="20">
+												<input type="text" name="dtelefono" id="dtelefono" class="span12" 
+													value="<?php echo (isset($info['info']->telefono)? $info['info']->telefono: ''); ?>" maxlength="15">
 											</div>
 										</div>
 
@@ -131,7 +142,14 @@
 											<label class="control-label" for="demail">Email:</label>
 											<div class="controls">
 												<input type="text" name="demail" id="demail" class="span12" 
-													value="<?php echo (isset($info['info']->email)? $info['info']->email: ''); ?>" maxlength="70">
+													value="<?php echo (isset($info['info']->email)? $info['info']->email: ''); ?>" maxlength="80">
+											</div>
+										</div>
+
+										<div class="control-group">
+											<label class="control-label" for="dlogo">Logo:</label>
+											<div class="controls">
+												<input type="file" name="dlogo" id="dlogo" class="span12">
 											</div>
 										</div>
 
@@ -146,7 +164,7 @@
 				
 				<div class="form-actions">
 				  <button type="submit" class="btn btn-primary">Guardar</button>
-				  <a href="<?php echo base_url('panel/proveedores/'); ?>" class="btn">Cancelar</a>
+				  <a href="<?php echo base_url('panel/productores/'); ?>" class="btn">Cancelar</a>
 				</div>
 
 			</form>

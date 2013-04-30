@@ -29,14 +29,14 @@
 
 									<div class="span6 mquit">
 										<div class="control-group tipo3">
-									  <label class="control-label" for="dtipo">Tipo </label>
-									  <div class="controls">
-											<select name="dtipo" id="dtipo" autofocus>
-												<option value="r" <?php echo set_select('dtipo', 'r', false, $this->input->post('dtipo')); ?>>Facturan fruta</option>
-												<option value="f" <?php echo set_select('dtipo', 'f', false, $this->input->post('dtipo')); ?>>Facturan gastos</option>
-											</select>
-									  </div>
-									</div>
+										  <label class="control-label" for="dtipo">Tipo </label>
+										  <div class="controls">
+												<select name="dtipo" id="dtipo" autofocus>
+													<option value="r" <?php echo set_select('dtipo', 'r', false, $this->input->post('dtipo')); ?>>Facturan fruta</option>
+													<option value="f" <?php echo set_select('dtipo', 'f', false, $this->input->post('dtipo')); ?>>Facturan gastos</option>
+												</select>
+										  </div>
+										</div>
 
 										<div class="control-group">
 											<label class="control-label" for="dnombre_fiscal">Nombre Fiscal:</label>

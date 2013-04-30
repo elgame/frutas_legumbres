@@ -52,7 +52,7 @@
 /**
  * @category	Uploads Archivos | Manipulacion de imagenes [Resize y Crop]
  */
-class My_upload {
+class MY_upload {
 
   // Vars
 	var $do_resize = FALSE; // Indica si redimensionara una imagen
@@ -78,7 +78,7 @@ class My_upload {
     //	Si no existe la carga, esto evita la sobrecarga
     if (! isset($this->CI->upload))
     	$this->CI->load->library('upload');
-
+var_dump($this->CI);
     if (count($config) > 0)
     	$this->initialize($config);
 
@@ -93,6 +93,7 @@ class My_upload {
   public function initialize($config=array())
   {
   	$this->config = $config;
+    var_dump($this->CI->upload);
   	$this->CI->upload->initialize($config);
   }
 

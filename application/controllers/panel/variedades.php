@@ -1,12 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-class productores extends MY_Controller {
+class variedades extends MY_Controller {
 	/**
 	 * Evita la validacion (enfocado cuando se usa ajax). Ver mas en privilegios_model
 	 * @var unknown_type
 	 */
-	private $excepcion_privilegio = array('productores/ajax_get_proveedor/');
+	private $excepcion_privilegio = array('variedades/ajax_get_proveedor/');
 
 	public function _remap($method){
 		$this->load->model("usuarios_model");
@@ -23,28 +23,28 @@ class productores extends MY_Controller {
 	}
 
 	/**
-	 * Default. Mustra el listado de productores para administrarlos
+	 * Default. Mustra el listado de variedades para administrarlos
 	 */
 	public function index(){
 		$this->carabiner->js(array(
 			array('general/msgbox.js'),
 		));
-		$this->load->model('productores_model');
+		$this->load->model('variedades_model');
 		$this->load->library('pagination');
 
 		$params['info_empleado'] = $this->info_empleado['info']; //info empleado
 		$params['seo'] = array(
-			'titulo' => 'Administrar Productores'
+			'titulo' => 'Administrar Variedades'
 		);
 
-		$params['productores'] = $this->productores_model->getProductores();
+		$params['variedades'] = $this->variedades_model->getVariedades();
 
 		if(isset($_GET['msg']{0}))
 			$params['frm_errors'] = $this->showMsgs($_GET['msg']);
 
 		$this->load->view('panel/header', $params);
 		$this->load->view('panel/general/menu', $params);
-		$this->load->view('panel/productores/listado', $params);
+		$this->load->view('panel/variedades/listado', $params);
 		$this->load->view('panel/footer');
 	}
 
@@ -58,24 +58,23 @@ class productores extends MY_Controller {
 		$this->carabiner->js(array(
 			array('libs/jquery.uniform.min.js'),
 			array('libs/jquery.numeric.js'),
-			array('panel/productores/frm_addmod.js')
 		));
 
 		$params['info_empleado'] = $this->info_empleado['info']; //info empleado
 		$params['seo'] = array(
-			'titulo' => 'Agregar Productor'
+			'titulo' => 'Agregar Variedad'
 		);
 
-		$this->configAddModProductor();
+		$this->configAddModVariedad();
 
 		if($this->form_validation->run() == FALSE){
 			$params['frm_errors'] = $this->showMsgs(2, preg_replace("[\n|\r|\n\r]", '', validation_errors()));
 		}else{
-			$this->load->model('productores_model');
-			$respons = $this->productores_model->addProductor();
+			$this->load->model('variedades_model');
+			$respons = $this->variedades_model->addVariedad();
 
 			if($respons[0])
-				redirect(base_url('panel/productores/agregar/?'.String::getVarsLink(array('msg')).'&msg='.$respons[2]));
+				redirect(base_url('panel/variedades/agregar/?'.String::getVarsLink(array('msg')).'&msg='.$respons[2]));
 			else
         $params['frm_errors'] = $this->showMsgs(2, $respons[1]);
 		}
@@ -85,12 +84,12 @@ class productores extends MY_Controller {
 
 		$this->load->view('panel/header', $params);
 		$this->load->view('panel/general/menu', $params);
-		$this->load->view('panel/productores/agregar', $params);
+		$this->load->view('panel/variedades/agregar', $params);
 		$this->load->view('panel/footer');
 	}
 
 	/**
-	 * Modificar una productor a la bd
+	 * Modificar una variedades a la bd
 	 */
 	public function modificar(){
 		$this->carabiner->css(array(
@@ -100,28 +99,27 @@ class productores extends MY_Controller {
 			array('libs/jquery.uniform.min.js'),
 			array('libs/jquery.numeric.js'),
 			array('general/msgbox.js'),
-			array('panel/productores/frm_addmod.js')
 		));
 
 		$params['info_empleado'] = $this->info_empleado['info']; //info empleado
 		$params['seo'] = array(
-				'titulo' => 'Modificar Productor'
+				'titulo' => 'Modificar Variedad'
 		);
 
 		if(isset($_GET['id']{0})){
-				$this->configAddModProductor();
-				$this->load->model('productores_model');
+				$this->configAddModVariedad();
+				$this->load->model('variedades_model');
 
 				if($this->form_validation->run() == FALSE){
 					$params['frm_errors'] = $this->showMsgs(2, preg_replace("[\n|\r|\n\r]", '', validation_errors()));
 				}else{
-					$respons = $this->productores_model->updateProductor($_GET['id']);
+					$respons = $this->variedades_model->updateVariedad($_GET['id']);
 
 					if($respons[0])
-						redirect(base_url('panel/productores/?'.String::getVarsLink(array('msg')).'&msg='.$respons[2]));
+						redirect(base_url('panel/variedades/?'.String::getVarsLink(array('msg')).'&msg='.$respons[2]));
 				}
 
-				$params['info'] = $this->productores_model->getInfoProductor($_GET['id']);
+				$params['info'] = $this->variedades_model->getInfoVariedad($_GET['id']);
 			}else
 				$params['frm_errors'] = $this->showMsgs(1);
 
@@ -130,19 +128,19 @@ class productores extends MY_Controller {
 
 				$this->load->view('panel/header', $params);
 				$this->load->view('panel/general/menu', $params);
-				$this->load->view('panel/productores/modificar', $params);
+				$this->load->view('panel/variedades/modificar', $params);
 				$this->load->view('panel/footer');
 	}
 
 	/**
-	 * Elimina a un productor, cambia el status a "e":eliminado
+	 * Elimina a una variedad, cambia el status a "e":eliminado
 	 */
 	public function eliminar(){
 		if(isset($_GET['id']{0})){
-			$this->load->model('productores_model');
-			$respons = $this->productores_model->updateProductor($_GET['id'], array('status' => 'e'), false);
+			$this->load->model('variedades_model');
+			$respons = $this->variedades_model->updateVariedad($_GET['id'], array('status' => 'e'), false);
 			if($respons[0])
-				redirect(base_url('panel/productores/?msg=5'));
+				redirect(base_url('panel/variedades/?msg=5'));
 		}else
 			$params['frm_errors'] = $this->showMsgs(1);
 	}
@@ -152,10 +150,10 @@ class productores extends MY_Controller {
 	 */
 	public function activar(){
 		if(isset($_GET['id']{0})){
-			$this->load->model('productores_model');
-			$respons = $this->productores_model->updateProductor($_GET['id'], array('status' => 'ac'), false);
+			$this->load->model('variedades_model');
+			$respons = $this->variedades_model->updateVariedad($_GET['id'], array('status' => 'ac'), false);
 			if($respons[0])
-				redirect(base_url('panel/productores/?msg=6'));
+				redirect(base_url('panel/variedades/?msg=6'));
 		}else
 			$params['frm_errors'] = $this->showMsgs(1);
 	}
@@ -165,8 +163,8 @@ class productores extends MY_Controller {
 	 * Obtiene lostado de proveedores para el autocomplete, ajax
 	 */
 	public function ajax_get_proveedor(){
-		$this->load->model('productores_model');
-		$params = $this->productores_model->getProveedoresAjax();
+		$this->load->model('variedades_model');
+		$params = $this->variedades_model->getProveedoresAjax();
 
 		echo json_encode($params);
 	}
@@ -174,60 +172,17 @@ class productores extends MY_Controller {
 	/**
 	 * Configura los metodos de agregar y modificar
 	 */
-	private function configAddModProductor(){
+	private function configAddModVariedad(){
 		$this->load->library('form_validation');
 
 			$rules = array(
-				array('field'	=> 'dnombre_fiscal',
-						'label'	=> 'Nombre Fiscal',
-						'rules'	=> 'required|max_length[120]'),
-				array('field'	=> 'drfc',
-						'label'	=> 'RFC',
-						'rules'	=> 'max_length[13]'),
-				array('field'	=> 'dcalle',
-						'label'	=> 'Calle',
-						'rules'	=> 'max_length[60]'),
-				array('field'	=> 'dno_exterior',
-						'label'	=> 'No exterior',
-						'rules'	=> 'max_length[7]'),
-				array('field'	=> 'dno_interior',
-						'label'	=> 'No interior',
-						'rules'	=> 'max_length[7]'),
-				array('field'	=> 'dcolonia',
-						'label'	=> 'Colonia',
-						'rules'	=> 'max_length[60]'),
-				array('field'	=> 'dmunicipio',
-						'label'	=> 'Municipio',
-						'rules'	=> 'max_length[45]'),
-				array('field'	=> 'destado',
-						'label'	=> 'Estado',
-						'rules'	=> 'max_length[45]'),
-				array('field'	=> 'dcp',
-						'label'	=> 'CP',
-						'rules'	=> 'max_length[10]'),
-				array('field'	=> 'dtelefono',
-						'label'	=> 'Teléfono',
-						'rules'	=> 'max_length[15]'),
-				array('field'	=> 'dcelular',
-						'label'	=> 'Celular',
-						'rules'	=> 'max_length[20]'),
-				array('field'	=> 'demail',
-						'label'	=> 'Email',
-						'rules'	=> 'valid_email|max_length[80]'),
-				array('field'	=> 'dregimen_fiscal',
-						'label'	=> 'Regimen fiscal',
-						'rules'	=> 'max_length[200]'),
+				array('field'	=> 'dnombre',
+						'label'	=> 'Nombre',
+						'rules'	=> 'required|max_length[40]'),
 				array('field'	=> 'dtipo',
-						'label'	=> 'Tipo',
+						'label'	=> 'Pagar por',
 						'rules'	=> 'required|max_length[1]'),
 			);
-
-		if ($this->input->post('dtipo') == 'f') {
-			$campos = array(1, 2, 3, 5, 6, 7, 12);
-			foreach ($campos as $key => $value) {
-				$rules[$value]['rules'] = 'required|'.$rules[$value]['rules'];
-			}
-		}
 		$this->form_validation->set_rules($rules);
 	}
 
@@ -249,19 +204,19 @@ class productores extends MY_Controller {
 				$icono = 'error';
 			break;
 			case 3:
-				$txt = 'El productor se agrego correctamente.';
+				$txt = 'La variedad se agrego correctamente.';
 				$icono = 'success';
 			break;
 			case 4:
-				$txt = 'El productor se modifico correctamente.';
+				$txt = 'La variedad se modifico correctamente.';
 				$icono = 'success';
 				break;
 			case 5:
-				$txt = 'El productor se elimino correctamente.';
+				$txt = 'La variedad se elimino correctamente.';
 				$icono = 'success';
 				break;
 			case 6:
-				$txt = 'El productor se activo correctamente.';
+				$txt = 'La variedad se activo correctamente.';
 				$icono = 'success';
 			break;
 			case 7:

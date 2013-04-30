@@ -55,20 +55,19 @@ class productores_model extends CI_Model{
 	}
 
 	/**
-	 * Obtiene la informacion de un proveedor
+	 * Obtiene la informacion de un productor
 	 */
-	public function getInfoProveedor($id, $info_basic=false){
+	public function getInfoProductor($id, $info_basic=false){
 		$res = $this->db
 			->select('*')
-			->from('proveedores AS p')
-			->where("p.id = '".$id."'")
+			->from('productores AS p')
+			->where("p.id_productor = '".$id."'")
 		->get();
 		if($res->num_rows() > 0){
 			$response['info'] = $res->row();
 			$res->free_result();
 			if($info_basic)
 				return $response;
-
 
 			return $response;
 		}else
@@ -116,28 +115,41 @@ class productores_model extends CI_Model{
 	}
 
 	/**
-	 * Modifica la informacion de un proveedor
+	 * Modifica la informacion de un productor
 	 */
-	public function updateProveedor($id_cliente, $data=null){
+	public function updateProductor($id, $data=null){
 		$msg = 4;
 		if ($data == null) {
+			$logo = '';
+			//valida la imagen
+			$upload_res = UploadFiles::uploadProductorLogo();
+
+			if(is_array($upload_res)){
+				if($upload_res[0] == false)
+					return array(false, $upload_res[1]);
+				$logo = APPPATH.'images/productor/logos/'.$upload_res[1]['file_name'];
+			}
+
 			$data = array(
-				'nombre_fiscal' => $this->input->post('dnombre_fiscal'),
-				'rfc'           => $this->input->post('drfc'),
-				'calle'         => $this->input->post('dcalle'),
-				'no_exterior'   => $this->input->post('dno_exterior'),
-				'no_interior'   => $this->input->post('dno_interior'),
-				'colonia'       => $this->input->post('dcolonia'),
-				'municipio'     => $this->input->post('dmunicipio'),
-				'estado'        => $this->input->post('destado'),
-				'cp'            => $this->input->post('dcp'),
-				'telefono1'     => $this->input->post('dtelefono1'),
-				'telefono2'     => $this->input->post('dtelefono2'),
-				'celular'       => $this->input->post('dcelular'),
-				'email'         => $this->input->post('demail'),
+				'nombre_fiscal'  => $this->input->post('dnombre_fiscal'),
+				'rfc'            => $this->input->post('drfc'),
+				'calle'          => $this->input->post('dcalle'),
+				'no_exterior'    => $this->input->post('dno_exterior'),
+				'no_interior'    => $this->input->post('dno_interior'),
+				'colonia'        => $this->input->post('dcolonia'),
+				'municipio'      => $this->input->post('dmunicipio'),
+				'estado'         => $this->input->post('destado'),
+				'cp'             => $this->input->post('dcp'),
+				'telefono'       => $this->input->post('dtelefono'),
+				'celular'        => $this->input->post('dcelular'),
+				'email'          => $this->input->post('demail'),
+				'regimen_fiscal' => $this->input->post('dregimen_fiscal'),
+				'tipo'           => $this->input->post('dtipo'),
 			);
+			if($logo != '')
+				$data['logo'] = $logo;
 		}
-		$this->db->update('proveedores', $data, "id = '".$id_cliente."'");
+		$this->db->update('productores', $data, "id_productor = '".$id."'");
 
 		return array(true, '', $msg);
 	}
