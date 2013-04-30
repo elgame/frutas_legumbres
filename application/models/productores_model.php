@@ -1,15 +1,15 @@
 <?php
 
-class proveedores_model extends CI_Model{
+class productores_model extends CI_Model{
 
 	function __construct(){
 		parent::__construct();
 	}
 
 	/**
-	 * Obtiene el listado de proveedores
+	 * Obtiene el listado de Productores
 	 */
-	public function getProveedores(){
+	public function getProductores(){
 		$sql = '';
 		//paginacion
 		$params = array(
@@ -31,26 +31,26 @@ class proveedores_model extends CI_Model{
 				lower(estado) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%'
 				)";
 		
-		$fstatus = $this->input->get('fstatus')===false? '1': $this->input->get('fstatus');
+		$fstatus = $this->input->get('fstatus')===false? 'ac': $this->input->get('fstatus');
 		if($fstatus != '' && $fstatus != 'todos')
 			$sql .= ($sql==''? ' WHERE ': ' AND ')." status = '".$fstatus."'";
 
 		$query = BDUtil::pagination("
-				SELECT id, nombre_fiscal, rfc, telefono1, email, 
+				SELECT id_productor, nombre_fiscal, rfc, telefono, email, 
 					CONCAT(calle, ' #', no_exterior, ', ', colonia, ', ', municipio, ', ', estado) AS direccion, status
-				FROM proveedores
+				FROM productores
 				".$sql."
 				ORDER BY nombre_fiscal ASC
 				", $params, true);
 		$res = $this->db->query($query['query']);
 
 		$response = array(
-			'proveedores'    => array(),
+			'productores'    => array(),
 			'total_rows'     => $query['total_rows'],
 			'items_per_page' => $params['result_items_per_page'],
 			'result_page'    => $params['result_page']
 		);
-		$response['proveedores'] = $res->result();
+		$response['productores'] = $res->result();
 		return $response;
 	}
 
@@ -76,11 +76,21 @@ class proveedores_model extends CI_Model{
 	}
 
 	/**
-	 * Agrega la info de un proveedor a la bd
+	 * Agrega la info de un productor a la bd
 	 */
-	public function addProveedor($data=null){
+	public function addProductor($data=null){
 
 		if ($data == null) {
+			$logo = '';
+			//valida la imagen
+			$upload_res = UploadFiles::uploadProductorLogo();
+
+			if(is_array($upload_res)){
+				if($upload_res[0] == false)
+					return array(false, $upload_res[1]);
+				$logo = APPPATH.'images/productor/logos/'.$upload_res[1]['file_name'];
+			}
+
 			$data = array(
 				'nombre_fiscal'  => $this->input->post('dnombre_fiscal'),
 				'rfc'            => $this->input->post('drfc'),
@@ -91,13 +101,15 @@ class proveedores_model extends CI_Model{
 				'municipio'      => $this->input->post('dmunicipio'),
 				'estado'         => $this->input->post('destado'),
 				'cp'             => $this->input->post('dcp'),
-				'telefono1'      => $this->input->post('dtelefono1'),
-				'telefono2'      => $this->input->post('dtelefono2'),
+				'telefono'       => $this->input->post('dtelefono'),
 				'celular'        => $this->input->post('dcelular'),
 				'email'          => $this->input->post('demail'),
+				'logo'           => $logo,
+				'regimen_fiscal' => $this->input->post('dregimen_fiscal'),
+				'tipo'           => $this->input->post('dtipo'),
 			);
 		}
-		$this->db->insert('proveedores', $data);
+		$this->db->insert('productores', $data);
 
 		$msg = 3;
 		return array(true, '', $msg);

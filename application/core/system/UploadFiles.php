@@ -3,13 +3,13 @@
 class UploadFiles{
 
 	/**
-	 * Guarda la imagen de un empleado
+	 * Guarda el logo de un productor
 	 */
-	public static function uploadEmpresaLogo(){
+	public static function uploadProductorLogo(){
 		$ci =& get_instance();
 		if(isset($_FILES['dlogo'])){
 			if($_FILES['dlogo']['name']!=''){
-				$config['upload_path'] = APPPATH.'images/empresas/';
+				$config['upload_path'] = APPPATH.'images/productor/logos/';
 				$config['allowed_types'] = 'jpg|jpeg|gif|png';
 				$config['max_size']	= '200';
 				$config['max_width'] = '1024';

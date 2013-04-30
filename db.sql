@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-04-2013 a las 23:03:06
+-- Tiempo de generación: 30-04-2013 a las 15:23:18
 -- Versión del servidor: 5.5.27
 -- Versión de PHP: 5.4.7
 
@@ -17,29 +17,153 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Base de datos: `punto_venta`
+-- Base de datos: `frutas_legumbres`
 --
-CREATE DATABASE `punto_venta` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `punto_venta`;
+CREATE DATABASE `frutas_legumbres` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `frutas_legumbres`;
 
-DELIMITER $$
+-- --------------------------------------------------------
+
 --
--- Funciones
+-- Estructura de tabla para la tabla `bancos_bancos`
 --
-CREATE DEFINER=`root`@`localhost` FUNCTION `valida_ultimo_nodo`(`id_fam` BIGINT) RETURNS tinyint(4)
-    DETERMINISTIC
-    COMMENT 'Valida si un id de familia es ultimo nodo o no'
-BEGIN
-DECLARE vconta BIGINT;
 
-	SELECT COUNT(*) INTO vconta FROM productos_familias WHERE id_padre = id_fam AND status = 1;
-	IF vconta = 0 THEN
-		RETURN 1;
-	END IF;
-RETURN 0;
-END$$
+CREATE TABLE IF NOT EXISTS `bancos_bancos` (
+  `id_banco` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(25) NOT NULL,
+  `status` enum('ac','e') NOT NULL,
+  PRIMARY KEY (`id_banco`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-DELIMITER ;
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bancos_cuentas`
+--
+
+CREATE TABLE IF NOT EXISTS `bancos_cuentas` (
+  `id_cuenta` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_banco` int(10) unsigned NOT NULL,
+  `numero` varchar(20) NOT NULL,
+  `alias` varchar(40) NOT NULL,
+  `status` enum('ac','e') NOT NULL,
+  PRIMARY KEY (`id_cuenta`),
+  KEY `id_banco` (`id_banco`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bancos_movimientos`
+--
+
+CREATE TABLE IF NOT EXISTS `bancos_movimientos` (
+  `id_movimiento` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_banco` int(10) unsigned NOT NULL,
+  `id_cuenta` int(10) unsigned NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `concepto` varchar(254) NOT NULL,
+  `monto` double NOT NULL,
+  `tipo` enum('d','r') NOT NULL DEFAULT 'd' COMMENT 'd:deposito, r:retiro',
+  `metodo_pago` varchar(20) NOT NULL,
+  PRIMARY KEY (`id_movimiento`),
+  KEY `id_banco` (`id_banco`),
+  KEY `id_cuenta` (`id_cuenta`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bancos_movimientos_conceptos`
+--
+
+CREATE TABLE IF NOT EXISTS `bancos_movimientos_conceptos` (
+  `id_movimiento` bigint(20) unsigned NOT NULL,
+  `no_concepto` int(10) unsigned NOT NULL,
+  `concepto` varchar(254) NOT NULL,
+  `monto` double NOT NULL,
+  PRIMARY KEY (`id_movimiento`,`no_concepto`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cajas_inventario`
+--
+
+CREATE TABLE IF NOT EXISTS `cajas_inventario` (
+  `id_inventario` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_productor` bigint(20) unsigned NOT NULL,
+  `id_variedad` int(10) unsigned NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `concepto` varchar(254) NOT NULL,
+  `cantidad` double NOT NULL,
+  `chofer` varchar(30) NOT NULL,
+  `tipo` enum('s','en') NOT NULL DEFAULT 's' COMMENT 's:salida, en:entrada de cajas',
+  PRIMARY KEY (`id_inventario`),
+  KEY `id_productor` (`id_productor`),
+  KEY `id_variedad` (`id_variedad`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cajas_recibidas`
+--
+
+CREATE TABLE IF NOT EXISTS `cajas_recibidas` (
+  `id_caja` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_dueno` bigint(20) unsigned NOT NULL,
+  `id_productor` bigint(20) unsigned NOT NULL,
+  `id_variedad` int(10) unsigned NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `certificado_tarjeta` varchar(40) NOT NULL,
+  `codigo_huerta` varchar(40) NOT NULL,
+  `no_lote` int(10) unsigned NOT NULL,
+  `cajas` int(10) unsigned NOT NULL,
+  `cajas_rezaga` int(10) unsigned NOT NULL,
+  `no_ticket` varchar(10) DEFAULT NULL,
+  `kilos` int(10) unsigned NOT NULL DEFAULT '0',
+  `precio` double NOT NULL,
+  `es_organico` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1:es organico, 0:no es organico',
+  `unidad_transporte` varchar(60) NOT NULL DEFAULT '',
+  `dueno_carga` varchar(60) NOT NULL DEFAULT '',
+  `observaciones` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_caja`),
+  KEY `id_dueno` (`id_dueno`),
+  KEY `id_productor` (`id_productor`),
+  KEY `id_variedad` (`id_variedad`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cajas_recibidas_abonos`
+--
+
+CREATE TABLE IF NOT EXISTS `cajas_recibidas_abonos` (
+  `id_abono` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_productor` bigint(20) unsigned NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `concepto` varchar(254) NOT NULL,
+  `monto` double NOT NULL,
+  PRIMARY KEY (`id_abono`),
+  KEY `id_productor` (`id_productor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cajas_tratamiento`
+--
+
+CREATE TABLE IF NOT EXISTS `cajas_tratamiento` (
+  `id_caja` bigint(20) unsigned NOT NULL,
+  `id_tratamiento` int(10) unsigned NOT NULL,
+  `cantidad` double NOT NULL,
+  PRIMARY KEY (`id_caja`,`id_tratamiento`),
+  KEY `id_tratamiento` (`id_tratamiento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -62,31 +186,28 @@ CREATE TABLE IF NOT EXISTS `ci_sessions` (
 --
 
 INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-('be496c80d00794f8e69f909d65dd09e8', '::1', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31 AlexaToolba', 1365388949, 'a:6:{s:9:"user_data";s:0:"";s:2:"id";s:1:"1";s:7:"usuario";s:5:"admin";s:5:"email";s:17:"dasdasd@gmail.com";s:4:"tipo";s:5:"admin";s:7:"idunico";s:24:"l51621e8eba9163.05045807";}');
+('3ec41e9550331334d9dce9dc66d90824', '::1', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31 AlexaToolba', 1367270534, 'a:6:{s:9:"user_data";s:0:"";s:2:"id";s:1:"1";s:7:"usuario";s:5:"admin";s:5:"email";s:17:"dasdasd@gmail.com";s:4:"tipo";s:5:"admin";s:7:"idunico";s:24:"l517e7e6ad634a6.30457411";}');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `clientes`
+-- Estructura de tabla para la tabla `duenios_huertas`
 --
 
-CREATE TABLE IF NOT EXISTS `clientes` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombre_fiscal` varchar(120) NOT NULL,
-  `rfc` varchar(13) NOT NULL,
-  `calle` varchar(80) NOT NULL,
-  `no_exterior` varchar(8) NOT NULL,
-  `no_interior` varchar(8) NOT NULL,
-  `colonia` varchar(80) NOT NULL,
-  `municipio` varchar(60) NOT NULL,
-  `estado` varchar(60) NOT NULL,
-  `cp` varchar(10) NOT NULL,
-  `desceunto` double NOT NULL,
-  `email` varchar(70) NOT NULL,
-  `telefono` varchar(20) NOT NULL,
-  `enviar_factura` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:enviar, 0:no enviar',
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:activo, 0:eliminado',
-  PRIMARY KEY (`id`)
+CREATE TABLE IF NOT EXISTS `duenios_huertas` (
+  `id_dueno` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(130) NOT NULL,
+  `calle` varchar(60) NOT NULL,
+  `no_exterior` varchar(7) NOT NULL,
+  `no_interior` varchar(7) NOT NULL,
+  `colonia` varchar(60) NOT NULL,
+  `municipio` varchar(45) NOT NULL,
+  `estado` varchar(45) NOT NULL,
+  `cp` int(10) NOT NULL,
+  `telefono` varchar(15) NOT NULL,
+  `celular` varchar(20) NOT NULL,
+  `status` enum('ac','e') NOT NULL DEFAULT 'ac',
+  PRIMARY KEY (`id_dueno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -104,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `privilegios` (
   `url_icono` varchar(100) NOT NULL,
   `target_blank` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
 --
 -- Volcado de datos para la tabla `privilegios`
@@ -120,210 +241,138 @@ INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_acci
 (7, 'Modificar', 5, 0, 'usuarios/modificar/', 'edit', 0),
 (8, 'Eliminar', 5, 0, 'usuarios/eliminar/', 'remove', 0),
 (9, 'Activar', 5, 0, 'usuarios/activar/', 'ok', 0),
-(10, 'Productos Base', 0, 1, 'productos/', 'book', 0),
-(11, 'Agregar', 10, 1, 'productos/agregar/', 'plus', 0),
-(12, 'Modificar', 10, 0, 'productos/modificar/', 'edit', 0),
-(13, 'Eliminar', 10, 0, 'productos/eliminar/', 'remove', 0),
-(14, 'Activar', 10, 0, 'productos/activar/', 'ok', 0),
-(15, 'Agregar Inventario', 10, 0, 'productos/agregar_inventario/', 'circle-arrow-up', 0),
-(16, 'Familias', 0, 1, 'familias/', 'th-large', 0),
-(17, 'Agregar', 16, 1, 'familias/agregar/', 'plus', 0),
-(18, 'Modificar', 16, 0, 'familias/modificar/', 'edit', 0),
-(19, 'Eliminar', 16, 0, 'familias/eliminar/', 'remove', 0),
-(20, 'Activar', 16, 0, 'familias/activar/', 'ok', 0);
+(10, 'Productores', 0, 1, 'productores/', 'user', 0),
+(11, 'Agregar', 10, 1, 'productores/agregar/', 'plus', 0),
+(12, 'Modificar', 10, 0, 'productores/modificar/', 'edit', 0),
+(13, 'Eliminar', 10, 0, 'productores/eliminar/', 'remove', 0),
+(14, 'Activar', 10, 0, 'productores/activar/', 'ok', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `productos_base`
+-- Estructura de tabla para la tabla `productores`
 --
 
-CREATE TABLE IF NOT EXISTS `productos_base` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(80) NOT NULL,
-  `stock_min` double NOT NULL DEFAULT '0',
-  `precio_compra` double NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:activo, 0:eliminado',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+CREATE TABLE IF NOT EXISTS `productores` (
+  `id_productor` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre_fiscal` varchar(130) NOT NULL,
+  `calle` varchar(60) NOT NULL,
+  `no_exterior` varchar(7) NOT NULL,
+  `no_interior` varchar(7) NOT NULL,
+  `colonia` varchar(60) NOT NULL,
+  `municipio` varchar(45) NOT NULL,
+  `estado` varchar(45) NOT NULL,
+  `cp` int(10) NOT NULL,
+  `rfc` varchar(13) NOT NULL,
+  `telefono` varchar(15) NOT NULL,
+  `celular` varchar(20) NOT NULL,
+  `email` varchar(80) NOT NULL,
+  `logo` varchar(130) NOT NULL,
+  `regimen_fiscal` varchar(200) NOT NULL DEFAULT '',
+  `status` enum('ac','e') NOT NULL DEFAULT 'ac',
+  `tipo` enum('r','f') NOT NULL DEFAULT 'r' COMMENT 'r:regular (venden fruta), f:ficticio (comprobar gastos)',
+  PRIMARY KEY (`id_productor`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
--- Volcado de datos para la tabla `productos_base`
+-- Volcado de datos para la tabla `productores`
 --
 
-INSERT INTO `productos_base` (`id`, `nombre`, `stock_min`, `precio_compra`, `status`) VALUES
-(1, 'Leche', 20, 5, 1),
-(2, 'Cucharas', 20, 0.2, 1),
-(3, 'Popote', 10, 0.04, 1),
-(4, 'Vaso', 10, 0.5, 1),
-(5, 'Tapa', 10, 0.08, 1),
-(6, 'Azucar', 50, 1, 1),
-(7, 'Chocolate', 20, 0.5, 1),
-(8, 'Pan molido', 4, 5, 1),
-(9, 'Pasas', 15, 2, 1),
-(10, 'Cacahuate', 30, 0.5, 1),
-(11, 'Pepino', 20, 0.5, 1);
+INSERT INTO `productores` (`id_productor`, `nombre_fiscal`, `calle`, `no_exterior`, `no_interior`, `colonia`, `municipio`, `estado`, `cp`, `rfc`, `telefono`, `celular`, `email`, `logo`, `regimen_fiscal`, `status`, `tipo`) VALUES
+(1, 'Abrahan Jimenez Magaña', '', '', '', '', '', '', 0, '', '', '', '', '', '', 'ac', 'r');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `productos_base_entradas`
+-- Estructura de tabla para la tabla `productores_facturas`
 --
 
-CREATE TABLE IF NOT EXISTS `productos_base_entradas` (
-  `base_id` bigint(20) unsigned NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `cantidad` double NOT NULL,
-  `precio_compra` double NOT NULL,
-  `importe` double NOT NULL,
-  PRIMARY KEY (`base_id`,`fecha`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `productos_base_entradas`
---
-
-INSERT INTO `productos_base_entradas` (`base_id`, `fecha`, `cantidad`, `precio_compra`, `importe`) VALUES
-(1, '2013-04-03 03:24:03', 20, 3, 60),
-(1, '2013-04-03 03:35:57', -10, 0, 0),
-(2, '2013-04-03 03:52:14', 20, 0.2, 4);
-
--- --------------------------------------------------------
-
---
--- Estructura Stand-in para la vista `productos_base_entradas_exist`
---
-CREATE TABLE IF NOT EXISTS `productos_base_entradas_exist` (
-`base_id` bigint(20) unsigned
-,`entradas` double
-);
--- --------------------------------------------------------
-
---
--- Estructura Stand-in para la vista `productos_base_existencias`
---
-CREATE TABLE IF NOT EXISTS `productos_base_existencias` (
-`id` bigint(20) unsigned
-,`entradas` double
-,`salidas` double
-,`existencia` double
-);
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `productos_base_familia`
---
-
-CREATE TABLE IF NOT EXISTS `productos_base_familia` (
-  `familia_id` bigint(20) unsigned NOT NULL,
-  `base_id` bigint(20) unsigned NOT NULL,
-  `cantidad` double NOT NULL,
-  PRIMARY KEY (`familia_id`,`base_id`),
-  KEY `base_id` (`base_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `productos_base_familia`
---
-
-INSERT INTO `productos_base_familia` (`familia_id`, `base_id`, `cantidad`) VALUES
-(7, 3, 1),
-(7, 4, 1),
-(7, 5, 1),
-(7, 6, 2);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `productos_base_salidas`
---
-
-CREATE TABLE IF NOT EXISTS `productos_base_salidas` (
-  `ticket_id` bigint(20) unsigned NOT NULL,
-  `familia_id` bigint(20) unsigned NOT NULL,
-  `base_id` bigint(20) unsigned NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cantidad` double NOT NULL,
-  `precio_compra` double NOT NULL,
-  `importe` double NOT NULL,
-  PRIMARY KEY (`ticket_id`,`familia_id`,`base_id`),
-  KEY `familia_id` (`familia_id`),
-  KEY `base_id` (`base_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Estructura Stand-in para la vista `productos_base_salidas_exist`
---
-CREATE TABLE IF NOT EXISTS `productos_base_salidas_exist` (
-`base_id` bigint(20) unsigned
-,`salidas` double
-);
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `productos_familias`
---
-
-CREATE TABLE IF NOT EXISTS `productos_familias` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `id_padre` bigint(20) DEFAULT NULL,
-  `nombre` varchar(80) NOT NULL,
-  `precio_venta` double NOT NULL DEFAULT '0',
-  `imagen` varchar(100) DEFAULT NULL,
-  `color1` varchar(7) DEFAULT NULL,
-  `color2` varchar(7) DEFAULT NULL,
-  `ultimo_nodo` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:ultimo, 0:no es ultimo',
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:activo, 0:eliminado',
-  PRIMARY KEY (`id`),
-  KEY `id_padre` (`id_padre`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
-
---
--- Volcado de datos para la tabla `productos_familias`
---
-
-INSERT INTO `productos_familias` (`id`, `id_padre`, `nombre`, `precio_venta`, `imagen`, `color1`, `color2`, `ultimo_nodo`, `status`) VALUES
-(1, NULL, 'Padre', 0, NULL, NULL, NULL, 0, 1),
-(5, 1, 'Cafe capuchino', 25, 'af493bb94c89f885a7ac491d2b38fb09.jpg', '#fffcb8', '#fffd12', 1, 1),
-(6, 1, 'Bebidas', 0, '', '#7efa29', '#7efa4e', 0, 1),
-(7, 6, 'Cafe negro', 20, '6e53f8ff0a65a18a5b43a4b9f4142dbb.jpg', '#79ff29', '#79ff83', 1, 1);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `tickets`
---
-
-CREATE TABLE IF NOT EXISTS `tickets` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `usuario_id` bigint(20) unsigned NOT NULL,
-  `cliente_id` bigint(20) unsigned DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `productores_facturas` (
+  `id_factura` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_productor` bigint(20) unsigned NOT NULL,
+  `serie` varchar(30) NOT NULL,
   `folio` bigint(20) NOT NULL,
+  `no_aprobacion` bigint(20) NOT NULL,
+  `ano_aprobacion` bigint(5) NOT NULL,
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `importe_iva` double NOT NULL,
+  `retencion_iva` double NOT NULL,
+  `descuento` double NOT NULL DEFAULT '0',
+  `subtotal` double NOT NULL,
   `total` double NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:vendido, 0:cancelado',
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  KEY `cliente_id` (`cliente_id`)
+  `total_letra` varchar(250) NOT NULL,
+  `img_cbb` varchar(60) NOT NULL,
+  `forma_pago` varchar(80) NOT NULL,
+  `metodo_pago` varchar(40) NOT NULL,
+  `metodo_pago_digitos` varchar(20) NOT NULL,
+  `condicion_pago` enum('co','cr') NOT NULL DEFAULT 'co' COMMENT 'cr:credito o co:contado',
+  `plazo_credito` int(11) NOT NULL DEFAULT '0',
+  `nombre` varchar(240) NOT NULL,
+  `rfc` varchar(13) NOT NULL,
+  `domicilio` varchar(250) NOT NULL,
+  `domicilio2` varchar(220) NOT NULL,
+  `status` enum('p','pa','ca') NOT NULL DEFAULT 'pa' COMMENT 'p:pendiente, pa:pagada, ca:cancelada',
+  PRIMARY KEY (`id_factura`),
+  KEY `id_productor` (`id_productor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tickets_detalle`
+-- Estructura de tabla para la tabla `productores_facturas_productos`
 --
 
-CREATE TABLE IF NOT EXISTS `tickets_detalle` (
-  `ticket_id` bigint(20) unsigned NOT NULL,
-  `familia_id` bigint(20) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `productores_facturas_productos` (
+  `id_fac_prod` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_factura` bigint(20) unsigned NOT NULL,
+  `descripcion` varchar(254) NOT NULL,
+  `taza_iva` double NOT NULL,
   `cantidad` double NOT NULL,
-  `precio_venta` double NOT NULL,
+  `precio_unitario` double NOT NULL,
   `importe` double NOT NULL,
-  PRIMARY KEY (`ticket_id`,`familia_id`),
-  KEY `familia_id` (`familia_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `importe_iva` double NOT NULL,
+  `total` double NOT NULL,
+  `descuento` float NOT NULL DEFAULT '0' COMMENT 'Es el % del descuento',
+  `retencion` float NOT NULL DEFAULT '0' COMMENT 'Es el % de la retencion',
+  `unidad` varchar(20) NOT NULL,
+  PRIMARY KEY (`id_fac_prod`),
+  KEY `id_factura` (`id_factura`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productores_series_folios`
+--
+
+CREATE TABLE IF NOT EXISTS `productores_series_folios` (
+  `id_serie_folio` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_productor` bigint(20) unsigned NOT NULL,
+  `serie` varchar(30) NOT NULL,
+  `no_aprobacion` bigint(20) unsigned NOT NULL,
+  `folio_inicio` bigint(20) unsigned NOT NULL,
+  `folio_fin` bigint(20) unsigned NOT NULL,
+  `imagen` varchar(200) NOT NULL,
+  `leyenda` varchar(70) NOT NULL,
+  `leyenda1` text NOT NULL,
+  `leyenda2` text NOT NULL,
+  `ano_aprobacion` date NOT NULL,
+  PRIMARY KEY (`id_serie_folio`),
+  KEY `id_productor` (`id_productor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tratamientos`
+--
+
+CREATE TABLE IF NOT EXISTS `tratamientos` (
+  `id_tratamiento` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(40) NOT NULL,
+  `status` enum('ac','e') NOT NULL DEFAULT 'ac',
+  PRIMARY KEY (`id_tratamiento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -340,15 +389,14 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `tipo` enum('admin','usuario') NOT NULL DEFAULT 'usuario',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:activo, 0:eliminado',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `email`, `tipo`, `status`) VALUES
-(1, 'admin', 'admin', '12345', 'dasdasd@gmail.com', 'admin', 1),
-(2, 'asd', 'dd', '12345', '', 'admin', 0);
+(1, 'admin', 'admin', '12345', 'dasdasd@gmail.com', 'admin', 1);
 
 -- --------------------------------------------------------
 
@@ -369,13 +417,9 @@ CREATE TABLE IF NOT EXISTS `usuarios_privilegios` (
 
 INSERT INTO `usuarios_privilegios` (`usuario_id`, `privilegio_id`) VALUES
 (1, 1),
-(2, 1),
 (1, 2),
-(2, 2),
 (1, 3),
-(2, 3),
 (1, 4),
-(2, 4),
 (1, 5),
 (1, 6),
 (1, 7),
@@ -385,79 +429,90 @@ INSERT INTO `usuarios_privilegios` (`usuario_id`, `privilegio_id`) VALUES
 (1, 11),
 (1, 12),
 (1, 13),
-(1, 14),
-(1, 15),
-(1, 16),
-(1, 17),
-(1, 18),
-(1, 19),
-(1, 20);
+(1, 14);
 
 -- --------------------------------------------------------
 
 --
--- Estructura para la vista `productos_base_entradas_exist`
+-- Estructura de tabla para la tabla `variedades`
 --
-DROP TABLE IF EXISTS `productos_base_entradas_exist`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `productos_base_entradas_exist` AS select `productos_base_entradas`.`base_id` AS `base_id`,sum(`productos_base_entradas`.`cantidad`) AS `entradas` from `productos_base_entradas` group by `productos_base_entradas`.`base_id`;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `productos_base_existencias`
---
-DROP TABLE IF EXISTS `productos_base_existencias`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `productos_base_existencias` AS select `pb`.`id` AS `id`,ifnull(sum(`e`.`entradas`),0) AS `entradas`,ifnull(sum(`s`.`salidas`),0) AS `salidas`,(ifnull(sum(`e`.`entradas`),0) - ifnull(sum(`s`.`salidas`),0)) AS `existencia` from ((`productos_base` `pb` left join `productos_base_entradas_exist` `e` on((`e`.`base_id` = `pb`.`id`))) left join `productos_base_salidas_exist` `s` on((`s`.`base_id` = `pb`.`id`))) group by `pb`.`id`;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `productos_base_salidas_exist`
---
-DROP TABLE IF EXISTS `productos_base_salidas_exist`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `productos_base_salidas_exist` AS select `productos_base_salidas`.`base_id` AS `base_id`,sum(`productos_base_salidas`.`cantidad`) AS `salidas` from `productos_base_salidas` group by `productos_base_salidas`.`base_id`;
+CREATE TABLE IF NOT EXISTS `variedades` (
+  `id_variedad` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(40) NOT NULL,
+  `tipo_pago` enum('k','c') NOT NULL DEFAULT 'k' COMMENT 'k:kilos, c:cajas',
+  `status` enum('ac','e') NOT NULL DEFAULT 'ac' COMMENT 'ac:activo, e:eliminado',
+  PRIMARY KEY (`id_variedad`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
--- Filtros para la tabla `productos_base_entradas`
+-- Filtros para la tabla `bancos_cuentas`
 --
-ALTER TABLE `productos_base_entradas`
-  ADD CONSTRAINT `productos_base_entradas_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `productos_base` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bancos_cuentas`
+  ADD CONSTRAINT `bancos_cuentas_ibfk_1` FOREIGN KEY (`id_banco`) REFERENCES `bancos_bancos` (`id_banco`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `productos_base_familia`
+-- Filtros para la tabla `bancos_movimientos`
 --
-ALTER TABLE `productos_base_familia`
-  ADD CONSTRAINT `productos_base_familia_ibfk_1` FOREIGN KEY (`base_id`) REFERENCES `productos_base` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `productos_base_familia_ibfk_2` FOREIGN KEY (`familia_id`) REFERENCES `productos_familias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bancos_movimientos`
+  ADD CONSTRAINT `bancos_movimientos_ibfk_1` FOREIGN KEY (`id_banco`) REFERENCES `bancos_bancos` (`id_banco`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `bancos_movimientos_ibfk_2` FOREIGN KEY (`id_cuenta`) REFERENCES `bancos_cuentas` (`id_cuenta`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `productos_base_salidas`
+-- Filtros para la tabla `bancos_movimientos_conceptos`
 --
-ALTER TABLE `productos_base_salidas`
-  ADD CONSTRAINT `productos_base_salidas_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `productos_base_salidas_ibfk_2` FOREIGN KEY (`familia_id`) REFERENCES `productos_familias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `productos_base_salidas_ibfk_3` FOREIGN KEY (`base_id`) REFERENCES `productos_base` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bancos_movimientos_conceptos`
+  ADD CONSTRAINT `bancos_movimientos_conceptos_ibfk_1` FOREIGN KEY (`id_movimiento`) REFERENCES `bancos_movimientos` (`id_movimiento`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `tickets`
+-- Filtros para la tabla `cajas_inventario`
 --
-ALTER TABLE `tickets`
-  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `cajas_inventario`
+  ADD CONSTRAINT `cajas_inventario_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cajas_inventario_ibfk_2` FOREIGN KEY (`id_variedad`) REFERENCES `variedades` (`id_variedad`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `tickets_detalle`
+-- Filtros para la tabla `cajas_recibidas`
 --
-ALTER TABLE `tickets_detalle`
-  ADD CONSTRAINT `tickets_detalle_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `tickets_detalle_ibfk_2` FOREIGN KEY (`familia_id`) REFERENCES `productos_familias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `cajas_recibidas`
+  ADD CONSTRAINT `cajas_recibidas_ibfk_1` FOREIGN KEY (`id_dueno`) REFERENCES `duenios_huertas` (`id_dueno`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cajas_recibidas_ibfk_2` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cajas_recibidas_ibfk_3` FOREIGN KEY (`id_variedad`) REFERENCES `variedades` (`id_variedad`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `cajas_recibidas_abonos`
+--
+ALTER TABLE `cajas_recibidas_abonos`
+  ADD CONSTRAINT `cajas_recibidas_abonos_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `cajas_tratamiento`
+--
+ALTER TABLE `cajas_tratamiento`
+  ADD CONSTRAINT `cajas_tratamiento_ibfk_1` FOREIGN KEY (`id_caja`) REFERENCES `cajas_recibidas` (`id_caja`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cajas_tratamiento_ibfk_2` FOREIGN KEY (`id_tratamiento`) REFERENCES `tratamientos` (`id_tratamiento`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `productores_facturas`
+--
+ALTER TABLE `productores_facturas`
+  ADD CONSTRAINT `productores_facturas_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `productores_facturas_productos`
+--
+ALTER TABLE `productores_facturas_productos`
+  ADD CONSTRAINT `productores_facturas_productos_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `productores_facturas` (`id_factura`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `productores_series_folios`
+--
+ALTER TABLE `productores_series_folios`
+  ADD CONSTRAINT `productores_series_folios_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuarios_privilegios`

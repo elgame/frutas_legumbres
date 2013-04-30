@@ -8,7 +8,7 @@
 						<a href="<?php echo base_url('panel'); ?>">Inicio</a> <span class="divider">/</span>
 					</li>
 					<li>
-						Proveedores
+						Productores
 					</li>
 				</ul>
 			</div>
@@ -16,22 +16,22 @@
 			<div class="row-fluid">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
-						<h2><i class="icon-user"></i> Proveedores</h2>
+						<h2><i class="icon-user"></i> Productores</h2>
 						<div class="box-icon">
 							<a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
 						</div>
 					</div>
 					<div class="box-content">
-						<form action="<?php echo base_url('panel/proveedores'); ?>" method="get" class="form-search">
+						<form action="<?php echo base_url('panel/productores'); ?>" method="get" class="form-search">
 							<div class="form-actions form-filters">
 								<label for="fnombre">Buscar</label>
 								<input type="text" name="fnombre" id="fnombre" value="<?php echo set_value_get('fnombre'); ?>" 
-									class="input-xlarge" placeholder="mesg8800920, av de los maestros, vanillasys" autofocus>
+									class="input-xlarge" placeholder="mesg8800920, av de los maestros, indie" autofocus>
 
 								<label for="fstatus">Estado</label>
 								<select name="fstatus">
-									<option value="1" <?php echo set_select('fstatus', '1', false, $this->input->get('fstatus')); ?>>ACTIVOS</option>
-									<option value="0" <?php echo set_select('fstatus', '0', false, $this->input->get('fstatus')); ?>>ELIMINADOS</option>
+									<option value="ac" <?php echo set_select('fstatus', 'ac', false, $this->input->get('fstatus')); ?>>ACTIVOS</option>
+									<option value="e" <?php echo set_select('fstatus', 'e', false, $this->input->get('fstatus')); ?>>ELIMINADOS</option>
 									<option value="todos" <?php echo set_select('fstatus', 'todos', false, $this->input->get('fstatus')); ?>>TODOS</option>
 								</select>
 
@@ -40,7 +40,7 @@
 						</form>
 
 						<?php
-						echo $this->usuarios_model->getLinkPrivSm('proveedores/agregar/', array(
+						echo $this->usuarios_model->getLinkPrivSm('productores/agregar/', array(
 										'params'   => '',
 										'btn_type' => 'btn-success pull-right',
 										'attrs' => array('style' => 'margin-bottom: 10px;') )
@@ -59,16 +59,16 @@
 							  </tr>
 						  </thead>
 						  <tbody>
-						<?php foreach($proveedores['proveedores'] as $proveedor){?>
+						<?php foreach($productores['productores'] as $productor){?>
 								<tr>
-									<td><?php echo $proveedor->nombre_fiscal; ?></td>
-									<td><?php echo $proveedor->rfc; ?></td>
-									<td><?php echo $proveedor->telefono1; ?></td>
-									<td><?php echo $proveedor->email; ?></td>
-									<td><?php echo $proveedor->direccion; ?></td>
+									<td><?php echo $productor->nombre_fiscal; ?></td>
+									<td><?php echo $productor->rfc; ?></td>
+									<td><?php echo $productor->telefono; ?></td>
+									<td><?php echo $productor->email; ?></td>
+									<td><?php echo $productor->direccion; ?></td>
 									<td>
 										<?php
-											if($proveedor->status == 1){
+											if($productor->status == 'ac'){
 												$v_status    = 'Activo';
 												$vlbl_status = 'label-success';
 											}else{
@@ -80,21 +80,21 @@
 									</td>
 									<td class="center">
 											<?php
-											echo $this->usuarios_model->getLinkPrivSm('proveedores/modificar/', array(
-													'params'   => 'id='.$proveedor->id,
+											echo $this->usuarios_model->getLinkPrivSm('productores/modificar/', array(
+													'params'   => 'id='.$productor->id_productor,
 													'btn_type' => 'btn-success')
 											);
-											if ($proveedor->status == 1) {
-												echo $this->usuarios_model->getLinkPrivSm('proveedores/eliminar/', array(
-														'params'   => 'id='.$proveedor->id,
+											if ($productor->status == 1) {
+												echo $this->usuarios_model->getLinkPrivSm('productores/eliminar/', array(
+														'params'   => 'id='.$productor->id_productor,
 														'btn_type' => 'btn-danger',
-														'attrs' => array('onclick' => "msb.confirm('Estas seguro de eliminar la proveedor?', 'proveedores', this); return false;"))
+														'attrs' => array('onclick' => "msb.confirm('Estas seguro de eliminar el productor?', 'productores', this); return false;"))
 												);
 											}else{
-												echo $this->usuarios_model->getLinkPrivSm('proveedores/activar/', array(
-														'params'   => 'id='.$proveedor->id,
+												echo $this->usuarios_model->getLinkPrivSm('productores/activar/', array(
+														'params'   => 'id='.$productor->id_productor,
 														'btn_type' => 'btn-danger',
-														'attrs' => array('onclick' => "msb.confirm('Estas seguro de activar la proveedor?', 'proveedores', this); return false;"))
+														'attrs' => array('onclick' => "msb.confirm('Estas seguro de activar el productor?', 'productores', this); return false;"))
 												);
 											}
 
@@ -109,9 +109,9 @@
 						//Paginacion
 						$this->pagination->initialize(array(
 								'base_url' 			=> base_url($this->uri->uri_string()).'?'.String::getVarsLink(array('pag')).'&',
-								'total_rows'		=> $proveedores['total_rows'],
-								'per_page'			=> $proveedores['items_per_page'],
-								'cur_page'			=> $proveedores['result_page']*$proveedores['items_per_page'],
+								'total_rows'		=> $productores['total_rows'],
+								'per_page'			=> $productores['items_per_page'],
+								'cur_page'			=> $productores['result_page']*$productores['items_per_page'],
 								'page_query_string'	=> TRUE,
 								'num_links'			=> 1,
 								'anchor_class'	=> 'pags corner-all',
