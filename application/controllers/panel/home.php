@@ -33,7 +33,7 @@ class home extends MY_Controller {
 		);
 		$params['venta_dia'] = $params['venta_semana'] = $params['venta_mes'] = 0;
 
-		$this->load->model('reportes_model');
+		// $this->load->model('reportes_model');
 
 		// $data = $this->reportes_model->getDataRVentasProductos(
 		// 		date('Y-m-d'), 
@@ -68,7 +68,7 @@ class home extends MY_Controller {
 		
 		$this->load->view('panel/header', $params);
 		$this->load->view('panel/general/menu', $params);
-		$this->load->view('panel/general/home', $params);
+		// $this->load->view('panel/general/home', $params);
 		$this->load->view('panel/footer');
 	}
 
