@@ -9,55 +9,34 @@ $(function(){
        numberOfMonths: 1 //muestra mas de un mes en el calendario, depende del numero
      });
 
-  $("#dcliente").autocomplete({
-      source: base_url+'panel/clientes/ajax_get_clientes',
+  $("#dproductor").autocomplete({
+      source: base_url+'panel/productores/ajax_get_productores?type=f',
       minLength: 1,
       selectFirst: true,
       select: function( event, ui ) {
-        $("#did_cliente").val(ui.item.id);
-        createInfoCliente(ui.item.item);
-        $("#dcliente").css("background-color", "#B0FFB0");
-        reAutocomplete();
-      }
-  }).on("keydown", function(event){
-      if(event.which == 8 || event == 46){
-        $("#dcliente").val("").css("background-color", "#FFD9B3");
-        $("#did_cliente").val("");
-        $("#dcliente_rfc").val("");
-        $("#dcliente_domici").val("");
-        $("#dcliente_ciudad").val("");
-        reAutocomplete();
-      }
-  });
-
-  $("#dempresa").autocomplete({
-      source: base_url+'panel/facturacion/ajax_get_empresas',
-      minLength: 1,
-      selectFirst: true,
-      select: function( event, ui ) {
-        $("#did_empresa").val(ui.item.id);
-        $("#dempresa").css("background-color", "#B0FFB0");
+        $("#did_productor").val(ui.item.id);
+        $("#dproductor").css("background-color", "#B0FFB0");
 
         loadSerieFolio(ui.item.id);
       }
   }).on("keydown", function(event){
       if(event.which == 8 || event == 46){
-        $("#dempresa").val("").css("background-color", "#FFD9B3");
-        $("#did_empresa").val("");
+        $("#dproductor").css("background-color", "#FFD9B3");
+        $("#did_productor").val("");
         $('#dserie').html('');
         $("#dfolio").val("");
         $("#dno_aprobacion").val("");
       }
   });
 
-  if ($('#did_empresa').val() !== '') {
-    loadSerieFolio($('#did_empresa').val());
+  if ($('#did_productor').val() !== '') {
+    loadSerieFolio($('#did_productor').val());
   }
 
   //Carga el folio para la serie seleccionada
   $("#dserie").on('change', function(){
     loader.create();
-    $.getJSON(base_url+'panel/facturacion/get_folio/?serie='+$(this).val()+'&ide='+$('#did_empresa').val(),
+    $.getJSON(base_url+'panel/productoresfac/get_folio/?serie='+$(this).val()+'&ide='+$('#did_productor').val(),
     function(res){
       if(res.msg == 'ok'){
         $("#dfolio").val(res.data.folio);
@@ -175,7 +154,7 @@ function calculaTotal () {
 function loadSerieFolio (ide) {
   var objselect = $('#dserie');
   loader.create();
-    $.getJSON(base_url+'panel/facturacion/get_series/?ide='+ide,
+    $.getJSON(base_url+'panel/productoresfac/get_series/?ide='+ide,
       function(res){
           if(res.msg === 'ok') {
             var html_option = '<option value=""></option>';
@@ -217,32 +196,15 @@ function createInfoCliente(item){
 }
 
 
-function reAutocomplete () {
- $("#ddescripcion").autocomplete({
-    source: base_url+'panel/productos/ajax_get_productos?cliente=' + $('#did_cliente').val(),
-    minLength: 1,
-    selectFirst: true,
-    select: function( event, ui ) {
-
-      $("#did_prod").val(ui.item.id);
-      $("#dpreciou").val(ui.item.item.precio);
-      $("#dcantidad").val(1);
-      $("#dmedida").val(ui.item.item.nombre_unidad);
-      $("#ddescuento").val(0);
-      $("#ddescripcion").css("background-color", "#B0FFB0");
-    }
-  });
-}
-
 function limpiar () {
-  $("#ddescripcion").val("").css("background-color", "#FFF");
   $("#did_prod").val('');
   $("#dpreciou").val('');
   $("#diva").val('');
-  $("#ddescuento").val('');
+  $("#ddescuento").val('0');
   $("#dreten_iva").val('');
   $("#dcantidad").val('');
-  $("#dmedida").val('');
+  $("#dmedida").val('Unidad');
+  $("#ddescripcion").val("").css("background-color", "#FFF").focus();
 }
 
 function valida_agregar () {

@@ -6,7 +6,7 @@ class productores extends MY_Controller {
 	 * Evita la validacion (enfocado cuando se usa ajax). Ver mas en privilegios_model
 	 * @var unknown_type
 	 */
-	private $excepcion_privilegio = array('productores/ajax_get_proveedor/');
+	private $excepcion_privilegio = array('productores/ajax_get_productores/');
 
 	public function _remap($method){
 		$this->load->model("usuarios_model");
@@ -162,11 +162,11 @@ class productores extends MY_Controller {
 
 
 	/**
-	 * Obtiene lostado de proveedores para el autocomplete, ajax
+	 * Obtiene lostado de productores para el autocomplete, ajax
 	 */
-	public function ajax_get_proveedor(){
+	public function ajax_get_productores(){
 		$this->load->model('productores_model');
-		$params = $this->productores_model->getProveedoresAjax();
+		$params = $this->productores_model->getProductoresAjax();
 
 		echo json_encode($params);
 	}

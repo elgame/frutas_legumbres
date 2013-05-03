@@ -280,18 +280,18 @@ class privilegios_model extends CI_Model{
 			if($data1->num > 0){
 				$txt .= '
 				<li'.($firs==false? ' class="submenu parent"': ' class="parent"').'>
-					<a class="ajax-link" '.($firs? 'onclick="panel.menu('.$data->id.');"': 'href="'.base_url('panel/'.$data->url_accion).'"').$link_tar.'>
+					<a class="ajax-link" '.($firs? 'onclick="panel.menu('.$data->id.');"': '').' href="'.base_url('panel/'.$data->url_accion).'"'.$link_tar.'>
 						<i class="icon-'.$data->url_icono.'"></i><span class="hidden-tablet"> '.$data->nombre.'</span>
 					</a>
 					<div class="menu-flotante">
 						<ol '.($firs? 'id="subm'.$data->id.'" class=""': '').'>';
 						if ($data->url_accion!='#' && $data->url_accion!='') {
-							$txt .= '
-								<li class="submenu">
-									<a class="ajax-link" href="'.base_url('panel/'.$data->url_accion).'"'.$link_tar.'>
-										<i class="icon-'.$data->url_icono.'"></i><span class="hidden-tablet"> '.$data->nombre.'</span>
-									</a>
-								</li>';
+							// $txt .= '
+							// 	<li class="submenu">
+							// 		<a class="ajax-link" href="'.base_url('panel/'.$data->url_accion).'"'.$link_tar.'>
+							// 			<i class="icon-'.$data->url_icono.'"></i><span class="hidden-tablet"> '.$data->nombre.'</span>
+							// 		</a>
+							// 	</li>';
 						}
 					$txt .= $this->generaMenuPrivilegio($data->id, false).'
 						</ol>

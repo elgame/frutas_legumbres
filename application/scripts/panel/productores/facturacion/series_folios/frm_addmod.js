@@ -9,18 +9,18 @@ $(document).ready(function(){
 		 numberOfMonths: 1 //muestra mas de un mes en el calendario, depende del numero
 	 });
 
-	$("#fempresa").autocomplete({
-      source: base_url+'panel/empresas/ajax_get_empresas',
+	$("#dproductor").autocomplete({
+      source: base_url+'panel/productores/ajax_get_productores?type=f',
       minLength: 1,
       selectFirst: true,
       select: function( event, ui ) {
-        $("#fid_empresa").val(ui.item.id);
-        $("#fempresa").css("background-color", "#B0FFB0");
+        $("#did_productor").val(ui.item.id);
+        $("#dproductor").css("background-color", "#B0FFB0");
       }
   }).on("keydown", function(event){
       if(event.which == 8 || event == 46){
-        $("#fempresa").val("").css("background-color", "#FFD9B3");
-        $("#fid_empresa").val("");
+        $("#dproductor").css("background-color", "#FFD9B3");
+        $("#did_productor").val("");
       }
   });
 
