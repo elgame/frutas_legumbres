@@ -1,0 +1,51 @@
+/*********************** PRIVILEGIOS DE DUEÑOS HUERTAS Y CAJAS ********************************/
+
+INSERT INTO `privilegios` (`nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES
+('Dueños Huertas', 0, 1, 'duenios_huertas/', 'user', 0),
+('Agregar', 15, 1, 'duenios_huertas/agregar/', 'plus', 0),
+('Modificar', 15, 0, 'duenios_huertas/modificar/', 'edit', 0),
+('Eliminar', 15, 0, 'duenios_huertas/eliminar/', 'remove', 0),
+('Activar', 15, 0, 'duenios_huertas/activar/', 'ok', 0),
+('Cajas', 0, 1, 'cajas/', 'inbox', 0),
+('Agregar Movimiento', 20, 1, 'cajas/agregar/', 'plus', 0),
+('Entradas', 20, 1, 'cajas/entradas/', 'share-alt', 0),
+('Agregar Entrada', 20, 1, 'cajas/agregar_entrada/', 'plus', 0),
+('Modificar', 23, 0, 'cajas/modificar_entrada/', 'edit', 0),
+('Eliminar', 23, 0, 'cajas/eliminar_entrada/', 'remove', 0);
+
+/***********  CAMBIOS BDD  **************/
+
+ALTER TABLE  `cajas_inventario` ADD  `id_caja` BIGINT( 20 ) UNSIGNED NULL DEFAULT NULL AFTER  `id_variedad`
+
+/***********  TRIGGERS  **************/
+
+DROP TRIGGER IF EXISTS agrega_entrada_inventario;
+DELIMITER $$
+CREATE TRIGGER agrega_entrada_inventario AFTER INSERT ON cajas_recibidas
+  FOR EACH ROW BEGIN
+    INSERT INTO cajas_inventario (id_productor, id_variedad, id_caja, fecha, concepto, cantidad, chofer, tipo)
+    VALUES (NEW.id_productor, NEW.id_variedad, NEW.id_caja, NEW.fecha, 'Registro de entradas cajas', NEW.cajas, '', 'en');
+  END$$
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS update_entrada_inventario;
+DELIMITER $$
+CREATE TRIGGER update_entrada_inventario AFTER UPDATE ON cajas_recibidas
+  FOR EACH ROW BEGIN
+
+    UPDATE cajas_inventario
+    SET id_productor = NEW.id_productor, id_variedad = NEW.id_variedad, fecha = NEW.fecha, cantidad = NEW.cajas
+    WHERE id_caja = OLD.id_caja;
+
+  END$$
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS delete_entrada_inventario;
+DELIMITER $$
+CREATE TRIGGER delete_entrada_inventario BEFORE DELETE ON cajas_recibidas
+  FOR EACH ROW BEGIN
+
+    DELETE FROM cajas_inventario WHERE id_caja = OLD.id_caja;
+
+  END$$
+DELIMITER ;
