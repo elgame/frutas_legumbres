@@ -9,7 +9,7 @@ class productores_model extends CI_Model{
 	/**
 	 * Obtiene el listado de Productores
 	 */
-	public function getProductores(){
+	public function getProductores($tipo=''){
 		$sql = '';
 		//paginacion
 		$params = array(
@@ -21,22 +21,24 @@ class productores_model extends CI_Model{
 
 		//Filtros para buscar
 		if($this->input->get('fnombre') != '')
-			$sql = " WHERE (
-				lower(nombre_fiscal) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR
-				lower(rfc) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR
-				lower(email) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR
-				lower(calle) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR
-				lower(colonia) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR
-				lower(municipio) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR
+			$sql = " WHERE ( 
+				lower(nombre_fiscal) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+				lower(rfc) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+				lower(email) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+				lower(calle) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+				lower(colonia) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+				lower(municipio) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
 				lower(estado) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%'
 				)";
-
+		
 		$fstatus = $this->input->get('fstatus')===false? 'ac': $this->input->get('fstatus');
 		if($fstatus != '' && $fstatus != 'todos')
 			$sql .= ($sql==''? ' WHERE ': ' AND ')." status = '".$fstatus."'";
+		if($tipo != '')
+			$sql .= ($sql==''? ' WHERE ': ' AND ')." tipo = '".$tipo."'";
 
 		$query = BDUtil::pagination("
-				SELECT id_productor, nombre_fiscal, rfc, telefono, email,
+				SELECT id_productor, nombre_fiscal, rfc, telefono, email, 
 					CONCAT(calle, ' #', no_exterior, ', ', colonia, ', ', municipio, ', ', estado) AS direccion, status
 				FROM productores
 				".$sql."
@@ -105,7 +107,7 @@ class productores_model extends CI_Model{
 				'email'          => $this->input->post('demail'),
 				'logo'           => $logo,
 				'regimen_fiscal' => $this->input->post('dregimen_fiscal'),
-				'tipo'           => $this->input->post('dtipo')
+				'tipo'           => $this->input->post('dtipo'),
 			);
 		}
 		$this->db->insert('productores', $data);
@@ -156,14 +158,18 @@ class productores_model extends CI_Model{
 
 
 	/**
-	 * Obtiene el listado de proveedores para usar ajax
+	 * Obtiene el listado de productores para usar ajax
 	 */
-	public function getProveedoresAjax(){
+	public function getProductoresAjax(){
 		$sql = '';
+		if ($this->input->get('term') !== false)
+			$sql = " AND lower(nombre_fiscal) LIKE '%".mb_strtolower($this->input->get('term'), 'UTF-8')."%'";
+		if($this->input->get('type') !== false)
+			$sql .= " AND tipo = '".mb_strtolower($this->input->get('type'), 'UTF-8')."'";
 		$res = $this->db->query("
-				SELECT id, nombre_fiscal, rfc, calle, no_exterior, no_interior, colonia, municipio, estado, cp, telefono1
-				FROM proveedores
-				WHERE status = 1 AND lower(nombre_fiscal) LIKE '%".mb_strtolower($this->input->get('term'), 'UTF-8')."%'
+				SELECT id_productor, nombre_fiscal, rfc, calle, no_exterior, no_interior, colonia, municipio, estado, cp, telefono 
+				FROM productores
+				WHERE status = 'ac' ".$sql."
 				ORDER BY nombre_fiscal ASC
 				LIMIT 20");
 
@@ -171,7 +177,7 @@ class productores_model extends CI_Model{
 		if($res->num_rows() > 0){
 			foreach($res->result() as $itm){
 				$response[] = array(
-						'id'    => $itm->id,
+						'id'    => $itm->id_productor,
 						'label' => $itm->nombre_fiscal,
 						'value' => $itm->nombre_fiscal,
 						'item'  => $itm,
