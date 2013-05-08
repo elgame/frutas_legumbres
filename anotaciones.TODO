@@ -3,10 +3,10 @@
 
 
 ******** Detalles *******
--en modificar entrada si no le pongo ningun tratamiento truena
--en agregar entradas el campo fecha poner por default la de ese dia
--en agregar movimiento en el autocomplete que pinte de color verde (#B0FFB0) el seleccionado y rojillo (#FFD9B3) cuando se borre, al borrar q no limpie la caja de texto solo el campo que tiene el id_productor (como esta en productoresfac/agregar), la fecha que cargue por default la de ese dia, poner el autofocus en el campo productor
--en el listado de productores de movimientos de caja poner todos los productores (no tomar exactamente el rango de fechas si no de la fecha mayor hacia atras solo en esa pantalla, entrando a un productor esta bien q tome el rango por q tiene saldo anterior). al entrar a un productor poner link de regresar como en facturacion productores que mantenga el filtro de fechas
+ ✔ en modificar entrada si no le pongo ningun tratamiento truena @done (13-05-08 14:31)
+ ✔ en agregar entradas el campo fecha poner por default la de ese dia @done (13-05-08 14:35)
+ ✔ en agregar movimiento en el autocomplete que pinte de color verde (#B0FFB0) el seleccionado y rojillo (#FFD9B3) cuando se borre, al borrar q no limpie la caja de texto solo el campo que tiene el id_productor (como esta en productoresfac/agregar), la fecha que cargue por default la de ese dia, poner el autofocus en el campo productor @done (13-05-08 14:41)
+ ✔ en el listado de productores de movimientos de caja poner todos los productores (no tomar exactamente el rango de fechas si no de la fecha mayor hacia atras solo en esa pantalla, entrando a un productor esta bien q tome el rango por q tiene saldo anterior). al entrar a un productor poner link de regresar como en facturacion productores que mantenga el filtro de fechas @done (13-05-08 14:50)
 
 
 

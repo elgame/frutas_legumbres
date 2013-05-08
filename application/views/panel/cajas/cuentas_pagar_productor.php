@@ -83,6 +83,7 @@
               <thead>
                 <tr>
                   <th>Fecha</th>
+                  <th>#</th>
                   <th># Ticket</th>
                   <th># Cajas</th>
                   <th>Cajas Rezaga</th>
@@ -113,7 +114,7 @@
                     <td><?php echo String::formatoNumero($total_entradas); ?></td>
                     <td><?php echo String::formatoNumero($total_abonos); ?></td>
                     <td><?php echo String::formatoNumero($total_pagar); ?></td>
-                    <td colspan="4"></td>
+                    <td colspan="5"></td>
                   </tr>
 
             <?php
@@ -144,6 +145,8 @@
                 ?>
                   <tr>
                     <td><?php echo $caja->fecha ?></td>
+                    <td><a href="<?php echo base_url('panel/cajas/detalle/').'?idc='.$caja->id_caja.'&'.
+                                  String::getVarsLink(array('idc')); ?>"><?php echo $caja->id_caja; ?></a></td>
                     <td><?php echo $caja->no_ticket; ?></td>
                     <td><?php echo $caja->cajas; ?></td>
                     <td><?php echo $caja->cajas_rezaga; ?></td>
@@ -174,6 +177,7 @@
                     <td style="background-color:#ccc;"><?php echo String::formatoNumero($ttotal_importe); ?></td>
                     <td style="background-color:#ccc;"><?php echo String::formatoNumero($ttotal_abonos); ?></td>
                     <td style="background-color:#ccc;"><?php echo String::formatoNumero($ttotal_saldo); ?></td>
+                    <td style="background-color:#ccc;"></td>
                     <td style="background-color:#ccc;"></td>
                   </tr>
 

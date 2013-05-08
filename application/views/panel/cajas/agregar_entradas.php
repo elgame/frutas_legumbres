@@ -33,7 +33,7 @@
                       <label class="control-label" for="dfecha">Fecha:</label>
                       <div class="controls">
                         <input type="text" name="dfecha" id="dfecha" class="span6"
-                          value="<?php echo set_value('dfecha'); ?>" maxlength="10" required>
+                          value="<?php echo isset($_POST['dfecha']) ? $_POST['dfecha'] : date('Y-m-d'); ?>" maxlength="10" required>
                       </div>
                     </div>
 

@@ -166,7 +166,8 @@ class Cuentas_pagar_model extends CI_Model {
 
 
     // Cajas y sus abonos en el rango de fechas seleccionado
-    $query = $this->db->query("SELECT DATE(cr.fecha) AS fecha,
+    $query = $this->db->query("SELECT cr.id_caja,
+                                      DATE(cr.fecha) AS fecha,
                                       cr.no_ticket,
                                       cr.cajas,
                                       cr.cajas_rezaga,
@@ -205,10 +206,61 @@ class Cuentas_pagar_model extends CI_Model {
     return $response;
   }
 
+  /**
+   * Muestra el detalle de una entrada o caja
+   *
+   * @return array
+   */
+  public function detalle()
+  {
+    $sql = '';
+
+    //Filtros para buscar
+    $_GET['ffecha1'] = $this->input->get('ffecha1')==''? date("Y-m-").'01': $this->input->get('ffecha1');
+    $_GET['ffecha2'] = $this->input->get('ffecha2')==''? date("Y-m-d"): $this->input->get('ffecha2');
+
+    $fecha1 = $fecha2 = '';
+    if($_GET['ffecha1'] > $_GET['ffecha2'])
+    {
+            $fecha2 = $_GET['ffecha1'];
+            $fecha1 = $_GET['ffecha2'];
+    }
+    else
+    {
+            $fecha2 = $_GET['ffecha2'];
+            $fecha1 = $_GET['ffecha1'];
+    }
+
+    $sql = $sql2 = '';
+    if($this->input->get('ftipo')=='pv'){
+            $sql = " AND (Date('".$fecha2."'::timestamp with time zone)-Date(c.fecha)) > c.plazo_credito";
+            $sql2 = 'WHERE saldo > 0';
+    }
+
+    //Obtenemos los abonos
+    $query = $this->db->query("SELECT id_abono,
+                                      Date(fecha) AS fecha,
+                                      monto AS abono
+                              FROM cajas_recibidas_abonos
+                              WHERE id_caja = {$_GET['idc']} AND
+                                    Date(fecha) <= '{$fecha2}'
+                              ORDER BY fecha ASC");
+
+    $response = array(
+      'abonos' => array(),
+      'fecha1'  => $fecha1
+    );
+
+    if($query->num_rows() > 0)
+      $response['abonos'] = $query->result();
+
+    return $response;
+  }
+
   /*************** FUNCIONES PARA GENERAR PDF'S Y XLS'S  *****************/
 
   /**
-   * Visualiza/Descarga el PDF de la relacion de
+   * Visualiza/Descarga el PDF de la relacion de entregas
    *
    * @return void
    */
@@ -440,6 +492,92 @@ class Cuentas_pagar_model extends CI_Model {
 
     $xls->workbook->send('relacion_productor.xls');
     $xls->workbook->close();
+  }
+
+  /**
+   * Visualiza/Descarga el PDF de la relacion de
+   *
+   * @return void
+   */
+  public function detalle_pdf()
+  {
+    $this->load->model('productores_model');
+    $this->load->model('cajas_model');
+
+    $entrega = $this->cajas_model->get_info_entrada($_GET['idc']);
+    $productor = $this->productores_model->getInfoProductor($_GET['id']);
+    $abonos = $this->detalle();
+
+    $this->load->library('mypdf');
+    // Creación del objeto de la clase heredada
+    $pdf = new MYpdf('P', 'mm', 'Letter');
+    $pdf->titulo2 = 'Detalle Entrega ' . $abonos['fecha1'];
+    $pdf->titulo3 = $productor['info']->nombre_fiscal . "\n";
+    $pdf->titulo3 .= 'Del: '.$this->input->get('ffecha1')." Al ".$this->input->get('ffecha2');
+    $pdf->AliasNbPages();
+    //$pdf->AddPage();
+    $pdf->SetFont('Arial','',8);
+
+    $aligns = array('C', 'C', 'C');
+    $widths = array(55, 73, 73);
+    $header = array('Fecha', 'Abono', 'Saldo');
+
+    $total_abono = 0;
+    $total_entrega = floatval($entrega['info']->total_pagar_kc) * floatval($entrega['info']->precio);
+    $total_saldo = $total_entrega;
+
+    $bad_cargot = true;
+
+    foreach($abonos['abonos'] as $key => $item)
+    {
+      $total_abono += floatval($item->abono);
+      $total_saldo -= floatval($item->abono);
+
+      if($pdf->GetY() >= $pdf->limiteY || $key==0) //salta de pagina si exede el max
+      {
+        $pdf->AddPage();
+
+        $pdf->SetFont('Arial','B',8);
+        $pdf->SetTextColor(255,255,255);
+        $pdf->SetFillColor(160,160,160);
+        $pdf->SetX(6);
+
+        if($bad_cargot)
+        {
+          $pdf->SetX(6);
+          $pdf->SetAligns(array('R'));
+          $pdf->SetWidths(array(201));
+          $pdf->Row(array('Total: '.String::formatoNumero($total_entrega)), true);
+          $bad_cargot = false;
+        }
+
+        $pdf->SetX(6);
+        $pdf->SetAligns($aligns);
+        $pdf->SetWidths($widths);
+        $pdf->Row($header, true);
+      }
+
+      $pdf->SetFont('Arial','',8);
+      $pdf->SetTextColor(0,0,0);
+      $datos = array($item->fecha,
+                     String::formatoNumero($item->abono),
+                     String::formatoNumero($total_saldo));
+
+      $pdf->SetX(6);
+      $pdf->SetAligns($aligns);
+      $pdf->SetWidths($widths);
+      $pdf->Row($datos, false);
+    }
+
+    $pdf->SetX(6);
+    $pdf->SetFont('Arial','B',8);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetWidths(array(55, 73, 73));
+    $pdf->Row(array('Totales:',
+                    String::formatoNumero($total_abono),
+                    String::formatoNumero($total_saldo)), true);
+
+    $pdf->Output('DETALLE_FACTURA.pdf', 'I');
   }
 
 }

@@ -14,6 +14,8 @@ class cajas extends MY_Controller {
                                         'cajas/cuentas_pagar_productor/',
                                         'cajas/cpp_pdf/',
                                         'cajas/cpp_xls/',
+                                        'cajas/detalle/',
+                                        'cajas/detalle_pdf/',
                                         );
 
   public function _remap($method){
@@ -240,7 +242,8 @@ class cajas extends MY_Controller {
       $this->load->view('panel/cajas/cuentas_pagar_productor', $params);
       $this->load->view('panel/footer');
     }
-    else redirect(base_url('panel/cajas/cuentas_pagar/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+    else redirect(base_url('panel/cajas/cuentas_pagar/?'.
+      String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
   }
 
   /**
@@ -255,7 +258,8 @@ class cajas extends MY_Controller {
       $this->cuentas_pagar_model->cpp_pdf();
     }
     else
-      redirect(base_url('panel/cajas/cuentas_pagar/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+      redirect(base_url('panel/cajas/cuentas_pagar/?'.
+        String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
   }
 
    /**
@@ -269,7 +273,65 @@ class cajas extends MY_Controller {
       $this->cuentas_pagar_model->cpp_xls();
     }
     else
-      redirect(base_url('panel/cajas/cuentas_pagar/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+      redirect(base_url('panel/cajas/cuentas_pagar/?'.
+        String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+  }
+
+  /**
+   * Muestra el detalle de abonos de una entrega o caja
+   *
+   * @return void
+   */
+  public function detalle()
+  {
+    if (isset($_GET['id']{0}) && isset($_GET['idc']{0}))
+    {
+      $this->carabiner->js(array(
+        array('general/msgbox.js'),
+        array('panel/cajas/inventario.js'),
+      ));
+
+      $this->load->model('cuentas_pagar_model');
+      $this->load->model('productores_model');
+      $this->load->model('cajas_model');
+
+      $params['info_empleado'] = $this->info_empleado['info']; //info empleado
+      $params['seo'] = array(
+        'titulo' => 'Detalle'
+      );
+
+      $params['info'] = $this->productores_model->getInfoProductor($_GET['id']);
+      $params['entrega'] = $this->cajas_model->get_info_entrada($_GET['idc']);
+
+      $params['abonos'] = $this->cuentas_pagar_model->detalle();
+
+      if(isset($_GET['msg']{0}))
+        $params['frm_errors'] = $this->showMsgs($_GET['msg']);
+
+      $this->load->view('panel/header', $params);
+      $this->load->view('panel/general/menu', $params);
+      $this->load->view('panel/cajas/detalle', $params);
+      $this->load->view('panel/footer');
+    }
+    else
+      redirect(base_url('panel/cajas/cuentas_pagar/?'.
+          String::getVarsLink(array('ffecha1', 'ffecha2', 'msg', 'id', 'idc')).'&msg=1'));
+  }
+
+  /**
+   * Visualiza/Descarga un pdf con el listado de los abonos de una entrega o
+   * caja
+   */
+  public function detalle_pdf()
+  {
+    if (isset($_GET['id']{0}) && isset($_GET['idc']{0}))
+    {
+      $this->load->model('cuentas_pagar_model');
+      $this->cuentas_pagar_model->detalle_pdf();
+    }
+    else
+      redirect(base_url('panel/cajas/cuentas_pagar/?'.
+        String::getVarsLink(array('ffecha1', 'ffecha2', 'msg', 'id', 'idc')).'&msg=1'));
   }
 
   /****************************** ENTRADAS ***********************************/

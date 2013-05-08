@@ -14,11 +14,12 @@ $(function(){
     selectFirst: true,
     select: function( event, ui ) {
       $("#did_productor").val(ui.item.id);
-      $("#dproductor").val(ui.item.label);
+      $("#dproductor").val(ui.item.label).css({'background-color': '#B0FFB0'});
+
     }
   }).keydown(function(e){
     if (e.which === 8) {
-      $(this).val('');
+      $(this).css({'background-color': '#FFD9B3'});
       $('#did_productor').val('');
     }
   });

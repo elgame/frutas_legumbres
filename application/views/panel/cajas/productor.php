@@ -24,6 +24,9 @@
             </div>
           </div>
           <div class="box-content">
+
+            <a href="<?php echo base_url('panel/cajas/?'.String::getVarsLink(array('id', 'msg')) ); ?>"><i class="icon-chevron-left"></i> Atras</a>
+
             <form action="<?php echo base_url('panel/cajas/productor/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg'))); ?>" method="get" class="form-search">
               <div class="form-actions form-filters">
 

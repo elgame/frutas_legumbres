@@ -54,7 +54,7 @@
                       <label class="control-label" for="dfecha">Fecha:</label>
                       <div class="controls">
                         <input type="text" name="dfecha" id="dfecha" class="span6"
-                          value="<?php echo set_value('dfecha'); ?>" maxlength="10" required>
+                          value="<?php echo (isset($_POST['dfecha'])) ? $_POST['dfecha']: date('Y-m-d'); ?>" maxlength="10" required>
                       </div>
                     </div>
 
@@ -85,7 +85,7 @@
                     <div class="control-group tipo3">
                       <label class="control-label" for="dmovimiento">Tipo de Movimiento </label>
                       <div class="controls">
-                        <select name="dmovimiento" id="dmovimiento" class="span6" autofocus>
+                        <select name="dmovimiento" id="dmovimiento" class="span6">
                           <option value="s" <?php echo set_select('dmovimiento', 's', false, $this->input->post('dmovimiento')); ?>>SALIDA</option>
                           <option value="en" <?php echo set_select('dmovimiento', 'en', false, $this->input->post('dmovimiento')); ?>>ENTRADA</option>
                         </select>

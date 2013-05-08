@@ -29,7 +29,21 @@ class Cajas_model extends CI_Model {
     $_GET['ffecha1'] = $this->input->get('ffecha1')==''? date("Y-m-").'01': $this->input->get('ffecha1');
     $_GET['ffecha2'] = $this->input->get('ffecha2')==''? date("Y-m-d"): $this->input->get('ffecha2');
 
-    $sql = " AND DATE(ci.fecha)>='".$_GET['ffecha1']."' AND DATE(ci.fecha)<='".$_GET['ffecha2']."'";
+
+    $fecha1 = $fecha2 = '';
+    if($_GET['ffecha1'] > $_GET['ffecha2'])
+    {
+      $fecha2 = $_GET['ffecha1'];
+      $fecha1 = $_GET['ffecha2'];
+    }
+    else
+    {
+      $fecha2 = $_GET['ffecha2'];
+      $fecha1 = $_GET['ffecha1'];
+    }
+
+    // $sql = " AND DATE(ci.fecha)>='".$_GET['ffecha1']."' AND DATE(ci.fecha)<='".$_GET['ffecha2']."'";
+    $sql = " AND DATE(ci.fecha)<='".$fecha2."'";
 
     $query = BDUtil::pagination("
             SELECT id_productor,
@@ -292,14 +306,17 @@ class Cajas_model extends CI_Model {
 
         // $_POST['did_tratamiento'] es un array de ids de tratamientos
         $data_trata = array();
-        foreach ($_POST['did_tratamiento'] as $key => $tratamiento) {
-          if ($tratamiento !== '' && $_POST['dcantidad_trata'][$key] !== '')
-          {
-            $data_trata[] = array(
-              'id_caja'        => $this->input->get('id'),
-              'id_tratamiento' => $tratamiento,
-              'cantidad'       => $_POST['dcantidad_trata'][$key],
-            );
+        if (isset($_POST['did_tratamiento']))
+        {
+          foreach ($_POST['did_tratamiento'] as $key => $tratamiento) {
+            if ($tratamiento !== '' && $_POST['dcantidad_trata'][$key] !== '')
+            {
+              $data_trata[] = array(
+                'id_caja'        => $this->input->get('id'),
+                'id_tratamiento' => $tratamiento,
+                'cantidad'       => $_POST['dcantidad_trata'][$key],
+              );
+            }
           }
         }
 
@@ -311,7 +328,8 @@ class Cajas_model extends CI_Model {
     if ($data_trata !== null)
     {
       $this->db->delete('cajas_tratamiento', array('id_caja' => $id)); // Elimina el tratamiento de la caja a actualizar
-      $this->db->insert_batch('cajas_tratamiento', $data_trata); // Inserta el nuevo tratamiento
+
+      if (count($data_trata) > 0) $this->db->insert_batch('cajas_tratamiento', $data_trata); // Inserta el nuevo tratamiento
     }
     return array(true, '', 5);
   }
