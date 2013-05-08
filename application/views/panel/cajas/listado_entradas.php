@@ -36,16 +36,17 @@
                 </select> -->
 
                 <button type="submit" class="btn">Buscar</button>
+
+                 <?php
+                    echo $this->usuarios_model->getLinkPrivSm('cajas/agregar_entrada/', array(
+                        'params'   => '',
+                        'btn_type' => 'btn-success pull-right',
+                        'attrs' => array('style' => 'margin-bottom: 10px;') )
+                    );
+                  ?>
               </div>
             </form>
 
-            <?php
-            echo $this->usuarios_model->getLinkPrivSm('cajas/agregar_entrada/', array(
-                    'params'   => '',
-                    'btn_type' => 'btn-success pull-right',
-                    'attrs' => array('style' => 'margin-bottom: 10px;') )
-                );
-             ?>
             <table class="table table-striped table-bordered bootstrap-datatable">
               <thead>
                 <tr>
@@ -106,9 +107,6 @@
         </div><!--/span-->
 
       </div><!--/row-->
-
-
-
 
           <!-- content ends -->
     </div><!--/#content.span10-->

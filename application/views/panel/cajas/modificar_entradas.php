@@ -170,11 +170,11 @@
                     <div class="control-group tipo3">
                       <label class="control-label" for="did_tratamiento">Tipo de Tratamiento</label>
                       <div class="controls">
-                        <select name="did_tratamiento" id="did_tratamiento" class="span6">
-                          <option value="" <?php echo set_select('did_tratamiento', '', false, (isset($info['info']->id_tratamiento)?$info['info']->id_tratamiento:'')); ?>></option>
-                          <option value="1" <?php echo set_select('did_tratamiento', '1', false, (isset($info['info']->id_tratamiento)?$info['info']->id_tratamiento:'')); ?>>75</option>
-                          <option value="2" <?php echo set_select('did_tratamiento', '2', false, (isset($info['info']->id_tratamiento)?$info['info']->id_tratamiento:'')); ?>>90</option>
-                          <option value="3" <?php echo set_select('did_tratamiento', '3', false, (isset($info['info']->id_tratamiento)?$info['info']->id_tratamiento:'')); ?>>110</option>
+                        <select name="" id="did_tratamiento" class="span6">
+                          <option value=""></option>
+                          <option value="1">75</option>
+                          <option value="2">90</option>
+                          <option value="3">110</option>
                         </select>
                       </div>
                     </div>
@@ -182,12 +182,47 @@
                     <div class="control-group">
                       <label class="control-label" for="dcantidad_trata">Cantidad:</label>
                       <div class="controls">
-                        <input type="text" name="dcantidad_trata" id="dcantidad_trata" class="span6 vnumeric"
-                          value="<?php echo (isset($info['info']->cantidad_trata) ? $info['info']->cantidad_trata : '' ); ?>">
+                        <input type="text" name="" id="dcantidad_trata" class="span6 vnumeric inline"
+                          value="" style="display: inline-block;">
+                        <button type="button" class="btn" id="btn-add-trata">Agregar</button>
+                      </div>
+                    </div>
+
+                    <div class="control-group">
+                      <label class="control-label" for="dcantidad_trata"></label>
+                      <div class="controls">
+
+                        <div class="span12">
+                          <table class="table table-bordered table-hover table-striped" id="table-tratamientos">
+                            <caption>TRATAMIENTOS REALIZADOS</caption>
+                            <thead>
+                              <tr>
+                                <th>Tratamiento</th>
+                                <th>Cantidad</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+
+                              <?php foreach($info['info']->tratamientos as $trata) { ?>
+
+                                <tr id="<?php echo "trata".$trata->id ?>">
+                                  <td><?php echo $trata->nombre ?><input type="hidden" name="did_tratamiento[]" value="<?php echo $trata->id ?>"></td>
+                                  <td><input type="text" name="dcantidad_trata[]" class="span6 vinteger" value="<?php echo $trata->cantidad ?>" style="display: inline-block;">
+                                      <a href="javascript:void(0)" attr-del="<?php echo $trata->id ?>" style="margin-left: 3px;"><i class="icon-remove"></i></a>
+                                  </td>
+                                </tr>
+
+                              <?php } ?>
+                            </tbody>
+                          </table>
+
+                        </div>
+
                       </div>
                     </div>
 
                   </div>
+
 
                 </fieldset>
 

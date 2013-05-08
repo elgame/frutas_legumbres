@@ -33,6 +33,14 @@ INSERT INTO `privilegios` (`nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `
 
 ALTER TABLE  `cajas_inventario` ADD  `id_caja` BIGINT( 20 ) UNSIGNED NULL DEFAULT NULL AFTER  `id_variedad`
 
+
+ALTER TABLE  `cajas_recibidas_abonos` ADD  `id_caja` BIGINT( 20 ) UNSIGNED NOT NULL AFTER  `id_abono`
+ALTER TABLE  `cajas_recibidas_abonos` ADD INDEX (  `id_caja` )
+ALTER TABLE  `cajas_recibidas_abonos` ADD FOREIGN KEY (  `id_caja` ) REFERENCES  `frutas_legumbres`.`cajas_recibidas` (
+`id_caja`
+) ON DELETE CASCADE ON UPDATE CASCADE ;
+
+
 /***********  TRIGGERS  **************/
 
 DROP TRIGGER IF EXISTS agrega_entrada_inventario;
