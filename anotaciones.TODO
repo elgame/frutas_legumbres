@@ -1,6 +1,21 @@
 -Privilegio gregar entradas ponerle el padre Entradas
 -(Agregar entradas de cajas, cuando se seleccione el dueño de caja cargar el lote de ese año)
 
+
+******** Detalles *******
+-en modificar entrada si no le pongo ningun tratamiento truena
+-en agregar entradas el campo fecha poner por default la de ese dia
+-en agregar movimiento en el autocomplete que pinte de color verde (#B0FFB0) el seleccionado y rojillo (#FFD9B3) cuando se borre, al borrar q no limpie la caja de texto solo el campo que tiene el id_productor (como esta en productoresfac/agregar), la fecha que cargue por default la de ese dia, poner el autofocus en el campo productor
+-en el listado de productores de movimientos de caja poner todos los productores (no tomar exactamente el rango de fechas si no de la fecha mayor hacia atras solo en esa pantalla, entrando a un productor esta bien q tome el rango por q tiene saldo anterior). al entrar a un productor poner link de regresar como en facturacion productores que mantenga el filtro de fechas
+
+
+
+
+
+
+
+
+
 ALTER TABLE  `bancos_movimientos` ADD  `id_fac_productor` BIGINT UNSIGNED NULL DEFAULT NULL AFTER  `id_cuenta` ,
 ADD INDEX (  `id_fac_productor` );
 ALTER TABLE  `bancos_movimientos` ADD FOREIGN KEY (  `id_fac_productor` ) REFERENCES  `frutas_legumbres`.`productores_facturas` (

@@ -55,6 +55,7 @@
 									<th>Email</th>
 									<th>Direccion</th>
 								  <th>Status</th>
+								  <th>Tipo</th>
 								  <th>Opc</th>
 							  </tr>
 						  </thead>
@@ -77,6 +78,18 @@
 											}
 										?>
 										<span class="label <?php echo $vlbl_status; ?>"><?php echo $v_status; ?></span>
+									</td>
+									<td>
+										<?php
+											if($productor->tipo == 'r'){
+												$v_status    = 'Facturan fruta';
+												$vlbl_status = 'label-info';
+											}else{
+												$v_status    = 'Facturan gastos';
+												$vlbl_status = 'label-info';
+											}
+										?>
+										<span class="label label-info"><?php echo $v_status; ?></span>
 									</td>
 									<td class="center">
 											<?php

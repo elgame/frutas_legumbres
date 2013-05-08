@@ -39,7 +39,7 @@ class productores_model extends CI_Model{
 
 		$query = BDUtil::pagination("
 				SELECT id_productor, nombre_fiscal, rfc, telefono, email, 
-					CONCAT(calle, ' #', no_exterior, ', ', colonia, ', ', municipio, ', ', estado) AS direccion, status
+					CONCAT(calle, ' #', no_exterior, ', ', colonia, ', ', municipio, ', ', estado) AS direccion, status, tipo
 				FROM productores
 				".$sql."
 				ORDER BY nombre_fiscal ASC
