@@ -1,3 +1,19 @@
+-Privilegio gregar entradas ponerle el padre Entradas
+-(Agregar entradas de cajas, cuando se seleccione el dueño de caja cargar el lote de ese año)
+
+ALTER TABLE  `bancos_movimientos` ADD  `id_fac_productor` BIGINT UNSIGNED NULL DEFAULT NULL AFTER  `id_cuenta` ,
+ADD INDEX (  `id_fac_productor` );
+ALTER TABLE  `bancos_movimientos` ADD FOREIGN KEY (  `id_fac_productor` ) REFERENCES  `frutas_legumbres`.`productores_facturas` (
+`id_factura`
+) ON DELETE CASCADE ON UPDATE CASCADE ;
+ALTER TABLE  `bancos_movimientos` ADD  `anombre_de` VARCHAR( 100 ) NULL DEFAULT NULL AFTER  `metodo_pago` ,
+ADD  `moneda` VARCHAR( 6 ) NULL DEFAULT NULL AFTER  `anombre_de` ,
+ADD  `abono_cuenta` BOOLEAN NOT NULL DEFAULT FALSE COMMENT  '0:no poner legenda; 1:pner legenda' AFTER  `moneda`;
+
+
+
+
+
 /*********************** PRIVILEGIOS DE DUEÑOS HUERTAS Y CAJAS ********************************/
 
 INSERT INTO `privilegios` (`nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES

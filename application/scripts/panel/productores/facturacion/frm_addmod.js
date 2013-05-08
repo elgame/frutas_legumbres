@@ -76,7 +76,28 @@ $(function(){
       return e.keyCode != 13;
   });
 
+  var dbanco = $("#dbanco").on('change', loadCuentasBanco);
+  if(dbanco.val() != '')
+    loadCuentasBanco(this, dbanco);
+
 });
+
+function loadCuentasBanco(obj, banco){
+  banco = banco? banco: $(this);
+  $.getJSON(base_url+'panel/banco/ajax_get_cuentas', "id="+banco.val(), function(data){
+    var cuentas = $("#dcuenta")
+    cuentas.html('');
+    if (data.ico){
+      noty({"text": data.msg, "layout":"topRight", "type": data.ico});
+    }else{
+      var html = '';
+      for (var i = 0; i < data.cuentas.length; i++) {
+        html += '<option value="'+data.cuentas[i].id_cuenta+'">'+data.cuentas[i].alias+' ('+util.darFormatoNum(data.cuentas[i].saldo)+')</option>';
+      };
+      cuentas.html(html);
+    }
+  });
+}
 
 function addProducto() {
   var importe   = trunc2Dec(parseFloat($('#dcantidad').val() * parseFloat($('#dpreciou').val()))),

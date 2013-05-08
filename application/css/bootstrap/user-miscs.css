@@ -63,6 +63,9 @@ img.center, span.center{
 .mquit{
   margin-left: 0px !important;
 }
+.nomarg{
+  margin: 0 !important;
+}
 /*paddings*/
 .nopadd{
   padding: 0 !important;

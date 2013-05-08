@@ -104,6 +104,7 @@ class productoresFac extends MY_Controller {
 
     $this->configAddModFactura();
     $this->load->model('productoresfac_model');
+    $this->load->model('banco_cuentas_model');
     $this->load->model('productores_model');
 
     if($this->form_validation->run() == FALSE){
@@ -111,7 +112,8 @@ class productoresFac extends MY_Controller {
     }else{
       $respons = $this->productoresfac_model->addFactura();
       if($respons[0])
-        redirect(base_url('panel/productoresfac/agregar/?msg=4&id='.$respons[2]));
+        redirect(base_url('panel/productoresfac/agregar/?msg=4&id='.$respons[2].'&banco='.
+          $this->input->post('dbanco').'&cuenta='.$this->input->post('dcuenta')));
     }
 
     if (!isset($_GET['id']{0}))
@@ -127,8 +129,14 @@ class productoresFac extends MY_Controller {
     $params['series'] = $this->productoresfac_model->getSeriesFolios(100);
     $params['fecha']  = date("Y-m-d");
 
-    if (isset($_GET['id']))
-      $params['id'] = $_GET['id'];
+
+    $params['bancos'] = $this->banco_cuentas_model->getBancos();
+
+    if (isset($_GET['id'])){
+      $params['id']     = $_GET['id'];
+      $params['banco']  = $this->input->get('banco');
+      $params['cuenta'] = $this->input->get('cuenta');
+    }
 
     if(isset($_GET['msg']{0}))
       $params['frm_errors'] = $this->showMsgs($_GET['msg']);
@@ -182,6 +190,13 @@ class productoresFac extends MY_Controller {
         array('field'   => 'dfecha',
             'label'   => 'Fecha',
             'rules'   => 'required|max_length[10]|callback_isValidDate'),
+
+        array('field' => 'dbanco',
+            'label' => 'Banco',
+            'rules' => 'required|numeric'),
+        array('field' => 'dcuenta',
+            'label' => 'Cuenta',
+            'rules' => 'required|numeric'),
 
         array('field'   => 'total_importe',
             'label'   => 'SubTotal1',
@@ -331,6 +346,12 @@ class productoresFac extends MY_Controller {
       if($resta < $str){
         $this->form_validation->set_message('val_total', 'El Total de la factura excede el limite permitido para el productor.');
         return false;
+      }else{
+        $cuentas = $this->banco_cuentas_model->getCuentas(0, $this->input->post('dcuenta'));
+        if($cuentas['cuentas'][0]->saldo < $this->input->post('total_totfac')){
+          $this->form_validation->set_message('val_total', 'El Saldo de la cuenta es insuficiente para pagar la factura.');
+          return false;
+        }
       }
     }
     return true;
@@ -659,6 +680,10 @@ class productoresFac extends MY_Controller {
         break;
       case 9:
         $txt = 'La Factura se pagó correctamente.';
+        $icono = 'success';
+        break;
+      case 10:
+        $txt = 'La Factura y el movimiento en el banco se registraron correctamente.';
         $icono = 'success';
         break;
     }

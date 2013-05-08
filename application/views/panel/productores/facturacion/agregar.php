@@ -141,6 +141,28 @@
               </div> -->
 
               <div class="control-group">
+                <label class="control-label" for="dbanco">Banco:</label>
+                <div class="controls">
+                  <select name="dbanco" id="dbanco" required>
+                    <option value=""></option>
+                    <?php 
+                    foreach ($bancos['bancos'] as $key => $value) {
+                      echo '<option value="'.$value->id_banco.'" '.set_select('dbanco', $value->id_banco).'>'.$value->nombre.'</option>';
+                    }
+                    ?>
+                  </select>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="dcuenta">Cuenta:</label>
+                <div class="controls">
+                  <select name="dcuenta" id="dcuenta" required>
+                  </select>
+                </div>
+              </div>
+
+              <div class="control-group">
                 <div class="controls">
                   <div class="well span9">
                       <button type="submit" class="btn btn-success btn-large btn-block" style="width:100%;" id="submit">Guardar Factura</button>
@@ -291,7 +313,8 @@
 <script type="text/javascript" charset="UTF-8">
 
   <?php if($frm_errors['ico'] === 'success') {
-    echo 'window.open("'.base_url('panel/productoresfac/imprimir/?id='.$id).'")';
+    echo 'window.open("'.base_url('panel/productoresfac/imprimir/?id='.$id).'");';
+    echo 'window.location = "'.base_url('panel/banco/agregar_operacion/?id='.$id.'&banco='.$banco.'&cuenta='.$cuenta.'&tipo=r&redirec=1').'";';
   }?>
 
   $(document).ready(function(){
