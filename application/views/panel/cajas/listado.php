@@ -16,7 +16,7 @@
       <div class="row-fluid">
         <div class="box span12">
           <div class="box-header well" data-original-title>
-            <h2><i class="icon-user"></i> Movimientos de Cajas (Salidas|Entradas)</h2>
+            <h2><i class="icon-user"></i> Movimientos de Cajas (Salidas y Entradas)</h2>
             <div class="box-icon">
               <a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
             </div>
@@ -24,58 +24,54 @@
           <div class="box-content">
             <form action="<?php echo base_url('panel/cajas'); ?>" method="get" class="form-search">
               <div class="form-actions form-filters">
-                <label for="fnombre">Buscar</label>
-                <input type="text" name="fnombre" id="fnombre" value="<?php echo set_value_get('fnombre'); ?>"
-                  class="input-xlarge" placeholder="mesg8800920, av de los maestros, indie" autofocus>
 
-                <!-- <label for="fstatus">Estado</label>
-                <select name="fstatus">
-                  <option value="ac" <?php echo set_select('fstatus', 'ac', false, $this->input->get('fstatus')); ?>>ACTIVOS</option>
-                  <option value="e" <?php echo set_select('fstatus', 'e', false, $this->input->get('fstatus')); ?>>ELIMINADOS</option>
-                  <option value="todos" <?php echo set_select('fstatus', 'todos', false, $this->input->get('fstatus')); ?>>TODOS</option>
-                </select> -->
+                <label for="ffecha1">Del:</label>
+                <input type="text" name="ffecha1" id="ffecha1" value="<?php echo $this->input->get('ffecha1'); ?>" size="10">
+
+                <label for="ffecha2">Al:</label>
+                <input type="text" name="ffecha2" id="ffecha2" value="<?php echo $this->input->get('ffecha2'); ?>" size="10">
 
                 <button type="submit" class="btn">Buscar</button>
+
+                <?php
+                  echo $this->usuarios_model->getLinkPrivSm('cajas/agregar/', array(
+                          'params'   => '',
+                          'btn_type' => 'btn-success pull-right',
+                          'attrs' => array('style' => 'margin-bottom: 10px;') )
+                      );
+                   ?>
               </div>
             </form>
 
-            <?php
-            echo $this->usuarios_model->getLinkPrivSm('cajas/agregar/', array(
-                    'params'   => '',
-                    'btn_type' => 'btn-success pull-right',
-                    'attrs' => array('style' => 'margin-bottom: 10px;') )
-                );
-             ?>
+
             <table class="table table-striped table-bordered bootstrap-datatable">
               <thead>
                 <tr>
-                  <th>No. Movimiento</th>
-                  <th>Fecha</th>
                   <th>Productor</th>
-                  <th>Variedad</th>
-                  <th>Tipo</th>
-                  <th>Opc</th>
+                  <th>Cajas sin entregar</th>
                 </tr>
               </thead>
               <tbody>
-            <?php foreach($cajas['cajas'] as $movi){ ?>
+            <?php
+                $total_deben = 0;
+                foreach($inventario['inventario'] as $productor) {
+                  $total_deben += $productor->total_debe;
+                ?>
                 <tr>
-                  <td><?php echo $movi->id_inventario; ?></td>
-                  <td><?php echo $movi->fecha; ?></td>
-                  <td><?php echo $movi->productor; ?></td>
-                  <td><?php echo $movi->variedad; ?></td>
-                  <td><?php echo ($movi->tipo === 's') ? 'Salida' : 'Entrada'; ?></td>
-
-                  <td class="center">
-                      <?php
-                      echo $this->usuarios_model->getLinkPrivSm('cajas/modificar/', array(
-                          'params'   => 'id='.$movi->id_inventario,
-                          'btn_type' => 'btn-success')
-                      );
-                      ?>
-                  </td>
+                  <td><a href="<?php echo base_url('panel/cajas/productor').'/?id='.$productor->id_productor.'&'.
+                                String::getVarsLink(array('id', 'msg')); ?>"><?php echo $productor->nombre; ?></a></td>
+                  <td><?php echo $productor->total_debe; ?></td>
                 </tr>
             <?php }?>
+                 <tr style="background-color:#ccc;font-weight: bold;">
+                    <td class="a-r">Total x Página:</td>
+                    <td><?php echo $total_deben; ?></td>
+                  </tr>
+                  <tr style="background-color:#ccc;font-weight: bold;">
+                    <td class="a-r">Total:</td>
+                    <td><?php echo $inventario['ttotal']; ?></td>
+                  </tr>
+
               </tbody>
             </table>
 
@@ -83,9 +79,9 @@
             //Paginacion
             $this->pagination->initialize(array(
                 'base_url'      => base_url($this->uri->uri_string()).'?'.String::getVarsLink(array('pag')).'&',
-                'total_rows'    => $cajas['total_rows'],
-                'per_page'      => $cajas['items_per_page'],
-                'cur_page'      => $cajas['result_page']*$cajas['items_per_page'],
+                'total_rows'    => $inventario['total_rows'],
+                'per_page'      => $inventario['items_per_page'],
+                'cur_page'      => $inventario['result_page']*$inventario['items_per_page'],
                 'page_query_string' => TRUE,
                 'num_links'     => 1,
                 'anchor_class'  => 'pags corner-all',

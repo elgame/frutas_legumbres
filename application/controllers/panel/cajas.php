@@ -6,7 +6,15 @@ class cajas extends MY_Controller {
    * Evita la validacion (enfocado cuando se usa ajax). Ver mas en privilegios_model
    * @var unknown_type
    */
-  private $excepcion_privilegio = array('cajas/ajax_get_productores/', 'cajas/ajax_get_duenos_huertas/');
+  private $excepcion_privilegio = array('cajas/ajax_get_productores/',
+                                        'cajas/ajax_get_duenos_huertas/',
+                                        'cajas/productor/',
+                                        'cajas/productor_pdf/',
+                                        'cajas/productor_xls/',
+                                        'cajas/cuentas_pagar_productor/',
+                                        'cajas/cpp_pdf/',
+                                        'cajas/cpp_xls/',
+                                        );
 
   public function _remap($method){
     $this->load->model("usuarios_model");
@@ -31,6 +39,7 @@ class cajas extends MY_Controller {
   {
     $this->carabiner->js(array(
       array('general/msgbox.js'),
+      array('panel/cajas/inventario.js'),
     ));
 
     $this->load->model('cajas_model');
@@ -38,10 +47,10 @@ class cajas extends MY_Controller {
 
     $params['info_empleado'] = $this->info_empleado['info']; //info empleado
     $params['seo'] = array(
-      'titulo' => 'Administrar de Cajas (Salidas y Entradas)'
+      'titulo' => 'Cajas (Entradas  y Salidas)'
     );
 
-    $params['cajas'] = $this->cajas_model->get_cajas();
+    $params['inventario'] = $this->cajas_model->get_inventario('40');
 
     if(isset($_GET['msg']{0}))
       $params['frm_errors'] = $this->showMsgs($_GET['msg']);
@@ -96,6 +105,171 @@ class cajas extends MY_Controller {
     $this->load->view('panel/general/menu', $params);
     $this->load->view('panel/cajas/agregar', $params);
     $this->load->view('panel/footer', $params);
+  }
+
+  /**
+   * Muestra el historial de cajas (entradas y salidas) de un productor
+   * @return void
+   */
+  public function productor()
+  {
+    if (isset($_GET['id']{0}))
+    {
+      $this->carabiner->js(array(
+        array('general/msgbox.js'),
+        array('panel/cajas/inventario.js'),
+      ));
+
+      $this->load->model('cajas_model');
+      $this->load->model('productores_model');
+      $this->load->library('pagination');
+
+      $params['info_empleado'] = $this->info_empleado['info']; //info empleado
+      $params['seo'] = array(
+        'titulo' => 'Entradas y Salidas de Productor'
+      );
+
+      $params['info'] = $this->productores_model->getInfoProductor($_GET['id']);
+
+      $params['inventario'] = $this->cajas_model->get_productor_inventario();
+
+      if(isset($_GET['msg']{0}))
+        $params['frm_errors'] = $this->showMsgs($_GET['msg']);
+
+      $this->load->view('panel/header', $params);
+      $this->load->view('panel/general/menu', $params);
+      $this->load->view('panel/cajas/productor', $params);
+      $this->load->view('panel/footer');
+    }
+    else redirect(base_url('panel/cajas/?'.String::getVarsLink(array('msg', 'ffecha1', 'ffecha2')).'&msg=1'));
+  }
+
+  /**
+   * Visualiza/Descarga un pdf con el listado de las entradas y salidas de un productor
+   * en especifico en un rango de fechas.
+   */
+  public function productor_pdf()
+  {
+    if (isset($_GET['id']{0}))
+    {
+      $this->load->model('cajas_model');
+      $this->cajas_model->productor_inventario_pdf();
+    }
+    else
+      redirect(base_url('panel/cajas/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+  }
+
+   /**
+   * Descarga un xls(excel) con el listado de las entradas y salidas de un productor
+   * en especifico en un rango de fechas.
+   */
+  public function productor_xls()
+  {
+    if (isset($_GET['id']{0}))
+    {
+      $this->load->model('cajas_model');
+      $this->cajas_model->productor_inventario_xls();
+    }
+    else
+      redirect(base_url('panel/cajas/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+  }
+
+  /********************** CUENTAS POR PAGAR ********************************/
+
+  /**
+   * Visualiza el listado con las cuentas a pagar de los productores
+   * @return void
+   */
+  public function cuentas_pagar()
+  {
+    $this->carabiner->js(array(
+      array('general/msgbox.js'),
+      array('panel/cajas/inventario.js'),
+    ));
+
+    $this->load->model('cuentas_pagar_model');
+    $this->load->library('pagination');
+
+    $params['info_empleado'] = $this->info_empleado['info']; //info empleado
+    $params['seo'] = array(
+      'titulo' => 'Cuentas por Pagar'
+    );
+
+    $params['cuentas_pagar'] = $this->cuentas_pagar_model->get_cuentas_pagar('40');
+
+    if(isset($_GET['msg']{0}))
+      $params['frm_errors'] = $this->showMsgs($_GET['msg']);
+
+    $this->load->view('panel/header', $params);
+    $this->load->view('panel/general/menu', $params);
+    $this->load->view('panel/cajas/cuentas_pagar', $params);
+    $this->load->view('panel/footer');
+  }
+
+  /**
+   * Visualiza el listado con las cuentas a pagar de los productores
+   * @return void
+   */
+  public function cuentas_pagar_productor()
+  {
+    if (isset($_GET['id']{0}))
+    {
+      $this->carabiner->js(array(
+        array('general/msgbox.js'),
+        array('panel/cajas/inventario.js'),
+      ));
+
+      $this->load->model('cuentas_pagar_model');
+      $this->load->model('productores_model');
+      $this->load->library('pagination');
+
+      $params['info_empleado'] = $this->info_empleado['info']; //info empleado
+      $params['seo'] = array(
+        'titulo' => 'Cuentas por Pagar'
+      );
+
+      $params['info'] = $this->productores_model->getInfoProductor($_GET['id']);
+
+      $params['productor'] = $this->cuentas_pagar_model->get_cuentas_pagar_productor();
+
+      if(isset($_GET['msg']{0}))
+        $params['frm_errors'] = $this->showMsgs($_GET['msg']);
+
+      $this->load->view('panel/header', $params);
+      $this->load->view('panel/general/menu', $params);
+      $this->load->view('panel/cajas/cuentas_pagar_productor', $params);
+      $this->load->view('panel/footer');
+    }
+    else redirect(base_url('panel/cajas/cuentas_pagar/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+  }
+
+  /**
+   * Visualiza/Descarga un pdf con el listado de las entradas
+   * de un productor
+   */
+  public function cpp_pdf()
+  {
+    if (isset($_GET['id']{0}))
+    {
+      $this->load->model('cuentas_pagar_model');
+      $this->cuentas_pagar_model->cpp_pdf();
+    }
+    else
+      redirect(base_url('panel/cajas/cuentas_pagar/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+  }
+
+   /**
+   * Descarga un xls(excel) con el listado de las entradas
+   */
+  public function cpp_xls()
+  {
+    if (isset($_GET['id']{0}))
+    {
+      $this->load->model('cuentas_pagar_model');
+      $this->cuentas_pagar_model->cpp_xls();
+    }
+    else
+      redirect(base_url('panel/cajas/cuentas_pagar/?'.String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
   }
 
   /****************************** ENTRADAS ***********************************/
@@ -373,21 +547,21 @@ class cajas extends MY_Controller {
     );
 
 
-    if ($extra)
-    {
-      if (isset($_POST['dcantidad_trata']) && isset($_POST['did_tratamiento']))
-      {
-        $r = ($_POST['dcantidad_trata'] !== '') ? 'required' : '';
-        $rules[] = array('field' => 'did_tratamiento',
-                          'label' => 'Tipo de tratamiento',
-                          'rules' => $r);
+    // if ($extra)
+    // {
+    //   if (isset($_POST['dcantidad_trata']) && isset($_POST['did_tratamiento']))
+    //   {
+    //     $r = ($_POST['dcantidad_trata'] !== '') ? 'required' : '';
+    //     $rules[] = array('field' => 'did_tratamiento',
+    //                       'label' => 'Tipo de tratamiento',
+    //                       'rules' => $r);
 
-        $r = ($_POST['did_tratamiento'] !== '') ? 'required|' : '';
-        $rules[] = array('field' => 'dcantidad_trata',
-                          'label' => 'Cantidad',
-                          'rules' => $r.'numeric');
-      }
-    }
+    //     $r = ($_POST['did_tratamiento'] !== '') ? 'required|' : '';
+    //     $rules[] = array('field' => 'dcantidad_trata',
+    //                       'label' => 'Cantidad',
+    //                       'rules' => $r.'numeric');
+    //   }
+    // }
 
     $this->form_validation->set_rules($rules);
   }
