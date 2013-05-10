@@ -101,10 +101,11 @@ class String{
 	@param $num number - N?mero a convertir.
 	@param $fem bool - Forma femenina (true) o no (false).
 	@param $dec bool - Con decimales (true) o no (false).
+	@param $moneda string - tipo de moneda (M.N.).
 	@result string - Devuelve el n?mero escrito en letra.
 
 	*/
-	public static function num2letras($num, $fem = false, $dec = true) {
+	public static function num2letras($num, $moneda='M.N.', $fem = false, $dec = true) {
 		$matuni[2]  = "dos";
 		$matuni[3]  = "tres";
 		$matuni[4]  = "cuatro";
@@ -273,7 +274,7 @@ class String{
 		}
 		$tex = $neg . substr($tex, 1) . $fin;
 		//Zi hack --> return ucfirst($tex);
-		$end_num=ucfirst($tex).' pesos '.$float[1].'/100 M.N.';
+		$end_num=ucfirst($tex).' pesos '.$float[1].'/100 '.$moneda;
 		return $end_num;
 	}
 

@@ -62,38 +62,6 @@ class banco_model extends CI_Model{
 			return false;
 	}
 
-	/**
-	 * Agrega la info de un variedad a la bd
-	 */
-	public function addVariedad($data=null){
-
-		if ($data == null) {
-			$data = array(
-				'nombre'    => $this->input->post('dnombre'),
-				'tipo_pago' => $this->input->post('dtipo'),
-			);
-		}
-		$this->db->insert('variedades', $data);
-
-		$msg = 3;
-		return array(true, '', $msg);
-	}
-
-	/**
-	 * Modifica la informacion de un variedad
-	 */
-	public function updateVariedad($id, $data=null){
-		$msg = 4;
-		if ($data == null) {
-			$data = array(
-				'nombre'    => $this->input->post('dnombre'),
-				'tipo_pago' => $this->input->post('dtipo'),
-			);
-		}
-		$this->db->update('variedades', $data, "id_variedad = '".$id."'");
-
-		return array(true, '', $msg);
-	}
 
 
 	/**

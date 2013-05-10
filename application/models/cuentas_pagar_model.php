@@ -13,7 +13,7 @@ class Cuentas_pagar_model extends CI_Model {
    * @param  string $per_pag
    * @return array
    */
-  public function get_cuentas_pagar($per_pag = '9999')
+  public function get_cuentas_pagar($per_pag = '9999', $order='nombre_fiscal ASC')
   {
     $sql = '';
     //paginacion
@@ -68,7 +68,7 @@ class Cuentas_pagar_model extends CI_Model {
              ) AS subquery
 
             GROUP BY id_productor, nombre_fiscal
-            ORDER BY nombre_fiscal ASC", $params, true);
+            ORDER BY ".$order." ", $params, true);
 
     $res = $this->db->query($query['query']);
 

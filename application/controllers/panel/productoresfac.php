@@ -41,6 +41,9 @@ class productoresFac extends MY_Controller {
     $_GET['fecha']     = (isset($_GET['fecha']{8})? $_GET['fecha']: date("Y-m-d"));
     $params['datos_s'] = $this->productoresfac_model->getProductores( $_GET['fecha'] );
 
+    if(isset($_GET['id_mov']{0}))
+      $params['id_mov'] = $_GET['id_mov'];
+
     if(isset($_GET['msg']{0}))
       $params['frm_errors'] = $this->showMsgs($_GET['msg']);
 

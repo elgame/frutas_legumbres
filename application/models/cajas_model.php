@@ -13,7 +13,7 @@ class Cajas_model extends CI_Model {
    * @param  string $per_pag
    * @return array
    */
-  public function get_inventario($per_pag = '9999')
+  public function get_inventario($per_pag = '9999', $order='productor ASC')
   {
     $sql = '';
     //paginacion
@@ -80,7 +80,7 @@ class Cajas_model extends CI_Model {
 
             ) AS inv
             GROUP BY id_productor, productor
-            ORDER BY productor ASC", $params, true);
+            ORDER BY ".$order, $params, true);
 
     $res = $this->db->query($query['query']);
 

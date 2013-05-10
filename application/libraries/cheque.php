@@ -2,7 +2,7 @@
 
 class Cheque extends FPDF {
 	var $titulo1 = 'Red Fire de Colima';
-	var $rg;
+	var $CI;
 	
 	var $hheader = '';
 	
@@ -27,20 +27,20 @@ class Cheque extends FPDF {
 	 * Descarga el estado de una cuenta seleccionada en formato pdf
 	 */
 	public function generaCheque($id_movimiento){
-		$this->rg = Registry::singleton();
-		$data = $this->rg->getObject("dao")->selectRows('id_movimiento, id_banco, fecha, monto, nombre_comercial',
-			'banco_movimientos AS bm INNER JOIN proveedores AS p ON p.id_proveedor = bm.id_proveedor',
-			"WHERE bm.id_movimiento = ".$id_movimiento, true);
-		if(count($data) > 0)
-			$this->{'generaCheque_'.$data[0]['id_banco']}($data[0]['nombre_comercial'], $data[0]['monto'], $data[0]['fecha']);
+		$CI =& get_instance();
+		$CI->load->model('banco_cuentas_model');
+		$data = $CI->banco_cuentas_model->getInfoOperacion($id_movimiento);
+		if(isset($data['info']->id_movimiento))
+			$this->{'generaCheque_'.$data['info']->id_banco}($data['info']->anombre_de, $data['info']->monto, 
+				substr($data['info']->fecha, 0, 10), $data['info']->moneda, $data['info']->abono_cuenta);
 		else
 			echo "No se obtubo la informacion del cheque";
 	}
 
 	/**
-	 * Banorte 13
+	 * Banorte 1
 	 */
-	public function generaCheque_13($nombre, $monto, $fecha=null, $opc='I'){
+	public function generaCheque_1($nombre, $monto, $fecha=null, $moneda='M.N.', $abono_cuenta=0, $opc='I'){
 		parent::__construct($this->orientation, $this->unit, array(70, 165));
 
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;
@@ -51,13 +51,18 @@ class Cheque extends FPDF {
 		$this->SetLineWidth(0.1);
 		$this->Rect(0, 0, 70, 165, 'D');
 		
-		$this->RotatedText(44, 64, $this->rg->getObject('string')->fechaATexto($fecha), -90);
+		$this->RotatedText(44, 64, String::fechaATexto($fecha), -90);
 		
-		$this->RotatedText(44, 124, $this->rg->getObject('string')->monedaToString($monto), -90);
+		$this->RotatedText(44, 124, String::formatoNumero($monto), -90);
 		
 		$this->RotatedText(38, 35, $nombre, -90);
 		
-		$this->RotatedText(28, 8, $this->rg->getObject('string')->num2letras($monto), -90);
+		$this->RotatedText(28, 8, String::num2letras($monto, $moneda), -90);
+
+		if($abono_cuenta == 1){
+			$this->SetFont('Arial','', 8);
+			$this->RotatedText(55, 50, 'PARA ABONO EN CUENTA', -90);
+		}
 		
 		$this->Output('cheque.pdf', $opc);
 	}
@@ -66,7 +71,7 @@ class Cheque extends FPDF {
 	 * Banbajio 12
 	 */
 	public function generaCheque_12($nombre, $monto, $fecha=null, $opc='I'){
-		parent::__construct($this->orientation, $this->unit, array(70, 165));
+		/*parent::__construct($this->orientation, $this->unit, array(70, 165));
 
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;
 		$this->AddPage('P', array(70, 165));
@@ -84,14 +89,14 @@ class Cheque extends FPDF {
 		
 		$this->RotatedText(32, 8, $this->rg->getObject('string')->num2letras($monto), -90);
 		
-		$this->Output('cheque.pdf', $opc);
+		$this->Output('cheque.pdf', $opc);*/
 	}
 	
 	/**
 	 * Afirme 11
 	 */
 	public function generaCheque_11($nombre, $monto, $fecha=null, $opc='I'){
-		parent::__construct($this->orientation, $this->unit, array(70, 165));
+		/*parent::__construct($this->orientation, $this->unit, array(70, 165));
 		
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;
 		$this->AddPage('P', array(70, 165));
@@ -109,7 +114,7 @@ class Cheque extends FPDF {
 		
 		$this->RotatedText(32, 8, $this->rg->getObject('string')->num2letras($monto), -90);
 		
-		$this->Output('cheque.pdf', $opc);
+		$this->Output('cheque.pdf', $opc);*/
 	}
 	
 	
