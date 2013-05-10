@@ -50,6 +50,10 @@
                       <a href="<?php echo base_url('panel/cajas/cpp_xls/?'.String::getVarsLink(array('msg'))); ?>" title="Generar EXCEL" target="_BLANK">
                         <img src="<?php echo base_url('application/images/otros/doc_xls.png');?>" width="64" height="64">
                       </a>
+
+                      <a href="#modal-abonos" role="button" data-toggle="modal" title="Abono" id="btn-modal" style="display:none;">
+                        <img src="<?php echo base_url('application/images/otros/creditcard.png');?>" width="64" height="64">
+                      </a>
                     </div>
 
                   </div>
@@ -99,7 +103,7 @@
                   <!-- <th>Observaciones</th> -->
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="table-tbody">
 
                   <?php
 
@@ -157,7 +161,12 @@
                     <td><?php echo String::formatoNumero($caja->precio); ?></td>
                     <td><?php echo String::formatoNumero($caja->importe); ?></td>
                     <td><?php echo String::formatoNumero($caja->abonos); ?></td>
-                    <td><?php echo String::formatoNumero($caja->saldo); ?></td>
+                    <td id="<?php echo ($caja->saldo > 0) ? 'masivo' : '' ?>"
+                      data-id="<?php echo $caja->id_caja; ?>"
+                        data-saldo="<?php echo $caja->saldo; ?>"
+                          data-status="off">
+                        <?php echo String::formatoNumero($caja->saldo); ?>
+                    </td>
                     <td><?php echo $caja->variedad; ?></td>
                     <!-- <td><?php echo $caja->observaciones; ?></td> -->
                   </tr>
@@ -165,6 +174,7 @@
 
                   <tr style="font-weight: bold; font-size: 1.1em;">
                     <td style="background-color:#ccc;">TOTALES</td>
+                    <td style="background-color:#ccc;"></td>
                     <td style="background-color:#ccc;"></td>
                     <td style="background-color:#ccc;"><?php echo $ttotal_cajas?></td>
                     <td style="background-color:#ccc;"><?php echo $ttotal_cajas_rezaga?></td>
@@ -192,6 +202,8 @@
           <!-- content ends -->
     </div><!--/#content.span10-->
 
+
+<?php echo $this->load->view('panel/cajas/abonos-modal.php', $bancos, true) ?>
 
 <!-- Bloque de alertas -->
 <?php if(isset($frm_errors)){

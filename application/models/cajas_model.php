@@ -258,13 +258,22 @@ class Cajas_model extends CI_Model {
                      ->where('id_caja = ' . $id)
                      ->get();
 
+    $res3 = $this->db->select('*')
+                     ->from('cajas_recibidas_abonos')
+                     ->where('id_caja = ' . $id)
+                     ->get();
+
     if($res->num_rows() > 0)
     {
       $response['info'] = $res->row();
       $response['info']->tratamientos = $res2->result();
 
+      $response['info']->abonos = array();
+      if ($res3->num_rows() > 0) $response['info']->abonos = $res3->result();
+
       $res->free_result();
       $res2->free_result();
+      $res3->free_result();
 
       return $response;
     }

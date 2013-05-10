@@ -22,7 +22,7 @@ class cajas extends MY_Controller {
     $this->load->model("usuarios_model");
     if($this->usuarios_model->checkSession()){
       $this->usuarios_model->excepcion_privilegio = $this->excepcion_privilegio;
-      $this->info_empleado                         = $this->usuarios_model->get_usuario_info($this->session->userdata('id_usuario'), true);
+      $this->info_empleado = $this->usuarios_model->get_usuario_info($this->session->userdata('id_usuario'), true);
 
       if($this->usuarios_model->tienePrivilegioDe('', get_class($this).'/'.$method.'/')){
         $this->{$method}();
@@ -218,11 +218,16 @@ class cajas extends MY_Controller {
     {
       $this->carabiner->js(array(
         array('general/msgbox.js'),
+        array('libs/jquery.numeric.js'),
+        array('general/util.js'),
+        array('panel/cajas/validator.js'),
+        array('panel/cajas/abonos.js'),
         array('panel/cajas/inventario.js'),
       ));
 
       $this->load->model('cuentas_pagar_model');
       $this->load->model('productores_model');
+      $this->load->model('banco_model');
       $this->load->library('pagination');
 
       $params['info_empleado'] = $this->info_empleado['info']; //info empleado
@@ -234,6 +239,9 @@ class cajas extends MY_Controller {
 
       $params['productor'] = $this->cuentas_pagar_model->get_cuentas_pagar_productor();
 
+      $params['bancos'] = $this->banco_model->getBancos(); // Obtiene los bancos
+                                                          // para los abonos
+
       if(isset($_GET['msg']{0}))
         $params['frm_errors'] = $this->showMsgs($_GET['msg']);
 
@@ -244,6 +252,55 @@ class cajas extends MY_Controller {
     }
     else redirect(base_url('panel/cajas/cuentas_pagar/?'.
       String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
+  }
+
+  /**
+   * Muestra el detalle de abonos de una entrega o caja
+   *
+   * @return void
+   */
+  public function detalle()
+  {
+    if (isset($_GET['id']{0}) && isset($_GET['idc']{0}))
+    {
+      $this->carabiner->js(array(
+        array('general/msgbox.js'),
+        array('libs/jquery.numeric.js'),
+        array('general/util.js'),
+        array('panel/cajas/validator.js'),
+        array('panel/cajas/abonos.js'),
+        array('panel/cajas/inventario.js'),
+      ));
+
+      $this->load->model('cuentas_pagar_model');
+      $this->load->model('productores_model');
+      $this->load->model('cajas_model');
+      $this->load->model('banco_model');
+
+      $params['info_empleado'] = $this->info_empleado['info']; //info empleado
+      $params['seo'] = array(
+        'titulo' => 'Detalle'
+      );
+
+      $params['info'] = $this->productores_model->getInfoProductor($_GET['id']);
+      $params['entrega'] = $this->cajas_model->get_info_entrada($_GET['idc']);
+
+      $params['abonos'] = $this->cuentas_pagar_model->detalle();
+
+      $params['bancos'] = $this->banco_model->getBancos(); // Obtiene los bancos
+                                                          // para los abonos
+
+      if(isset($_GET['msg']{0}))
+        $params['frm_errors'] = $this->showMsgs($_GET['msg']);
+
+      $this->load->view('panel/header', $params);
+      $this->load->view('panel/general/menu', $params);
+      $this->load->view('panel/cajas/detalle', $params);
+      $this->load->view('panel/footer');
+    }
+    else
+      redirect(base_url('panel/cajas/cuentas_pagar/?'.
+          String::getVarsLink(array('ffecha1', 'ffecha2', 'msg', 'id', 'idc')).'&msg=1'));
   }
 
   /**
@@ -275,47 +332,6 @@ class cajas extends MY_Controller {
     else
       redirect(base_url('panel/cajas/cuentas_pagar/?'.
         String::getVarsLink(array('ffecha1', 'ffecha2', 'msg')).'&msg=1'));
-  }
-
-  /**
-   * Muestra el detalle de abonos de una entrega o caja
-   *
-   * @return void
-   */
-  public function detalle()
-  {
-    if (isset($_GET['id']{0}) && isset($_GET['idc']{0}))
-    {
-      $this->carabiner->js(array(
-        array('general/msgbox.js'),
-        array('panel/cajas/inventario.js'),
-      ));
-
-      $this->load->model('cuentas_pagar_model');
-      $this->load->model('productores_model');
-      $this->load->model('cajas_model');
-
-      $params['info_empleado'] = $this->info_empleado['info']; //info empleado
-      $params['seo'] = array(
-        'titulo' => 'Detalle'
-      );
-
-      $params['info'] = $this->productores_model->getInfoProductor($_GET['id']);
-      $params['entrega'] = $this->cajas_model->get_info_entrada($_GET['idc']);
-
-      $params['abonos'] = $this->cuentas_pagar_model->detalle();
-
-      if(isset($_GET['msg']{0}))
-        $params['frm_errors'] = $this->showMsgs($_GET['msg']);
-
-      $this->load->view('panel/header', $params);
-      $this->load->view('panel/general/menu', $params);
-      $this->load->view('panel/cajas/detalle', $params);
-      $this->load->view('panel/footer');
-    }
-    else
-      redirect(base_url('panel/cajas/cuentas_pagar/?'.
-          String::getVarsLink(array('ffecha1', 'ffecha2', 'msg', 'id', 'idc')).'&msg=1'));
   }
 
   /**
