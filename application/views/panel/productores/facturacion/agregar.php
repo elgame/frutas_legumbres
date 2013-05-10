@@ -312,7 +312,9 @@
 ?>
 <script type="text/javascript" charset="UTF-8">
 
-  <?php if($frm_errors['ico'] === 'success') {
+  <?php
+
+  if($frm_errors['ico'] === 'success') {
     echo 'window.open("'.base_url('panel/productoresfac/imprimir/?id='.$id).'");';
     echo 'window.location = "'.base_url('panel/banco/agregar_operacion/?id='.$id.'&banco='.$banco.'&cuenta='.$cuenta.'&tipo=r&redirec=1').'";';
   }?>

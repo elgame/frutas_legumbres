@@ -101,6 +101,12 @@
   if($frm_errors['msg'] != ''){
 ?>
 <script type="text/javascript" charset="UTF-8">
+  <?php 
+  if(isset($id_mov)) //imprime el cheque
+    echo 'window.open("'.base_url('panel/banco/print_cheque/?id='.$id_mov).'");';
+
+  ?>
+
   $(document).ready(function(){
     noty({"text":"<?php echo $frm_errors['msg']; ?>", "layout":"topRight", "type":"<?php echo $frm_errors['ico']; ?>"});
   });

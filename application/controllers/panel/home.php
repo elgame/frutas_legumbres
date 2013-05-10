@@ -31,44 +31,17 @@ class home extends MY_Controller {
 		$params['seo'] = array(
 			'titulo' => 'Panel de Administración'
 		);
-		$params['venta_dia'] = $params['venta_semana'] = $params['venta_mes'] = 0;
+		
+		$this->load->model('cuentas_pagar_model');
+		$params['cuentas_pagar'] = $this->cuentas_pagar_model->get_cuentas_pagar('15', 'total_pagar DESC')['cuenta_pagar'];
 
-		// $this->load->model('reportes_model');
-
-		// $data = $this->reportes_model->getDataRVentasProductos(
-		// 		date('Y-m-d'), 
-		// 		date('Y-m-d') );
-		// foreach ($data['info'] as $key => $value) {
-		// 	$params['venta_dia'] += $value->total;
-		// }
-
-		// $calcWeek = date('W', strtotime(''))-1;
-		// $data = $this->reportes_model->getDataRVentasProductos(
-		// 		date('Y-m-d', strtotime('Monday ' . ($calcWeek-1) . ' weeks')), 
-		// 		date('Y-m-d', strtotime('Sunday ' . $calcWeek . ' weeks')) );
-		// foreach ($data['info'] as $key => $value) {
-		// 	$params['venta_semana'] += $value->total;
-		// }
-
-		// $data = $this->reportes_model->getDataRVentasProductos(
-		// 		date('Y-m')."-01", 
-		// 		date('Y-m').'-'.String::ultimoDia(date('Y'), date('m')) );
-		// foreach ($data['info'] as $key => $value) {
-		// 	$params['venta_mes'] += $value->total;
-		// }
-
-		// $data = $this->reportes_model->getDataRBajoInventario(null, date("Y-m-d"));
-		// $params['bajos_inventario'] = count($data['info']);
-
-		// $data = $this->reportes_model->productos_vendidos(null, null, 'cantidad DESC LIMIT 10');
-		// $params['mas_vendidos'] = $data['info'];
-		// $data = $this->reportes_model->productos_vendidos(null, null, 'cantidad ASC LIMIT 10');
-		// $params['menos_vendidos'] = $data['info'];
+		$this->load->model('cajas_model');
+		$params['inventario'] = $this->cajas_model->get_inventario('15', 'total_debe DESC')['inventario'];
 		
 		
 		$this->load->view('panel/header', $params);
 		$this->load->view('panel/general/menu', $params);
-		// $this->load->view('panel/general/home', $params);
+		$this->load->view('panel/general/home', $params);
 		$this->load->view('panel/footer');
 	}
 

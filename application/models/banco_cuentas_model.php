@@ -7,29 +7,39 @@ class banco_cuentas_model extends banco_model{
 	}
 
 	/**
-	 * Obtiene el listado de Variedades
+	 * Obtiene el listado de cuentas bancarias
+	 * si id_banco y id_cuenta son null, regresa todas las cuentas bancarias
+	 * si id_banco tiene un valor y id_cuenta es null, regresa las cuentas del banco seleccionado
+	 * si id_banco es 0 y id_cuenta tiene un valor, regresa 1 cuenta bancaria (la cuenta del id)
+	 * @param  [type] $id_banco  [description] 
+	 * @param  [type] $id_cuenta [description]
+	 * @return [type]            [description]
 	 */
-	public function getCuentas($id_banco, $id_cuenta=null){
+	public function getCuentas($id_banco=null, $id_cuenta=null){
 		$sql = '';
 
 		//Filtros para buscar
-		$sql = "WHERE bc.id_banco = ".$id_banco;
+		if($id_banco != null)
+			$sql = "WHERE bb.id_banco = ".$id_banco;
 		if($id_cuenta!=null && $id_banco == 0)
 			$sql = "WHERE bc.id_cuenta = ".$id_cuenta;
 
 		if($this->input->get('fnombre') != '')
 			$sql .= " AND ( 
-				lower(bc.nombre) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' )";
+				lower(bc.numero) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+				lower(bc.alias) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+				lower(bb.nombre) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' )";
 		
 		$fstatus = $this->input->get('fstatus')===false? 'ac': $this->input->get('fstatus');
 		if($fstatus != '' && $fstatus != 'todos')
 			$sql .= " AND bc.status = '".$fstatus."'";
 
 
-		$res = $this->db->query("SELECT bc.id_cuenta, id_banco, numero, alias, status,
+		$res = $this->db->query("SELECT bc.id_cuenta, bb.id_banco, bb.nombre AS banco, bc.numero, bc.alias, bc.status,
 					(SELECT Sum(monto) FROM bancos_movimientos WHERE id_cuenta = bc.id_cuenta AND tipo = 'd') AS depositos,
 					(SELECT Sum(monto) FROM bancos_movimientos WHERE id_cuenta = bc.id_cuenta AND tipo = 'r') AS retiros
 				FROM bancos_cuentas AS bc 
+					INNER JOIN bancos_bancos AS bb ON bc.id_banco = bb.id_banco 
 				".$sql."
 				ORDER BY bc.alias ASC");
 
@@ -47,7 +57,7 @@ class banco_cuentas_model extends banco_model{
 	}
 
 	/**
-	 * Obtiene la informacion de una variedad
+	 * Obtiene la informacion de una operacion
 	 */
 	public function getInfoOperacion($id, $info_basic=false){
 		$res = $this->db
@@ -108,21 +118,42 @@ class banco_cuentas_model extends banco_model{
 			$this->db->insert_batch('bancos_movimientos_conceptos', $data_cons);
 
 		$msg = 3;
+		return array(true, '', $msg, $id_mov);
+	}
+
+
+
+
+	/**
+	 * ***********  CUENTAS BANCARIAS  ***************
+	 */
+	public function addCuenta($id, $data=null){
+		$msg = 4;
+		if ($data == null) {
+			$data = array(
+				'id_banco' => $this->input->post('dbanco'),
+				'numero'   => $this->input->post('dnumero'),
+				'alias'    => $this->input->post('dalias'),
+			);
+		}
+		$this->db->insert('bancos_cuentas', $data);
+
 		return array(true, '', $msg);
 	}
 
 	/**
-	 * Modifica la informacion de un variedad
+	 * Modifica la informacion de una cuenta
 	 */
-	public function updateVariedad($id, $data=null){
-		$msg = 4;
+	public function updateCuenta($id, $data=null){
+		$msg = 7;
 		if ($data == null) {
 			$data = array(
-				'nombre'    => $this->input->post('dnombre'),
-				'tipo_pago' => $this->input->post('dtipo'),
+				'id_banco' => $this->input->post('dbanco'),
+				'numero'   => $this->input->post('dnumero'),
+				'alias'    => $this->input->post('dalias'),
 			);
 		}
-		$this->db->update('variedades', $data, "id_variedad = '".$id."'");
+		$this->db->update('bancos_cuentas', $data, "id_cuenta = '".$id."'");
 
 		return array(true, '', $msg);
 	}
