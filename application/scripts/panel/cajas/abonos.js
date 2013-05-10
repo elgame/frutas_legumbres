@@ -98,11 +98,12 @@ var guardaAbono = function () {
 
   $.post(base_url + urlTipoAbono(), data,
     function(response) {
+      // console.log(response);
       noty({"text": response.msg, "layout":"topRight", "type": response.ico});
       if (response.passes) {
 
         if (data.metodo === 'cheque') {
-
+          window.open(base_url + 'panel/banco/print_cheque/?id=' + response.info.bancoInfo.id_mov);
         }
         setTimeout("location.reload(true);",1500);
       }

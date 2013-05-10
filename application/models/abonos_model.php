@@ -109,8 +109,11 @@ class abonos_model extends CI_Model{
 
       if ($banco)
       {
-        $this->banco_cuentas_model->addOperacion($banco);
+        $resp = $this->banco_cuentas_model->addOperacion($banco);
+
         $dataResponse['bancoInfo'] = $banco;
+        $dataResponse['bancoInfo']['id_mov'] = $resp[3];
+
       }
 
       return array('passes' => true,

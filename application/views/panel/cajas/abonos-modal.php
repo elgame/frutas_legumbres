@@ -105,8 +105,8 @@
 
   </div>
   <div class="modal-footer">
-    <input type="text" id="id_productor" value="<?php echo isset($_GET['id'])?$_GET['id']:''; ?>">
-    <input type="text" id="id_entrada" value="<?php echo isset($_GET['idc'])?$_GET['idc']:''; ?>">
+    <input type="hidden" id="id_productor" value="<?php echo isset($_GET['id'])?$_GET['id']:''; ?>">
+    <input type="hidden" id="id_entrada" value="<?php echo isset($_GET['idc'])?$_GET['idc']:''; ?>">
 
     <?php if(!isset($_GET['idc'])) { ?>
        <input type="hidden" id="id_abono_masivo" value="masivo">
