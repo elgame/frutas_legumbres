@@ -684,6 +684,271 @@ class Cajas_model extends CI_Model {
     $xls->workbook->close();
   }
 
+
+  /****************************  REPORTES  *******************************/
+
+  /**
+   * Funcion Helper para construir el String de la Direccion
+   * @param  array $info
+   * @return String
+   */
+  private function buildAddress($info)
+  {
+    $dir = array();
+    if (!empty($info->calle)) $dir[] = 'Calle: ' . $info->calle;
+    if (!empty($info->no_exterior)) $dir[] = 'No. Exterior: ' . $info->no_exterior;
+    if (!empty($info->no_interior)) $dir[] = 'No. Interior: ' . $info->no_interior;
+    if (!empty($info->colonia)) $dir[] = 'Colonia: ' . $info->colonia;
+    if (!empty($info->municipio)) $dir[] = 'Municipio: ' . $info->municipio;
+    if (!empty($info->estado)) $dir[] = 'Estado: ' . $info->estado;
+    if ($info->cp != 0) $dir[] = 'C.P.: ' . $info->cp;
+
+    return implode(', ', $dir);
+  }
+
+  /**
+   * Obtiene los datos para el reporte RCR
+   * @return [type] [description]
+   */
+  private function rcr_data()
+  {
+    if (!isset($_GET['ffecha1']) && !isset($_GET['ffecha2']))
+    {
+      $_GET['ffecha1'] =  date("Y-m-").'01';
+      $_GET['ffecha2'] =  date("Y-m-d");
+    }
+
+    $_GET['ffecha1'] = ($_GET['ffecha1'] === '') ? date("Y-m-").'01' : $_GET['ffecha1'];
+    $_GET['ffecha2'] = ($_GET['ffecha2'] === '') ? date("Y-m-d") : $_GET['ffecha2'];
+
+    $query = $this->db->query("SELECT DATE(cr.fecha) AS fecha,
+                                      cr.certificado_tarjeta,
+                                      dh.nombre as dueno_huerta,
+                                      dh.calle,
+                                      dh.no_exterior,
+                                      dh.no_interior,
+                                      dh.colonia,
+                                      dh.municipio,
+                                      dh.estado,
+                                      dh.cp,
+                                      cr.codigo_huerta,
+                                      cr.no_lote,
+                                      cr.cajas,
+                                      cr.cajas_rezaga,
+                                      v.nombre AS variedad,
+                                      cr.unidad_transporte,
+                                      cr.dueno_carga
+                               FROM cajas_recibidas AS cr
+                               INNER JOIN duenios_huertas AS dh
+                                  ON dh.id_dueno = cr.id_dueno
+                               INNER JOIN variedades AS v
+                                  ON v.id_variedad = cr.id_variedad
+                               WHERE DATE(cr.fecha) >= '{$_GET['ffecha1']}' AND
+                                     DATE(cr.fecha) <= '{$_GET['ffecha2']}'
+                               ORDER BY cr.fecha ASC");
+    $response['info'] = array();
+    if ($query->result() > 0)
+    {
+      $response['info'] = $query->result();
+
+      foreach ($response['info'] as $caja)
+        $caja->origen = $this->buildAddress($caja);
+    }
+
+    return $response;
+  }
+
+  /**
+   * Visualiza/Descarga el PDF de la relacion de cajas entregasa y salidas de
+   * un productor en un rango de fechas
+   *
+   * @return void
+   */
+  public function rcr_pdf()
+  {
+    $rcr = $this->rcr_data();
+
+    $this->load->library('mypdf');
+    // Creación del objeto de la clase heredada
+    $pdf = new MYpdf('L', 'mm', 'Letter');
+    $pdf->titulo2 = "RELACION DE CAJAS RECIBIDAS";
+    $pdf->titulo3 = 'DEL ' . $this->input->get('ffecha1') . " AL " .
+                      $this->input->get('ffecha2')."\n";
+
+    $pdf->AliasNbPages();
+    //$pdf->AddPage();
+    $pdf->SetFont('Arial','', 8);
+
+    $aligns = array('C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C');
+    $widths = array(20, 25, 30, 50, 20, 10, 15, 15, 22, 30, 30);
+    $header = array('FECHA', '# CERTIFICADO O TARJETA', 'NOMBRE DEL PRODUCTOR',
+                    'ORIGEN DE LA FRUTA',  'CODIGO DE LA HUERTA',
+                    '# DE LOTE', 'TOTAL CAJAS', 'CAJAS DE REZAGA',
+                    'VARIEDAD', 'UNIDAD DE TRANSPORTE',
+                    'DUEÑO DE CARGA');
+
+    foreach($rcr['info'] as $key => $item)
+    {
+      if($pdf->GetY() >= $pdf->limiteY || $key==0) //salta de pagina si exede el max
+      {
+        $pdf->AddPage();
+
+        $pdf->SetFont('Arial','B',8);
+        $pdf->SetTextColor(255,255,255);
+        $pdf->SetFillColor(160,160,160);
+        $pdf->SetX(6);
+        $pdf->SetAligns($aligns);
+        $pdf->SetWidths($widths);
+        $pdf->Row($header, true);
+      }
+
+      $pdf->SetFont('Arial','',8);
+      $pdf->SetTextColor(0,0,0);
+
+      $datos = array($item->fecha,
+                     $item->certificado_tarjeta,
+                     $item->dueno_huerta,
+                     $item->origen,
+                     $item->codigo_huerta,
+                     $item->no_lote,
+                     $item->cajas,
+                     $item->cajas_rezaga,
+                     $item->variedad,
+                     $item->unidad_transporte,
+                     $item->dueno_carga);
+
+      $pdf->SetX(6);
+      $pdf->SetAligns($aligns);
+      $pdf->SetWidths($widths);
+      $pdf->Row($datos, false);
+    }
+
+    $pdf->Output('RELACION_CAJAS_RECIBIDAS.pdf', 'I');
+  }
+
+  /**
+   * Obtiene los datos para el reporte RLL
+   * @return array
+   */
+  private function rll_data()
+  {
+    if (!isset($_GET['ffecha1']) && !isset($_GET['ffecha2']))
+    {
+      $_GET['ffecha1'] =  date("Y-m-").'01';
+      $_GET['ffecha2'] =  date("Y-m-d");
+    }
+
+    $_GET['ffecha1'] = ($_GET['ffecha1'] === '') ? date("Y-m-").'01' : $_GET['ffecha1'];
+    $_GET['ffecha2'] = ($_GET['ffecha2'] === '') ? date("Y-m-d") : $_GET['ffecha2'];
+
+    $query = $this->db->query("SELECT cr.id_caja, DATE(cr.fecha) AS fecha,
+                                      p.nombre_fiscal AS productor,
+                                      cr.no_lote,
+                                      cr.cajas,
+                                      cr.cajas_rezaga,
+                                      v.nombre AS variedad,
+                                      cr.dueno_carga,
+                                      cr.observaciones
+                               FROM cajas_recibidas AS cr
+                               INNER JOIN productores AS p
+                                  ON p.id_productor = cr.id_productor
+                               INNER JOIN variedades AS v
+                                  ON v.id_variedad = cr.id_variedad
+                               WHERE DATE(cr.fecha) >= '{$_GET['ffecha1']}' AND
+                                     DATE(cr.fecha) <= '{$_GET['ffecha2']}'
+                               ORDER BY cr.fecha ASC");
+    $response['info'] = array();
+    if ($query->result() > 0)
+    {
+      $response['info'] = $query->result();
+
+      $query->free_result();
+      foreach ($response['info'] as $caja)
+      {
+        $query = $this->db->query("SELECT t.nombre, ct.cantidad
+                                   FROM cajas_tratamiento AS ct
+                                   INNER JOIN tratamientos AS t ON
+                                      t.id_tratamiento = ct.id_tratamiento
+                                   WHERE ct.id_caja = {$caja->id_caja}");
+
+        $caja->t75 = $caja->t90 = $caja->t110 = '-';
+        if ($query->num_rows() > 0)
+          foreach ($query->result() as $trata) {
+            if ($trata->nombre === '75') $caja->t75 = $trata->cantidad;
+            else if ($trata->nombre === '90') $caja->t90 = $trata->cantidad;
+            else $caja->t110 = $trata->cantidad;
+          }
+      }
+    }
+    return $response;
+  }
+
+  /**
+   * Visualiza/Descarga el PDF de la relacion de cajas entregasa y salidas de
+   * un productor en un rango de fechas
+   *
+   * @return void
+   */
+  public function rll_pdf()
+  {
+    $rcr = $this->rll_data();
+
+    $this->load->library('mypdf');
+    // Creación del objeto de la clase heredada
+    $pdf = new MYpdf('L', 'mm', 'Letter');
+    $pdf->titulo2 = "RELACION DE LAVADO POR LOTE";
+    $pdf->titulo3 = 'DEL ' . $this->input->get('ffecha1') . " AL " .
+                      $this->input->get('ffecha2')."\n";
+
+    $pdf->AliasNbPages();
+    //$pdf->AddPage();
+    $pdf->SetFont('Arial','', 8);
+
+    $aligns = array('C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C');
+    $widths = array(20, 10, 50, 50, 20, 15, 15, 10, 10, 10, 58);
+    $header = array('FECHA', 'LOTE', 'PRODUCTOR',
+                    'DUEÑO DE CARGA', 'VARIEDAD', 'CAJAS CAMPO',
+                    'REZAGA', '75', '90', '110', 'OBSERVACIONES');
+
+    foreach($rcr['info'] as $key => $item)
+    {
+      if($pdf->GetY() >= $pdf->limiteY || $key==0) //salta de pagina si exede el max
+      {
+        $pdf->AddPage();
+
+        $pdf->SetFont('Arial','B',8);
+        $pdf->SetTextColor(255,255,255);
+        $pdf->SetFillColor(160,160,160);
+        $pdf->SetX(6);
+        $pdf->SetAligns($aligns);
+        $pdf->SetWidths($widths);
+        $pdf->Row($header, true);
+      }
+
+      $pdf->SetFont('Arial','',8);
+      $pdf->SetTextColor(0,0,0);
+
+      $datos = array($item->fecha,
+                     $item->no_lote,
+                     $item->productor,
+                     $item->dueno_carga,
+                     $item->variedad,
+                     $item->cajas,
+                     $item->cajas_rezaga,
+                     $item->t75,
+                     $item->t90,
+                     $item->t110,
+                     $item->observaciones);
+
+      $pdf->SetX(6);
+      $pdf->SetAligns($aligns);
+      $pdf->SetWidths($widths);
+      $pdf->Row($datos, false);
+    }
+
+    $pdf->Output('RELACION_CAJAS_RECIBIDAS.pdf', 'I');
+  }
+
 }
 
 /* End of file cajas_model.php */

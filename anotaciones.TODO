@@ -44,6 +44,12 @@ INSERT INTO `privilegios` (`nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `
 ('Modificar', 23, 0, 'cajas/modificar_entrada/', 'edit', 0),
 ('Eliminar', 23, 0, 'cajas/eliminar_entrada/', 'remove', 0);
 
+PRIVILEGIOS REPORTES:
+  INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES
+  (28, 'Reporte Relacion Cajas Recibidas', 20, 1, 'cajas_reportes/rcr/', 'book', 0),
+  (29, 'Reporte Relacion de Lavado por Lotes', 20, 1, 'cajas_reportes/rll/', 'book', 0);
+
+
 /***********  CAMBIOS BDD  **************/
 
 ALTER TABLE  `cajas_inventario` ADD  `id_caja` BIGINT( 20 ) UNSIGNED NULL DEFAULT NULL AFTER  `id_variedad`
