@@ -7,10 +7,12 @@
             <a href="<?php echo base_url('panel'); ?>">Inicio</a> <span class="divider">/</span>
           </li>
           <li>
-            <a href="<?php echo base_url('panel/cajas/cuentas_pagar'); ?>" title="">Cuentas por Pagar</a> <span class="divider">/</span>
+            <a href="<?php echo base_url('panel/cajas/cuentas_pagar'); ?>" title="">
+              Cuentas por Pagar</a> <span class="divider">/</span>
           </li>
            <li>
-            <a href="<?php echo base_url('panel/cajas/cuentas_pagar_productor/?'.String::getVarsLink(array('idc'))); ?>" title="">Productor</a> <span class="divider">/</span>
+            <a href="<?php echo base_url('panel/cajas/cuentas_pagar_productor/?'.
+              String::getVarsLink(array('idc'))); ?>" title="">Productor</a> <span class="divider">/</span>
           </li>
           <li>
             Detalle de Entrega
@@ -51,9 +53,9 @@
                         <img src="<?php echo base_url('application/images/otros/doc_pdf.png');?>" width="64" height="64">
                       </a>
 
-                      <!-- <a href="<?php echo base_url('panel/cajas/detalle_xls/?'.String::getVarsLink(array('msg'))); ?>" title="Generar EXCEL" target="_BLANK">
-                        <img src="<?php echo base_url('application/images/otros/doc_xls.png');?>" width="64" height="64">
-                      </a> -->
+                      <a href="#modal-abonos" role="button" data-toggle="modal" title="Abono">
+                        <img src="<?php echo base_url('application/images/otros/creditcard.png');?>" width="64" height="64">
+                      </a>
                     </div>
 
                   </div>
@@ -128,6 +130,9 @@
 
           <!-- content ends -->
     </div><!--/#content.span10-->
+
+
+<?php echo $this->load->view('panel/cajas/abonos-modal.php', $bancos, true) ?>
 
 
 <!-- Bloque de alertas -->

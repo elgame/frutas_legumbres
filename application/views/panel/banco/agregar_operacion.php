@@ -31,9 +31,9 @@
 										<div class="control-group span4 nomarg">
 											<label class="control-label" for="dfecha">Fecha:</label>
 											<div class="controls">
-												<!-- <input type="text" name="dfecha" id="dfecha" class="span6" 
+												<!-- <input type="text" name="dfecha" id="dfecha" class="span6"
 													value="<?php echo set_value('dfecha'); ?>" maxlength="40" required autofocus> -->
-												<input type="datetime-local" name="dfecha" id="dfecha" class="span8" 
+												<input type="datetime-local" name="dfecha" id="dfecha" class="span8"
 													value="<?php echo set_value('dfecha', str_replace(' ', 'T', date("Y-m-d H:i")) ); ?>" maxlength="40" required autofocus>
 											</div>
 										</div>
@@ -43,7 +43,7 @@
 											<div class="controls">
 												<select name="dbanco" id="dbanco" required>
 													<option value=""></option>
-											<?php 
+											<?php
 											foreach ($bancos['bancos'] as $key => $value) {
 												echo '<option value="'.$value->id_banco.'" '.set_select('dbanco', $value->id_banco, false, $dbanco_load).'>'.$value->nombre.'</option>';
 											}
@@ -66,8 +66,8 @@
 										<div class="control-group span4 nomarg">
 											<label class="control-label" for="dconcepto">Concepto:</label>
 											<div class="controls">
-												<textarea name="dconcepto" id="dconcepto" class="span11" 
-													required><?php 
+												<textarea name="dconcepto" id="dconcepto" class="span11"
+													required><?php
 													$concepto = (isset($fac['info']->folio)? 'Pago de la factura '.
 														($fac['info']->serie!=''? $fac['info']->folio.'-': '').$fac['info']->folio: '');
 													echo set_value('dconcepto', $concepto); ?></textarea>
@@ -77,7 +77,7 @@
 										<div class="control-group span2 nomarg">
 											<label class="control-label" for="dmonto">Monto:</label>
 											<div class="controls">
-												<input type="text" name="dmonto" id="dmonto" class="span11 vpositive" 
+												<input type="text" name="dmonto" id="dmonto" class="span11 vpositive"
 													value="<?php echo set_value('dmonto', (isset($fac['info']->total)? $fac['info']->total: 0) ); ?>" maxlength="40" required>
 											</div>
 										</div>
@@ -109,7 +109,7 @@
 			              <div class="control-group span4 nomarg only_cheques hide" style="padding-top: 10px;">
 											<label class="control-label" for="dchk_anombre">A nombre de:</label>
 											<div class="controls">
-												<input type="text" name="dchk_anombre" id="dchk_anombre" class="span11" 
+												<input type="text" name="dchk_anombre" id="dchk_anombre" class="span11"
 													value="<?php echo set_value('dchk_anombre', (isset($fac['info']->productor->nombre_fiscal)? $fac['info']->productor->nombre_fiscal: '') ); ?>" maxlength="100">
 											</div>
 										</div>
@@ -139,7 +139,7 @@
 							  	<legend>Conceptos Reales</legend>
 
 							  	<div>
-							  		<input type="text" id="addcons_concep" maxlength="254" placeholder="Concepto"> 
+							  		<input type="text" id="addcons_concep" maxlength="254" placeholder="Concepto">
 							  		<input type="text" id="addcons_monto" class="vpositive" placeholder="Monto ($)">
 							  		<button type="button" class="btn" id="addcons_agregar">Agregar</button>
 							  	</div>
