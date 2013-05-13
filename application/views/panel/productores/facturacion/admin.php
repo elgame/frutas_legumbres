@@ -102,7 +102,7 @@
 ?>
 <script type="text/javascript" charset="UTF-8">
   <?php 
-  if(isset($id_mov)) //imprime el cheque
+  if(isset($id_mov) && $this->input->get('met_pago') == 'cheque') //imprime el cheque
     echo 'window.open("'.base_url('panel/banco/print_cheque/?id='.$id_mov).'");';
 
   ?>

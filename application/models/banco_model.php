@@ -43,13 +43,13 @@ class banco_model extends CI_Model{
 	}
 
 	/**
-	 * Obtiene la informacion de una variedad
+	 * Obtiene la informacion de un banco
 	 */
-	public function getInfoVariedad($id, $info_basic=false){
+	public function getInfoBanco($id, $info_basic=false){
 		$res = $this->db
 			->select('*')
-			->from('variedades AS v')
-			->where("v.id_variedad = '".$id."'")
+			->from('bancos_bancos')
+			->where("id_banco = '".$id."'")
 		->get();
 		if($res->num_rows() > 0){
 			$response['info'] = $res->row();

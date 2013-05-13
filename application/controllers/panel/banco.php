@@ -6,7 +6,7 @@ class banco extends MY_Controller {
 	 * Evita la validacion (enfocado cuando se usa ajax). Ver mas en privilegios_model
 	 * @var unknown_type
 	 */
-	private $excepcion_privilegio = array('banco/ajax_get_cuentas/', 'banco/print_cheque/');
+	private $excepcion_privilegio = array('banco/ajax_get_cuentas/', 'banco/print_cheque/', 'banco/estado_cuenta_pdf/');
 
 	public function _remap($method){
 		$this->load->model("usuarios_model");
@@ -24,26 +24,82 @@ class banco extends MY_Controller {
 
 	
 	public function index(){
-		$this->carabiner->js(array(
-			array('general/msgbox.js'),
+		$this->carabiner->css(array(
+			array('libs/jquery.uniform.css', 'screen'),
+			array('panel/frutas_legumbres.css', 'screen'),
 		));
-		$this->load->model('variedades_model');
+		$this->carabiner->js(array(
+			array('libs/jquery.uniform.min.js'),
+			array('panel/banco/estados_cuenta.js'),
+		));
+		$this->load->model('banco_cuentas_model');
 		$this->load->library('pagination');
 
 		$params['info_empleado'] = $this->info_empleado['info']; //info empleado
 		$params['seo'] = array(
-			'titulo' => 'Administrar Variedades'
+			'titulo' => 'Estados de ceuntas'
 		);
 
-		$params['variedades'] = $this->variedades_model->getVariedades();
+		$_GET['ffecha1'] = isset($_GET['ffecha1'])? $_GET['ffecha1']: date("Y-m").'-01';
+		$_GET['ffecha2'] = isset($_GET['ffecha2'])? $_GET['ffecha2']: date("Y-m-d");
+		$fecha = ($_GET['ffecha1']>$_GET['ffecha2'])? $_GET['ffecha1']: $_GET['ffecha2'];
+
+		$params['bancos'] = $this->banco_cuentas_model->getDataSaldos($fecha);
 
 		if(isset($_GET['msg']{0}))
 			$params['frm_errors'] = $this->showMsgs($_GET['msg']);
 
 		$this->load->view('panel/header', $params);
 		$this->load->view('panel/general/menu', $params);
-		$this->load->view('panel/variedades/listado', $params);
+		$this->load->view('panel/banco/listado', $params);
 		$this->load->view('panel/footer');
+	}
+
+	public function estado_cuenta(){
+		if(isset($_GET['id']{0})){
+			$this->carabiner->css(array(
+				array('libs/jquery.uniform.css', 'screen'),
+				array('panel/frutas_legumbres.css', 'screen'),
+			));
+			$this->carabiner->js(array(
+				array('libs/jquery.uniform.min.js'),
+				array('general/msgbox.js'),
+				array('panel/banco/estados_cuenta.js'),
+			));
+			$this->load->model('banco_cuentas_model');
+			$this->load->library('pagination');
+
+			$params['info_empleado'] = $this->info_empleado['info']; //info empleado
+			$params['seo'] = array(
+				'titulo' => 'Estados de ceuntas'
+			);
+
+			$_GET['ffecha1'] = isset($_GET['ffecha1'])? $_GET['ffecha1']: date("Y-m").'-01';
+			$_GET['ffecha2'] = isset($_GET['ffecha2'])? $_GET['ffecha2']: date("Y-m-d");
+
+			$params['movimientos'] = $this->banco_cuentas_model->getDataEstadoCuenta($_GET['id'], $_GET['ffecha1'], $_GET['ffecha2']);
+
+			if(isset($_GET['msg']{0}))
+				$params['frm_errors'] = $this->showMsgs($_GET['msg']);
+
+			$this->load->view('panel/header', $params);
+			$this->load->view('panel/general/menu', $params);
+			$this->load->view('panel/banco/estado_cuenta', $params);
+			$this->load->view('panel/footer');
+		}else
+			redirect(base_url('panel/banco/?'.String::getVarsLink(array('id', 'msg')) ));
+	}
+
+	public function estado_cuenta_pdf(){
+		if(isset($_GET['id']{0})){
+      $this->load->model('banco_cuentas_model');
+
+      $_GET['ffecha1'] = isset($_GET['ffecha1'])? $_GET['ffecha1']: date("Y-m").'-01';
+			$_GET['ffecha2'] = isset($_GET['ffecha2'])? $_GET['ffecha2']: date("Y-m-d");
+			
+      $this->banco_cuentas_model->printEstadoCuenta($_GET['id'], $_GET['ffecha1'], $_GET['ffecha2']);
+    }else
+			redirect(base_url('panel/banco/?'.String::getVarsLink(array('id', 'msg')) ));
 	}
 
 	
@@ -80,9 +136,9 @@ class banco extends MY_Controller {
 
 			if($respons[0]){
 				if($_GET['redirec'] == '1') //redirecciona a facturacion de productores
-					redirect(base_url('panel/productoresfac/?'.String::getVarsLink(array('msg', 'id', 'tipo', 'redirec')).'&msg=10&id_mov='.$respons[3]));
+					redirect(base_url('panel/productoresfac/?'.String::getVarsLink(array('msg', 'id', 'tipo', 'redirec')).'&msg=10&id_mov='.$respons[3].'&met_pago='.$respons[4]));
 				else
-					redirect(base_url('panel/banco/agregar_operacion/?'.String::getVarsLink(array('msg', 'id_mov')).'&msg='.$respons[2].'&id_mov='.$respons[3]));
+					redirect(base_url('panel/banco/agregar_operacion/?'.String::getVarsLink(array('msg', 'id_mov')).'&msg='.$respons[2].'&id_mov='.$respons[3].'&met_pago='.$respons[4]));
 			}else
         $params['frm_errors'] = $this->showMsgs(2, $respons[1]);
 		}
@@ -106,6 +162,16 @@ class banco extends MY_Controller {
 		$this->load->view('panel/general/menu', $params);
 		$this->load->view('panel/banco/agregar_operacion', $params);
 		$this->load->view('panel/footer');
+	}
+
+	public function eliminar_operacion(){
+		if(isset($_GET['id_mov']{0})){
+      $this->load->model('banco_cuentas_model');
+      $this->banco_cuentas_model->eliminarOperacion($_GET['id_mov']);
+
+      redirect(base_url('panel/banco/estado_cuenta?msg=8&'.String::getVarsLink(array('id_mov', 'msg')) ));
+    }else
+      redirect(base_url('panel/banco/estado_cuenta?msg=1&'.String::getVarsLink(array('id_mov', 'msg')) ));
 	}
 
 	/**
@@ -403,6 +469,11 @@ class banco extends MY_Controller {
 			break;
 			case 7:
 				$txt = 'La cuenta se modifico correctamente.';
+				$icono = 'success';
+			break;
+
+			case 8:
+				$txt = 'La operación se elimino correctamente.';
 				$icono = 'success';
 			break;
 		}

@@ -198,8 +198,9 @@
 	if($frm_errors['msg'] != ''){
 ?>
 <script type="text/javascript" charset="UTF-8">
-	<?php if($frm_errors['ico'] === 'success') {
-    echo 'window.open("'.base_url('panel/banco/print_cheque/?id='.$_GET['id_mov']).'");';
+	<?php if($frm_errors['ico'] === 'success' && isset($_GET['met_pago'])) {
+		if($_GET['met_pago'] == 'cheque')
+    	echo 'window.open("'.base_url('panel/banco/print_cheque/?id='.$_GET['id_mov']).'");';
   }?>
 
 	$(document).ready(function(){

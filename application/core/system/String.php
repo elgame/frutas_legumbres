@@ -274,7 +274,15 @@ class String{
 		}
 		$tex = $neg . substr($tex, 1) . $fin;
 		//Zi hack --> return ucfirst($tex);
-		$end_num=ucfirst($tex).' pesos '.$float[1].'/100 '.$moneda;
+		
+		$tipo_moneda = 'pesos';
+		switch ($moneda) {
+			case 'USD':
+				$tipo_moneda = 'dolares';
+				break;
+		}
+
+		$end_num=ucfirst($tex).' '.$tipo_moneda.' '.$float[1].'/100 '.$moneda;
 		return $end_num;
 	}
 

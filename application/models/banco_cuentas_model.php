@@ -118,7 +118,11 @@ class banco_cuentas_model extends banco_model{
 			$this->db->insert_batch('bancos_movimientos_conceptos', $data_cons);
 
 		$msg = 3;
-		return array(true, '', $msg, $id_mov);
+		return array(true, '', $msg, $id_mov, $this->input->post('dmetodo_pago'));
+	}
+
+	public function eliminarOperacion($id_movimiento){
+		$this->db->delete('bancos_movimientos', 'id_movimiento = '.$id_movimiento);
 	}
 
 
@@ -184,6 +188,220 @@ class banco_cuentas_model extends banco_model{
 		}
 
 		return $response;
+	}
+
+
+
+	/**
+	 * *************  SALDOS Y ESTADOS DE CUENTA  ****************
+	 */
+	/**
+	 * obtiene los saldos de las cuentas bancarias
+	 * @param  [type] $fecha [description]
+	 * @return [type]        [description]
+	 */
+	public function getDataSaldos($fecha){
+		$bancos = $this->getBancos()['bancos'];
+		foreach ($bancos as $key => $value) {
+			$bancos[$key]->saldo   = 0;
+			$bancos[$key]->cuentas = $this->db->query("SELECT bc.id_cuenta, bc.alias, bc.numero, 
+					IFNULL(d.monto, 0) AS depositos, IFNULL(r.monto, 0) AS retiros, 
+					(IFNULL(d.monto, 0) - IFNULL(r.monto, 0)) AS saldo
+				FROM bancos_cuentas AS bc 
+					LEFT JOIN (
+						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
+						WHERE tipo = 'd' AND Date(fecha) <= '".$fecha."' GROUP BY id_cuenta ) AS d ON d.id_cuenta = bc.id_cuenta 
+					LEFT JOIN (
+						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
+						WHERE tipo = 'r' AND Date(fecha) <= '".$fecha."' GROUP BY id_cuenta ) AS r ON r.id_cuenta = bc.id_cuenta
+				WHERE bc.status = 'ac' AND bc.id_banco = ".$value->id_banco." 
+				GROUP BY id_cuenta")->result();	
+			foreach ($bancos[$key]->cuentas as $key1 => $cun) {
+				$bancos[$key]->saldo += $cun->saldo;
+			}
+		}
+		return $bancos;
+	}
+
+	/**
+	 * obtiene la informacion del estado de cuenta seleccionado
+	 * @param  [type] $id_cuenta [description]
+	 * @param  [type] $fecha1    [description]
+	 * @param  [type] $fecha2    [description]
+	 * @return [type]            [description]
+	 */
+	public function getDataEstadoCuenta($id_cuenta, $fecha1, $fecha2){
+		$response = array(
+			'cuenta'      => '',
+			'movimientos' => array(),
+			'depositos'   => 0,
+			'retiros'     => 0,
+			);
+
+		$cuenta = $this->getCuentas(0, $id_cuenta);
+		$response['cuenta'] = $cuenta['cuentas'][0];
+
+		//saldo anterior
+		$saldo_anterior = $this->db->query("SELECT bc.id_cuenta, bc.alias, bc.numero, 
+					IFNULL(d.monto, 0) AS depositos, IFNULL(r.monto, 0) AS retiros, 
+					(IFNULL(d.monto, 0) - IFNULL(r.monto, 0)) AS saldo
+				FROM bancos_cuentas AS bc 
+					LEFT JOIN (
+						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
+						WHERE tipo = 'd' AND Date(fecha) < '".$fecha1."' GROUP BY id_cuenta ) AS d ON d.id_cuenta = bc.id_cuenta 
+					LEFT JOIN (
+						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
+						WHERE tipo = 'r' AND Date(fecha) < '".$fecha1."' GROUP BY id_cuenta ) AS r ON r.id_cuenta = bc.id_cuenta
+				WHERE bc.id_cuenta = ".$id_cuenta." 
+				GROUP BY id_cuenta")->row();
+		$response['movimientos'][] = array(
+			'id_movimiento' => '',
+			'fecha'         => '',
+			'concepto'      => 'SALDO ANTERIOR AL '.$fecha1,
+			'depositos'     => String::formatoNumero($saldo_anterior->depositos),
+			'retiros'       => String::formatoNumero($saldo_anterior->retiros),
+			'saldo'         => String::formatoNumero($saldo_anterior->saldo),
+			'conceptos'     => array(),
+			);
+		
+		$saldo = $saldo_anterior->saldo;
+		$total_depositos = $total_retiros = $depositos = $retiros = 0;
+		$movimientos = $this->db->query("SELECT id_movimiento, Date(fecha) AS fecha, concepto, monto, tipo
+			FROM bancos_movimientos 
+			WHERE id_cuenta = ".$id_cuenta." AND Date(fecha) BETWEEN '".$fecha1."' AND '".$fecha2."' 
+			ORDER BY id_movimiento ASC, fecha ASC")->result();
+		foreach ($movimientos as $key => $value) {
+			$depositos = $retiros = '';
+			if ($value->tipo == 'd') {
+				$depositos       = String::formatoNumero($value->monto);
+				$total_depositos += $value->monto;
+				$saldo           += $value->monto;
+			}else{
+				$retiros       = String::formatoNumero($value->monto);
+				$total_retiros += $value->monto;
+				$saldo         -= $value->monto;
+			}
+			$response['movimientos'][] = array(
+				'id_movimiento' => $value->id_movimiento,
+				'fecha'         => $value->fecha,
+				'concepto'      => $value->concepto,
+				'depositos'     => $depositos,
+				'retiros'       => $retiros,
+				'saldo'         => String::formatoNumero($saldo),
+				'conceptos'     => $this->getConceptosMov($value->id_movimiento),
+				);
+		}
+		$response['depositos'] = String::formatoNumero($total_depositos);
+		$response['retiros']   = String::formatoNumero($total_retiros);
+
+		return $response;
+	}
+	/**
+	 * obtiene los conceptos reales de un movimiento
+	 * @param  [type] $id_movimiento [description]
+	 * @return [type]                [description]
+	 */
+	public function getConceptosMov($id_movimiento){
+		$data = $this->db->query("SELECT id_movimiento, no_concepto, concepto, monto
+		                           FROM bancos_movimientos_conceptos
+		                           WHERE id_movimiento = ".$id_movimiento." 
+		                           ORDER BY no_concepto");
+		$respon = array();
+		if($data->num_rows()>0){
+			foreach ($data->result() as $key => $value) {
+				$value->monto = String::formatoNumero($value->monto);
+				$respon[] = $value;
+			}
+		}
+		return $respon;
+	}
+
+	/**
+	 * genera el estado de ceunta de la cuenta bancaria seleccionada
+	 * @param  [type] $id_cuenta [description]
+	 * @param  [type] $fecha1    [description]
+	 * @param  [type] $fecha2    [description]
+	 * @return [type]            [description]
+	 */
+	public function printEstadoCuenta($id_cuenta, $fecha1, $fecha2){
+		$data = $this->getDataEstadoCuenta($id_cuenta, $fecha1, $fecha2);
+
+		$this->load->library('mypdf');
+    // Creación del objeto de la clase heredada
+    $pdf = new MYpdf('P', 'mm', 'Letter');
+    $pdf->titulo2 = "Estado de ceunta | ";
+    $pdf->titulo2 .= $data['cuenta']->banco.' ('.$data['cuenta']->alias.')';
+    $pdf->titulo3 = 'Del: '.$fecha1." Al ".$fecha2."\n";
+
+    $pdf->AliasNbPages();
+    //$pdf->AddPage();
+    $pdf->SetFont('Arial','', 8);
+
+		$aligns  = array('C', 'L', 'C', 'C', 'C');
+		$widths  = array(20, 100, 28, 28, 28);
+		$widths2 = array(20, 100, 56, 28);
+		$header  = array('Fecha', 'Concepto', 'Retiros', 'Depósitos', 'Saldo');
+
+    foreach ($data['movimientos'] as $key => $value) {
+    	if($pdf->GetY() >= $pdf->limiteY || $key==0) //salta de pagina si exede el max
+      {
+        $pdf->AddPage();
+
+        $pdf->SetFont('Arial','B',8);
+        $pdf->SetTextColor(255,255,255);
+        $pdf->SetFillColor(160,160,160);
+        $pdf->SetX(6);
+        $pdf->SetAligns($aligns);
+        $pdf->SetWidths($widths);
+        $pdf->Row($header, true);
+      }
+
+      $pdf->SetFont('Arial','',8);
+      $pdf->SetTextColor(0,0,0);
+
+
+      $pdf->SetX(6);
+      $pdf->SetAligns($aligns);
+      $pdf->SetWidths($widths);
+      $pdf->Row(array(
+					$value['fecha'],
+					$value['concepto'],
+					$value['depositos'],
+					$value['retiros'],
+					$value['saldo'],
+      	));
+
+      if(count($value['conceptos']) > 0){
+      	$pdf->SetFillColor(205,255,209);
+      	foreach ($value['conceptos'] as $key2 => $cons) {
+	      	$pdf->SetX(6);
+		      $pdf->SetAligns($aligns);
+		      $pdf->SetWidths($widths2);
+		      $pdf->Row(array(
+							'',
+							$cons->concepto,
+							$cons->monto,
+							'',
+		      	), true);
+		    }
+      }
+    }
+    
+    $pdf->SetFont('Arial','B',8);
+    $pdf->SetTextColor(255,255,255);
+    $pdf->SetFillColor(160,160,160);
+    $pdf->SetX(6);
+    $pdf->SetAligns($aligns);
+    $pdf->SetWidths($widths);
+    $pdf->Row(array(
+				'',
+				'Total:',
+				$data['depositos'],
+				$data['retiros'],
+				'',
+    	), true);
+
+    $pdf->Output('estado_ceunta.pdf', 'I');
 	}
 
 }
