@@ -68,10 +68,10 @@ class Cheque extends FPDF {
 	}
 
 	/**
-	 * Banbajio 12
+	 * Banbajio 2
 	 */
-	public function generaCheque_12($nombre, $monto, $fecha=null, $opc='I'){
-		/*parent::__construct($this->orientation, $this->unit, array(70, 165));
+	public function generaCheque_2($nombre, $monto, $fecha=null, $moneda='M.N.', $abono_cuenta=0, $opc='I'){
+		parent::__construct($this->orientation, $this->unit, array(70, 165));
 
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;
 		$this->AddPage('P', array(70, 165));
@@ -81,15 +81,15 @@ class Cheque extends FPDF {
 		$this->SetLineWidth(0.1);
 		$this->Rect(0, 0, 70, 165, 'D');
 		
-		$this->RotatedText(50, 64, $this->rg->getObject('string')->fechaATexto($fecha), -90);
+		$this->RotatedText(50, 64, String::fechaATexto($fecha), -90);
 		
-		$this->RotatedText(40, 124, $this->rg->getObject('string')->monedaToString($monto), -90);
+		$this->RotatedText(40, 124, String::formatoNumero($monto), -90);
 		
 		$this->RotatedText(42, 8, $nombre, -90);
 		
-		$this->RotatedText(32, 8, $this->rg->getObject('string')->num2letras($monto), -90);
+		$this->RotatedText(32, 8, String::num2letras($monto), -90);
 		
-		$this->Output('cheque.pdf', $opc);*/
+		$this->Output('cheque.pdf', $opc);
 	}
 	
 	/**
