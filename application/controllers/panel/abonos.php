@@ -60,12 +60,18 @@ class abonos extends MY_Controller {
       $ids = explode(',', $_POST['id_caja']);
       foreach ($ids as $key => $id)
       {
-        $masivo = $banco = ($key === (count($ids) - 1)) ? true : false;
+        $masivo = $banco = (($key == (count($ids) - 1)) ? true : false);
         $response = $this->abonos_model->addAbono($id, null, true, $banco, null, $masivo);
       }
     }
-
     echo json_encode($response);
   }
 
+  public function eliminar()
+  {
+    $this->load->model('abonos_model');
+    $this->abonos_model->eliminar();
+
+    redirect(base_url('panel/cajas/detalle/?'.String::getVarsLink(array('ida', 'msg')).'&msg=7'));
+  }
 }

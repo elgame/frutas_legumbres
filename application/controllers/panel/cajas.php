@@ -678,6 +678,10 @@ class cajas extends MY_Controller {
         $txt = 'El entrada se elimino correctamente.';
         $icono = 'success';
       break;
+      case 7:
+        $txt = 'El abono se elimino correctamente';
+        $icono = 'success';
+      break;
     }
 
     return array(

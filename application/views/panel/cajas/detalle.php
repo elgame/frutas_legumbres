@@ -12,7 +12,7 @@
           </li>
            <li>
             <a href="<?php echo base_url('panel/cajas/cuentas_pagar_productor/?'.
-              String::getVarsLink(array('idc'))); ?>" title="">Productor</a> <span class="divider">/</span>
+              String::getVarsLink(array('idc', 'msg'))); ?>" title="">Productor</a> <span class="divider">/</span>
           </li>
           <li>
             Detalle de Entrega
@@ -91,12 +91,13 @@
               <thead>
                 <tr style="font-weight: bold; font-size: 1.1em;background-color:#ccc;">
                   <th></th>
-                  <th colspan="2">TOTAL: <?php echo String::formatoNumero($total_entrega) ?></th>
+                  <th colspan="3">TOTAL: <?php echo String::formatoNumero($total_entrega) ?></th>
                 </tr>
                 <tr>
                   <th>Fecha</th>
                   <th>Abono</th>
                   <th>Saldo</th>
+                  <th>Opc</th>
                 </tr>
               </thead>
               <tbody>
@@ -110,7 +111,16 @@
                       <tr>
                         <td><?php echo $abono->fecha ?></td>
                         <td><?php echo String::formatoNumero($abono->abono); ?></td>
-                        <td><?php echo String::formatoNumero($total_saldo); ?></td>
+                        <td><?php echo String::formatoNumero($total_saldo);?></td>
+                        <td>
+                          <?php
+                              echo $this->usuarios_model->getLinkPrivSm('abonos/eliminar/', array(
+                              'params'   => 'ida='.$abono->id_abono.'&'.String::getVarsLink(array('ida', 'msg')),
+                              'btn_type' => 'btn-success',
+                              'attrs' => array('onclick' => "msb.confirm('Estas seguro de eliminar el abono?', 'Abonos', this); return false;"))
+                              );
+                           ?>
+                        </td>
                       </tr>
                 <?php }?>
 
@@ -118,6 +128,7 @@
                         <td style="background-color:#ccc;">TOTAL</td>
                         <td style="background-color:#ccc;"><?php echo String::formatoNumero($total_abono); ?></td>
                         <td style="background-color:#ccc;"><?php echo String::formatoNumero($total_saldo); ?></td>
+                        <td style="background-color:#ccc;"></td>
                       </tr>
 
               </tbody>

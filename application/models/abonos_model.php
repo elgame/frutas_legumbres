@@ -76,20 +76,20 @@ class abonos_model extends CI_Model{
                       'concepto'     => $this->input->post('concepto'),
                       'monto'        => $this->input->post('monto'));
 
-        if ($bancoData === null)
+        if ($banco && $bancoData === null)
         {
-          $banco = array('id_banco'   => $this->input->post('id_banco'),
-                        'id_cuenta'   => $this->input->post('id_cuenta'),
-                        'fecha'       => str_replace('T', ' ', $_POST['fecha']),
-                        'concepto'    => $this->input->post('concepto'),
-                        'monto'       => $this->input->post('monto'),
-                        'tipo'        => $this->input->post('tipo'),
-                        'metodo_pago' => $this->input->post('metodo'));
+          $bancoData = array('id_banco'   => $this->input->post('id_banco'),
+                            'id_cuenta'   => $this->input->post('id_cuenta'),
+                            'fecha'       => str_replace('T', ' ', $_POST['fecha']),
+                            'concepto'    => $this->input->post('concepto'),
+                            'monto'       => $this->input->post('monto'),
+                            'tipo'        => $this->input->post('tipo'),
+                            'metodo_pago' => $this->input->post('metodo'));
 
           if ($this->input->post('metodo') === 'cheque')
           {
-            $banco['anombre_de'] = $this->input->post('anombrede');
-            $banco['moneda']     = $this->input->post('moneda');
+            $bancoData['anombre_de'] = $this->input->post('anombrede');
+            $bancoData['moneda']     = $this->input->post('moneda');
           }
         }
       }
@@ -99,7 +99,7 @@ class abonos_model extends CI_Model{
       if ($liquidar || (floatval($abono['monto']) > $saldo))
       {
         $abono['monto'] = $saldo;
-        if ($banco && !$masivo) $banco['monto'] = $abono['monto'];
+        if ($banco && !$masivo) $bancoData['monto'] = $abono['monto'];
       }
 
       $this->db->insert('cajas_recibidas_abonos', $abono);
@@ -109,11 +109,10 @@ class abonos_model extends CI_Model{
 
       if ($banco)
       {
-        $resp = $this->banco_cuentas_model->addOperacion($banco);
+        $resp = $this->banco_cuentas_model->addOperacion($bancoData);
 
-        $dataResponse['bancoInfo'] = $banco;
+        $dataResponse['bancoInfo'] = $bancoData;
         $dataResponse['bancoInfo']['id_mov'] = $resp[3];
-
       }
 
       return array('passes' => true,
@@ -139,6 +138,14 @@ class abonos_model extends CI_Model{
     $saldo = $total_caja - $total_abonado;
 
     return floatval($saldo);
+  }
+
+  public function eliminar()
+  {
+    $this->db
+      ->delete('cajas_recibidas_abonos', array('id_abono'=>$_GET['ida']));
+
+    return true;
   }
 
 }

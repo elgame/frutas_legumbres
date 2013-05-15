@@ -150,7 +150,7 @@
                   <tr>
                     <td><?php echo $caja->fecha ?></td>
                     <td><a href="<?php echo base_url('panel/cajas/detalle/').'?idc='.$caja->id_caja.'&'.
-                                  String::getVarsLink(array('idc')); ?>"><?php echo $caja->id_caja; ?></a></td>
+                                  String::getVarsLink(array('idc', 'msg')); ?>"><?php echo $caja->id_caja; ?></a></td>
                     <td><?php echo $caja->no_ticket; ?></td>
                     <td><?php echo $caja->cajas; ?></td>
                     <td><?php echo $caja->cajas_rezaga; ?></td>

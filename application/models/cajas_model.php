@@ -723,6 +723,7 @@ class Cajas_model extends CI_Model {
 
     $query = $this->db->query("SELECT DATE(cr.fecha) AS fecha,
                                       cr.certificado_tarjeta,
+                                      p.nombre_fiscal AS productor,
                                       dh.nombre as dueno_huerta,
                                       dh.calle,
                                       dh.no_exterior,
@@ -737,8 +738,11 @@ class Cajas_model extends CI_Model {
                                       cr.cajas_rezaga,
                                       v.nombre AS variedad,
                                       cr.unidad_transporte,
-                                      cr.dueno_carga
+                                      cr.dueno_carga,
+                                      cr.es_organico
                                FROM cajas_recibidas AS cr
+                               INNER JOIN productores AS p
+                                  ON p.id_productor = cr.id_productor
                                INNER JOIN duenios_huertas AS dh
                                   ON dh.id_dueno = cr.id_dueno
                                INNER JOIN variedades AS v
@@ -779,13 +783,13 @@ class Cajas_model extends CI_Model {
     //$pdf->AddPage();
     $pdf->SetFont('Arial','', 8);
 
-    $aligns = array('C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C');
-    $widths = array(20, 25, 30, 50, 20, 10, 15, 15, 22, 30, 30);
-    $header = array('FECHA', '# CERTIFICADO O TARJETA', 'NOMBRE DEL PRODUCTOR',
+    $aligns = array('C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C');
+    $widths = array(17, 25, 30, 50, 20, 10, 15, 15, 20, 22, 25, 18);
+    $header = array('FECHA', '# CERTIFICADO O TARJETA', 'DUEÑO DE LA HUERTA',
                     'ORIGEN DE LA FRUTA',  'CODIGO DE LA HUERTA',
-                    '# DE LOTE', 'TOTAL CAJAS', 'CAJAS DE REZAGA',
-                    'VARIEDAD', 'UNIDAD DE TRANSPORTE',
-                    'DUEÑO DE CARGA');
+                    '# DE LOTE', 'TOTAL CAJAS', 'CAJAS REZAGA',
+                    'VARIEDAD', 'UNIDAD TRANSPORTE',
+                    'NOMBRE PRODUCTOR', 'ORGANICO');
 
     foreach($rcr['info'] as $key => $item)
     {
@@ -815,7 +819,8 @@ class Cajas_model extends CI_Model {
                      $item->cajas_rezaga,
                      $item->variedad,
                      $item->unidad_transporte,
-                     $item->dueno_carga);
+                     $item->productor,
+                     $item->es_organico==1 ? 'SI' : 'NO');
 
       $pdf->SetX(6);
       $pdf->SetAligns($aligns);
