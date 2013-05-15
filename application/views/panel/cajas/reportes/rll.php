@@ -2,32 +2,10 @@
       <!-- content starts -->
 
 
-      <div>
-        <ul class="breadcrumb">
-          <li>
-            <a href="<?php echo base_url('panel'); ?>">Inicio</a>
-              <span class="divider">/</span>
-          </li>
-          <li>
-             <a href="<?php echo base_url('panel/cajas/'); ?>">Cajas</a>
-              <span class="divider">/</span>
-          </li>
-          <li>
-            <li>Reporte Relación de Lavado por Lotes</li>
-          </li>
-        </ul>
-      </div>
 
       <div class="row-fluid">
         <div class="box span12">
-          <div class="box-header well" data-original-title>
-            <h2><i class="icon-book"></i> Reporte</h2>
-            <div class="box-icon">
-              <a href="#" class="btn btn-minimize btn-round">
-                <i class="icon-chevron-up"></i></a>
-            </div>
-          </div>
-
+          
           <div class="box-content">
 
             <form action="<?php echo base_url('panel/cajas_reportes/rll_pdf/'); ?>"

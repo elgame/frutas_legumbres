@@ -27,7 +27,7 @@ class MYpdf extends FPDF {
     public function Header() {
     	if($this->show_head){
 	        // Logo
-		    $this->Image(APPPATH.'/images/logo.png', 6, 5, 38);
+		    $this->Image(APPPATH.'/images/logo.png', 6, 5, 20);
 		    $this->SetFont('Arial','',5);
 		    //$this->Text(6, 15, 'EXTINTORES Y SISTEMAS CONTRA INCENDIOS');
 

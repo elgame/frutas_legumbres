@@ -43,7 +43,7 @@
 				<a class="brand" href="<?php echo base_url('panel/home/'); ?>"> 
 					<img alt="logo" src="<?php echo base_url('application/images/logo.png'); ?>" height="54">
 					<span>
-						<?php echo $seo['titulo'];?>
+						
 					</span>
 				</a>
 
@@ -56,8 +56,6 @@
 							<span class="caret"></span>
 						</a>
 						<ul class="dropdown-menu">
-							<li><a href="#">Perfil</a></li>
-							<li class="divider"></li>
 							<li><a href="<?php echo base_url('panel/home/logout'); ?>">Cerrar sesión</a></li>
 						</ul>
 					</div>
