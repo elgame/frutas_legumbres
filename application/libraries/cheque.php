@@ -87,7 +87,7 @@ class Cheque extends FPDF {
 		
 		$this->RotatedText(42, 8, $nombre, -90);
 		
-		$this->RotatedText(32, 8, String::num2letras($monto), -90);
+		$this->RotatedText(32, 8, String::num2letras($monto, $moneda), -90);
 		
 		$this->Output('cheque.pdf', $opc);
 	}

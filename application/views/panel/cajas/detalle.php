@@ -116,7 +116,7 @@
                           <?php
                               echo $this->usuarios_model->getLinkPrivSm('abonos/eliminar/', array(
                               'params'   => 'ida='.$abono->id_abono.'&'.String::getVarsLink(array('ida', 'msg')),
-                              'btn_type' => 'btn-success',
+                              'btn_type' => 'btn-danger',
                               'attrs' => array('onclick' => "msb.confirm('Estas seguro de eliminar el abono?', 'Abonos', this); return false;"))
                               );
                            ?>

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-04-2013 a las 15:23:18
+-- Tiempo de generación: 15-05-2013 a las 20:00:09
 -- Versión del servidor: 5.5.27
 -- Versión de PHP: 5.4.7
 
@@ -33,7 +33,15 @@ CREATE TABLE IF NOT EXISTS `bancos_bancos` (
   `nombre` varchar(25) NOT NULL,
   `status` enum('ac','e') NOT NULL,
   PRIMARY KEY (`id_banco`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Volcado de datos para la tabla `bancos_bancos`
+--
+
+INSERT INTO `bancos_bancos` (`id_banco`, `nombre`, `status`) VALUES
+(1, 'Banorte', 'ac'),
+(2, 'Banbajio', 'ac');
 
 -- --------------------------------------------------------
 
@@ -46,10 +54,14 @@ CREATE TABLE IF NOT EXISTS `bancos_cuentas` (
   `id_banco` int(10) unsigned NOT NULL,
   `numero` varchar(20) NOT NULL,
   `alias` varchar(40) NOT NULL,
-  `status` enum('ac','e') NOT NULL,
+  `status` enum('ac','e') NOT NULL DEFAULT 'ac',
   PRIMARY KEY (`id_cuenta`),
   KEY `id_banco` (`id_banco`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `bancos_cuentas`
+--
 
 -- --------------------------------------------------------
 
@@ -61,15 +73,24 @@ CREATE TABLE IF NOT EXISTS `bancos_movimientos` (
   `id_movimiento` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `id_banco` int(10) unsigned NOT NULL,
   `id_cuenta` int(10) unsigned NOT NULL,
+  `id_fac_productor` bigint(20) unsigned DEFAULT NULL,
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `concepto` varchar(254) NOT NULL,
   `monto` double NOT NULL,
   `tipo` enum('d','r') NOT NULL DEFAULT 'd' COMMENT 'd:deposito, r:retiro',
   `metodo_pago` varchar(20) NOT NULL,
+  `anombre_de` varchar(100) DEFAULT NULL,
+  `moneda` varchar(6) DEFAULT NULL,
+  `abono_cuenta` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:no poner legenda; 1:pner legenda',
   PRIMARY KEY (`id_movimiento`),
   KEY `id_banco` (`id_banco`),
-  KEY `id_cuenta` (`id_cuenta`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `id_cuenta` (`id_cuenta`),
+  KEY `id_fac_productor` (`id_fac_productor`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `bancos_movimientos`
+--
 
 -- --------------------------------------------------------
 
@@ -85,6 +106,48 @@ CREATE TABLE IF NOT EXISTS `bancos_movimientos_conceptos` (
   PRIMARY KEY (`id_movimiento`,`no_concepto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Volcado de datos para la tabla `bancos_movimientos_conceptos`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `bancos_movimientos_depositos`
+--
+CREATE TABLE IF NOT EXISTS `bancos_movimientos_depositos` (
+`id_movimiento` bigint(20) unsigned
+,`id_banco` int(10) unsigned
+,`id_cuenta` int(10) unsigned
+,`id_fac_productor` bigint(20) unsigned
+,`fecha` timestamp
+,`concepto` varchar(254)
+,`monto` double
+,`tipo` enum('d','r')
+,`metodo_pago` varchar(20)
+,`anombre_de` varchar(100)
+,`moneda` varchar(6)
+,`abono_cuenta` tinyint(1)
+);
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `bancos_movimientos_retiros`
+--
+CREATE TABLE IF NOT EXISTS `bancos_movimientos_retiros` (
+`id_movimiento` bigint(20) unsigned
+,`id_banco` int(10) unsigned
+,`id_cuenta` int(10) unsigned
+,`id_fac_productor` bigint(20) unsigned
+,`fecha` timestamp
+,`concepto` varchar(254)
+,`monto` double
+,`tipo` enum('d','r')
+,`metodo_pago` varchar(20)
+,`anombre_de` varchar(100)
+,`moneda` varchar(6)
+,`abono_cuenta` tinyint(1)
+);
 -- --------------------------------------------------------
 
 --
@@ -95,6 +158,7 @@ CREATE TABLE IF NOT EXISTS `cajas_inventario` (
   `id_inventario` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `id_productor` bigint(20) unsigned NOT NULL,
   `id_variedad` int(10) unsigned NOT NULL,
+  `id_caja` bigint(20) unsigned DEFAULT NULL,
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `concepto` varchar(254) NOT NULL,
   `cantidad` double NOT NULL,
@@ -102,8 +166,13 @@ CREATE TABLE IF NOT EXISTS `cajas_inventario` (
   `tipo` enum('s','en') NOT NULL DEFAULT 's' COMMENT 's:salida, en:entrada de cajas',
   PRIMARY KEY (`id_inventario`),
   KEY `id_productor` (`id_productor`),
-  KEY `id_variedad` (`id_variedad`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `id_variedad` (`id_variedad`),
+  KEY `id_caja` (`id_caja`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `cajas_inventario`
+--
 
 -- --------------------------------------------------------
 
@@ -129,11 +198,52 @@ CREATE TABLE IF NOT EXISTS `cajas_recibidas` (
   `unidad_transporte` varchar(60) NOT NULL DEFAULT '',
   `dueno_carga` varchar(60) NOT NULL DEFAULT '',
   `observaciones` varchar(250) NOT NULL DEFAULT '',
+  `kilos_rezaga` double NOT NULL DEFAULT '0',
+  `total_pagar_kc` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_caja`),
   KEY `id_dueno` (`id_dueno`),
   KEY `id_productor` (`id_productor`),
   KEY `id_variedad` (`id_variedad`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `cajas_recibidas`
+--
+
+--
+-- Disparadores `cajas_recibidas`
+--
+DROP TRIGGER IF EXISTS `agrega_entrada_inventario`;
+DELIMITER //
+CREATE TRIGGER `agrega_entrada_inventario` AFTER INSERT ON `cajas_recibidas`
+ FOR EACH ROW BEGIN
+    INSERT INTO cajas_inventario (id_productor, id_variedad, id_caja, fecha, concepto, cantidad, chofer, tipo)
+    VALUES (NEW.id_productor, NEW.id_variedad, NEW.id_caja, NEW.fecha, 'Registro de entradas cajas', NEW.cajas, '', 'en');
+  END
+//
+DELIMITER ;
+DROP TRIGGER IF EXISTS `delete_entrada_inventario`;
+DELIMITER //
+CREATE TRIGGER `delete_entrada_inventario` BEFORE DELETE ON `cajas_recibidas`
+ FOR EACH ROW BEGIN
+
+    DELETE FROM cajas_inventario WHERE id_caja = OLD.id_caja;
+
+  END
+//
+DELIMITER ;
+DROP TRIGGER IF EXISTS `update_entrada_inventario`;
+DELIMITER //
+CREATE TRIGGER `update_entrada_inventario` AFTER UPDATE ON `cajas_recibidas`
+ FOR EACH ROW BEGIN
+
+    UPDATE cajas_inventario
+    SET id_productor = NEW.id_productor, id_variedad = NEW.id_variedad, fecha = NEW.fecha, cantidad = NEW.cajas
+    WHERE id_caja = OLD.id_caja;
+
+  END
+//
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -143,13 +253,20 @@ CREATE TABLE IF NOT EXISTS `cajas_recibidas` (
 
 CREATE TABLE IF NOT EXISTS `cajas_recibidas_abonos` (
   `id_abono` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_caja` bigint(20) unsigned NOT NULL,
   `id_productor` bigint(20) unsigned NOT NULL,
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `concepto` varchar(254) NOT NULL,
   `monto` double NOT NULL,
   PRIMARY KEY (`id_abono`),
-  KEY `id_productor` (`id_productor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `id_productor` (`id_productor`),
+  KEY `id_caja` (`id_caja`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `cajas_recibidas_abonos`
+--
+
 
 -- --------------------------------------------------------
 
@@ -164,6 +281,11 @@ CREATE TABLE IF NOT EXISTS `cajas_tratamiento` (
   PRIMARY KEY (`id_caja`,`id_tratamiento`),
   KEY `id_tratamiento` (`id_tratamiento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `cajas_tratamiento`
+--
+
 
 -- --------------------------------------------------------
 
@@ -185,9 +307,6 @@ CREATE TABLE IF NOT EXISTS `ci_sessions` (
 -- Volcado de datos para la tabla `ci_sessions`
 --
 
-INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-('3ec41e9550331334d9dce9dc66d90824', '::1', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31 AlexaToolba', 1367270534, 'a:6:{s:9:"user_data";s:0:"";s:2:"id";s:1:"1";s:7:"usuario";s:5:"admin";s:5:"email";s:17:"dasdasd@gmail.com";s:4:"tipo";s:5:"admin";s:7:"idunico";s:24:"l517e7e6ad634a6.30457411";}');
-
 -- --------------------------------------------------------
 
 --
@@ -208,7 +327,32 @@ CREATE TABLE IF NOT EXISTS `duenios_huertas` (
   `celular` varchar(20) NOT NULL,
   `status` enum('ac','e') NOT NULL DEFAULT 'ac',
   PRIMARY KEY (`id_dueno`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `duenios_huertas`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `nomina_salarios_minimos`
+--
+
+CREATE TABLE IF NOT EXISTS `nomina_salarios_minimos` (
+  `id_salario` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `zona_a` float unsigned NOT NULL,
+  `zona_b` float unsigned NOT NULL,
+  `zona_c` float unsigned NOT NULL,
+  PRIMARY KEY (`id_salario`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Volcado de datos para la tabla `nomina_salarios_minimos`
+--
+
+INSERT INTO `nomina_salarios_minimos` (`id_salario`, `zona_a`, `zona_b`, `zona_c`) VALUES
+(1, 64.76, 64.76, 61.38);
 
 -- --------------------------------------------------------
 
@@ -225,7 +369,7 @@ CREATE TABLE IF NOT EXISTS `privilegios` (
   `url_icono` varchar(100) NOT NULL,
   `target_blank` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=52 ;
 
 --
 -- Volcado de datos para la tabla `privilegios`
@@ -245,7 +389,44 @@ INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_acci
 (11, 'Agregar', 10, 1, 'productores/agregar/', 'plus', 0),
 (12, 'Modificar', 10, 0, 'productores/modificar/', 'edit', 0),
 (13, 'Eliminar', 10, 0, 'productores/eliminar/', 'remove', 0),
-(14, 'Activar', 10, 0, 'productores/activar/', 'ok', 0);
+(14, 'Activar', 10, 0, 'productores/activar/', 'ok', 0),
+(15, 'Variedades', 0, 1, 'variedades/', 'leaf', 0),
+(16, 'Agregar', 15, 1, 'variedades/agregar/', 'plus', 0),
+(17, 'Modificar', 15, 0, 'variedades/modificar/', 'edit', 0),
+(18, 'Eliminar', 15, 0, 'variedades/eliminar/', 'remove', 0),
+(19, 'Activar', 15, 0, 'variedades/activar/', 'ok', 0),
+(20, 'Facturacion', 10, 1, 'productoresfac/', 'file', 0),
+(21, 'Series y folios', 20, 1, 'productoresfac/series_folios/', 'list-alt', 0),
+(22, 'Agregar', 21, 1, 'productoresfac/agregar_serie_folio/', 'plus', 0),
+(23, 'Modificar', 21, 0, 'productoresfac/modificar_serie_folio/', 'edit', 0),
+(24, 'Agregar', 20, 1, 'productoresfac/agregar/', 'plus', 0),
+(25, 'Detalles facturas', 20, 0, 'productoresfac/detalles_facturas/', 'file', 0),
+(26, 'Cancelar', 20, 0, 'productoresfac/cancelar/', 'remove', 0),
+(27, 'Imprimir', 20, 0, 'productoresfac/imprimir/', 'print', 0),
+(28, 'Dueños Huertas', 0, 1, 'duenios_huertas/', 'user', 0),
+(29, 'Agregar', 28, 1, 'duenios_huertas/agregar/', 'plus', 0),
+(30, 'Modificar', 28, 0, 'duenios_huertas/modificar/', 'edit', 0),
+(31, 'Eliminar', 28, 0, 'duenios_huertas/eliminar/', 'remove', 0),
+(32, 'Activar', 28, 0, 'duenios_huertas/activar/', 'ok', 0),
+(33, 'Cajas', 0, 1, 'cajas/', 'inbox', 0),
+(34, 'Agregar Movimiento', 33, 1, 'cajas/agregar/', 'plus', 0),
+(35, 'Entradas', 33, 1, 'cajas/entradas/', 'share-alt', 0),
+(36, 'Agregar Entrada', 35, 1, 'cajas/agregar_entrada/', 'plus', 0),
+(37, 'Modificar', 33, 0, 'cajas/modificar_entrada/', 'edit', 0),
+(38, 'Eliminar', 33, 0, 'cajas/eliminar_entrada/', 'remove', 0),
+(39, 'Banco', 0, 1, 'banco/', 'hdd', 0),
+(40, 'Agregar operación', 39, 1, 'banco/agregar_operacion/', 'plus-sign', 0),
+(41, 'Cuentas por pagar', 33, 1, 'cajas/cuentas_pagar/', 'list-alt', 0),
+(42, 'Cuentas', 39, 1, 'banco/cuentas/', 'inbox', 0),
+(43, 'Agregar', 42, 1, 'banco/agregar_cuenta/', 'plus', 0),
+(44, 'Modificar', 42, 0, 'banco/modificar_cuenta/', 'edit', 0),
+(45, 'Eliminar', 42, 0, 'banco/eliminar_cuenta/', 'remove', 0),
+(46, 'Activar', 42, 0, 'banco/activar_cuenta/', 'ok', 0),
+(47, 'Estado de cuenta', 39, 0, 'banco/estado_cuenta/', 'hdd', 0),
+(48, 'Eliminar', 39, 0, 'banco/eliminar_operacion/', 'remove', 0),
+(49, 'Reporte Relacion Cajas Recibidas', 33, 1, 'cajas_reportes/rcr/', 'book', 0),
+(50, 'Reporte Relacion de Lavado por Lotes', 33, 1, 'cajas_reportes/rll/', 'book', 0),
+(51, 'Eliminar', 41, 0, 'abonos/eliminar/', 'remove', 0);
 
 -- --------------------------------------------------------
 
@@ -272,14 +453,11 @@ CREATE TABLE IF NOT EXISTS `productores` (
   `status` enum('ac','e') NOT NULL DEFAULT 'ac',
   `tipo` enum('r','f') NOT NULL DEFAULT 'r' COMMENT 'r:regular (venden fruta), f:ficticio (comprobar gastos)',
   PRIMARY KEY (`id_productor`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Volcado de datos para la tabla `productores`
 --
-
-INSERT INTO `productores` (`id_productor`, `nombre_fiscal`, `calle`, `no_exterior`, `no_interior`, `colonia`, `municipio`, `estado`, `cp`, `rfc`, `telefono`, `celular`, `email`, `logo`, `regimen_fiscal`, `status`, `tipo`) VALUES
-(1, 'Abrahan Jimenez Magaña', '', '', '', '', '', '', 0, '', '', '', '', '', '', 'ac', 'r');
 
 -- --------------------------------------------------------
 
@@ -307,6 +485,8 @@ CREATE TABLE IF NOT EXISTS `productores_facturas` (
   `metodo_pago_digitos` varchar(20) NOT NULL,
   `condicion_pago` enum('co','cr') NOT NULL DEFAULT 'co' COMMENT 'cr:credito o co:contado',
   `plazo_credito` int(11) NOT NULL DEFAULT '0',
+  `productor_domicilio` varchar(240) NOT NULL,
+  `productor_ciudad` varchar(220) NOT NULL,
   `nombre` varchar(240) NOT NULL,
   `rfc` varchar(13) NOT NULL,
   `domicilio` varchar(250) NOT NULL,
@@ -314,7 +494,11 @@ CREATE TABLE IF NOT EXISTS `productores_facturas` (
   `status` enum('p','pa','ca') NOT NULL DEFAULT 'pa' COMMENT 'p:pendiente, pa:pagada, ca:cancelada',
   PRIMARY KEY (`id_factura`),
   KEY `id_productor` (`id_productor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `productores_facturas`
+--
 
 -- --------------------------------------------------------
 
@@ -337,7 +521,11 @@ CREATE TABLE IF NOT EXISTS `productores_facturas_productos` (
   `unidad` varchar(20) NOT NULL,
   PRIMARY KEY (`id_fac_prod`),
   KEY `id_factura` (`id_factura`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `productores_facturas_productos`
+--
 
 -- --------------------------------------------------------
 
@@ -359,7 +547,11 @@ CREATE TABLE IF NOT EXISTS `productores_series_folios` (
   `ano_aprobacion` date NOT NULL,
   PRIMARY KEY (`id_serie_folio`),
   KEY `id_productor` (`id_productor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Volcado de datos para la tabla `productores_series_folios`
+--
 
 -- --------------------------------------------------------
 
@@ -372,7 +564,16 @@ CREATE TABLE IF NOT EXISTS `tratamientos` (
   `nombre` varchar(40) NOT NULL,
   `status` enum('ac','e') NOT NULL DEFAULT 'ac',
   PRIMARY KEY (`id_tratamiento`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Volcado de datos para la tabla `tratamientos`
+--
+
+INSERT INTO `tratamientos` (`id_tratamiento`, `nombre`, `status`) VALUES
+(1, '75', 'ac'),
+(2, '90', 'ac'),
+(3, '110', 'ac');
 
 -- --------------------------------------------------------
 
@@ -429,7 +630,44 @@ INSERT INTO `usuarios_privilegios` (`usuario_id`, `privilegio_id`) VALUES
 (1, 11),
 (1, 12),
 (1, 13),
-(1, 14);
+(1, 14),
+(1, 15),
+(1, 16),
+(1, 17),
+(1, 18),
+(1, 19),
+(1, 20),
+(1, 21),
+(1, 22),
+(1, 23),
+(1, 24),
+(1, 25),
+(1, 26),
+(1, 27),
+(1, 28),
+(1, 29),
+(1, 30),
+(1, 31),
+(1, 32),
+(1, 33),
+(1, 34),
+(1, 35),
+(1, 36),
+(1, 37),
+(1, 38),
+(1, 39),
+(1, 40),
+(1, 41),
+(1, 42),
+(1, 43),
+(1, 44),
+(1, 45),
+(1, 46),
+(1, 47),
+(1, 48),
+(1, 49),
+(1, 50),
+(1, 51);
 
 -- --------------------------------------------------------
 
@@ -443,7 +681,33 @@ CREATE TABLE IF NOT EXISTS `variedades` (
   `tipo_pago` enum('k','c') NOT NULL DEFAULT 'k' COMMENT 'k:kilos, c:cajas',
   `status` enum('ac','e') NOT NULL DEFAULT 'ac' COMMENT 'ac:activo, e:eliminado',
   PRIMARY KEY (`id_variedad`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Volcado de datos para la tabla `variedades`
+--
+
+INSERT INTO `variedades` (`id_variedad`, `nombre`, `tipo_pago`, `status`) VALUES
+(1, 'Ataulfo', 'c', 'ac'),
+(2, 'Haden', 'k', 'ac');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `bancos_movimientos_depositos`
+--
+DROP TABLE IF EXISTS `bancos_movimientos_depositos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `bancos_movimientos_depositos` AS select `bancos_movimientos`.`id_movimiento` AS `id_movimiento`,`bancos_movimientos`.`id_banco` AS `id_banco`,`bancos_movimientos`.`id_cuenta` AS `id_cuenta`,`bancos_movimientos`.`id_fac_productor` AS `id_fac_productor`,`bancos_movimientos`.`fecha` AS `fecha`,`bancos_movimientos`.`concepto` AS `concepto`,`bancos_movimientos`.`monto` AS `monto`,`bancos_movimientos`.`tipo` AS `tipo`,`bancos_movimientos`.`metodo_pago` AS `metodo_pago`,`bancos_movimientos`.`anombre_de` AS `anombre_de`,`bancos_movimientos`.`moneda` AS `moneda`,`bancos_movimientos`.`abono_cuenta` AS `abono_cuenta` from `bancos_movimientos` where (`bancos_movimientos`.`tipo` = 'd');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `bancos_movimientos_retiros`
+--
+DROP TABLE IF EXISTS `bancos_movimientos_retiros`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `bancos_movimientos_retiros` AS select `bancos_movimientos`.`id_movimiento` AS `id_movimiento`,`bancos_movimientos`.`id_banco` AS `id_banco`,`bancos_movimientos`.`id_cuenta` AS `id_cuenta`,`bancos_movimientos`.`id_fac_productor` AS `id_fac_productor`,`bancos_movimientos`.`fecha` AS `fecha`,`bancos_movimientos`.`concepto` AS `concepto`,`bancos_movimientos`.`monto` AS `monto`,`bancos_movimientos`.`tipo` AS `tipo`,`bancos_movimientos`.`metodo_pago` AS `metodo_pago`,`bancos_movimientos`.`anombre_de` AS `anombre_de`,`bancos_movimientos`.`moneda` AS `moneda`,`bancos_movimientos`.`abono_cuenta` AS `abono_cuenta` from `bancos_movimientos` where (`bancos_movimientos`.`tipo` = 'r');
 
 --
 -- Restricciones para tablas volcadas
@@ -460,7 +724,8 @@ ALTER TABLE `bancos_cuentas`
 --
 ALTER TABLE `bancos_movimientos`
   ADD CONSTRAINT `bancos_movimientos_ibfk_1` FOREIGN KEY (`id_banco`) REFERENCES `bancos_bancos` (`id_banco`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `bancos_movimientos_ibfk_2` FOREIGN KEY (`id_cuenta`) REFERENCES `bancos_cuentas` (`id_cuenta`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `bancos_movimientos_ibfk_2` FOREIGN KEY (`id_cuenta`) REFERENCES `bancos_cuentas` (`id_cuenta`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `bancos_movimientos_ibfk_3` FOREIGN KEY (`id_fac_productor`) REFERENCES `productores_facturas` (`id_factura`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `bancos_movimientos_conceptos`
@@ -473,7 +738,8 @@ ALTER TABLE `bancos_movimientos_conceptos`
 --
 ALTER TABLE `cajas_inventario`
   ADD CONSTRAINT `cajas_inventario_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `cajas_inventario_ibfk_2` FOREIGN KEY (`id_variedad`) REFERENCES `variedades` (`id_variedad`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `cajas_inventario_ibfk_2` FOREIGN KEY (`id_variedad`) REFERENCES `variedades` (`id_variedad`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cajas_inventario_ibfk_3` FOREIGN KEY (`id_caja`) REFERENCES `cajas_recibidas` (`id_caja`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `cajas_recibidas`
@@ -487,7 +753,8 @@ ALTER TABLE `cajas_recibidas`
 -- Filtros para la tabla `cajas_recibidas_abonos`
 --
 ALTER TABLE `cajas_recibidas_abonos`
-  ADD CONSTRAINT `cajas_recibidas_abonos_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `cajas_recibidas_abonos_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cajas_recibidas_abonos_ibfk_2` FOREIGN KEY (`id_caja`) REFERENCES `cajas_recibidas` (`id_caja`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `cajas_tratamiento`
