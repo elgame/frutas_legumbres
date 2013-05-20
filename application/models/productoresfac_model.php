@@ -154,12 +154,13 @@ class productoresfac_model extends privilegios_model{
                       where("id_productor = ".$ide."")->
                       order_by('serie', 'ASC')->get();
 
+    $res = array();
     if($query->num_rows() > 0)
     {
       $res = $query->result();
       $msg = 'ok';
     } else
-      $msg = 'El productor seleccionada no cuenta con Series y Folios.';
+      $msg = 'El productor seleccionada no cuenta con Series y Folios asignados.';
 
     return array($res, $msg);
   }
@@ -249,6 +250,15 @@ class productoresfac_model extends privilegios_model{
 	 */
 	public function cancelaFactura($id_factura){
 		$this->db->update('productores_facturas', array('status' => 'ca'), "id_factura = '".$id_factura."'");
+
+    // //Cancela el movimiento en el banco que pertenese a esta factura
+    // $result = $this->db->query("SELECT id_movimiento 
+    //                            FROM bancos_movimientos
+    //                            WHERE id_fac_productor = ".$id_factura)->row();
+    // if(isset($result->id_movimiento)){
+    //   $this->load->model('banco_cuentas_model');
+    //   $this->banco_cuentas_model->eliminarOperacion($result->id_movimiento);
+    // }
 
 		return array(true, '');
 	}
