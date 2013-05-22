@@ -1,8 +1,30 @@
--Privilegio gregar entradas ponerle el padre Entradas
--(Agregar entradas de cajas, cuando se seleccione el dueño de caja cargar el lote de ese año)
 
 
 ******** Detalles *******
+ ☐ (gama) Adaptar el cheque banamex
+ ☐ (gama) En banco quitar la suma que tiene el banco de las diferentes cuentas
+ ☐ (gama) Generar sql para cambiar los nombres de los siguientes privilegios
+     -Agregar => Agregar cuenta
+     -Agregar => Agregar productor
+     -Agregar => Agregar variedad
+     -Agregar => Agregar factura
+     -Agregar => Agregar folio
+     -Agregar movimiento => Agregar cajas campo
+     -Entradas => Entradas de fruta <= que sea el padre de ese modulo
+     -Cajas => Cajas campo <= ya no seria el padre de ese modulo
+ ☐ Cambiar los siguientes textos
+     ☐ (gama) En agregar/modificar productores, campo tipo cambiar por "Facturan fruta" => "Externos", "Facturan gasto" => "Internos"
+     ☐ (furby) En agregar/modificar entradas de fruta cambiar "No organico" => "Convencional"
+ ☐ (furby) Traducir calendario datapiquer a español
+ ☐ (gama y furby) Quitar deposito en los metodos de pago (cada quien lo quita en susu modulos)
+ ☐ (gama) En facturacion quitar el proseso de agregar el abono automatico a bancos cuando se cree una factura
+ ☐ (furby) Cuentas por pagar quitar el abono automatico a las cuentas de banco (lo dejas comentado por si lo quieren despues)
+ ☐ (furby) Cuentas por pagar si el importe de la entrada es 0 que no se muestre en el listado de las ceuntas por pagar, pero si en administrar entradas (como esta ahorita)
+ ☐ (furby) Cuentas por pagar al hacer los abonos masivos dejar modificar la Cantidad, al ir abonando a cada entrada ir restando el saldo de la entrada a la cantidad que pusieron, de tal forma que si la cantidad que pusieron no cubre todas las entradas, la ultima se agregara un abono no todo el saldo. Me preguntas si tienes duda. 
+ ☐ (furby) En los flotantes de abonar (masivo y normal) dejar comentado el evento que hace que salga los campos cuando se selecciona cheque, eso se ocupa en banco
+ ☐ (gama) En banco agregar operacion poner autocomplet al crear un cheque en el campo "a nombre de"
+
+
  ✔ en modificar entrada si no le pongo ningun tratamiento truena @done (13-05-08 14:31)
  ✔ en agregar entradas el campo fecha poner por default la de ese dia @done (13-05-08 14:35)
  ✔ en agregar movimiento en el autocomplete que pinte de color verde (#B0FFB0) el seleccionado y rojillo (#FFD9B3) cuando se borre, al borrar q no limpie la caja de texto solo el campo que tiene el id_productor (como esta en productoresfac/agregar), la fecha que cargue por default la de ese dia, poner el autofocus en el campo productor @done (13-05-08 14:41)
