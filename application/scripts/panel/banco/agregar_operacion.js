@@ -8,6 +8,19 @@ var tbl_conceptos = (function($){
 	var objr={}, conta_products=0;
 
 	function init(){
+		$("#dchk_anombre").autocomplete({
+      source: base_url+'panel/banco/ajax_get_cheque_pagos',
+      minLength: 1,
+      selectFirst: true,
+      select: function( event, ui ) {
+        $("#dchk_anombre").css("background-color", "#B0FFB0");
+      }
+	  }).on("keydown", function(event){
+	      if(event.which == 8 || event == 46){
+	        $("#dchk_anombre").css("background-color", "#FFD9B3");
+	      }
+	  });
+
 		//cargar cuentas de bancos
 		var dbanco = $("#dbanco").on('change', loadCuentasBanco);
 		if(dbanco.val() != '') //si esta seleccionado 1
@@ -114,3 +127,25 @@ var tbl_conceptos = (function($){
 	objr.init = init;
 	return objr;
 })(jQuery);
+
+
+
+
+/**
+ * Modificacion del plugin autocomplete
+ */
+$.widget( "custom.catcomplete", $.ui.autocomplete, {
+  _renderMenu: function( ul, items ) {
+    var self = this,
+      currentCategory = "";
+    $.each( items, function( index, item ) {
+      if(item.category != undefined){
+        if ( item.category != currentCategory ) {
+          ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+          currentCategory = item.category;
+        }
+      }
+      self._renderItem( ul, item );
+    });
+  }
+});

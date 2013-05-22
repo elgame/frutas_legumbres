@@ -118,7 +118,6 @@
                     <option value="cheque" <?php echo set_select('dmetodo_pago', 'cheque'); ?>>Cheque</option>
                     <option value="tarjeta" <?php echo set_select('dmetodo_pago', 'tarjeta'); ?>>Tarjeta</option>
                     <option value="transferencia" <?php echo set_select('dmetodo_pago', 'transferencia'); ?>>Transferencia</option>
-                    <option value="deposito" <?php echo set_select('dmetodo_pago', 'deposito'); ?>>Deposito</option>
                   </select>
                 </div>
               </div>
@@ -316,7 +315,7 @@
 
   if($frm_errors['ico'] === 'success') {
     echo 'window.open("'.base_url('panel/productoresfac/imprimir/?id='.$id).'");';
-    echo 'window.location = "'.base_url('panel/banco/agregar_operacion/?id='.$id.'&banco='.$banco.'&cuenta='.$cuenta.'&tipo=r&redirec=1').'";';
+    // echo 'window.location = "'.base_url('panel/banco/agregar_operacion/?id='.$id.'&banco='.$banco.'&cuenta='.$cuenta.'&tipo=r&redirec=1').'";';
   }?>
 
   $(document).ready(function(){

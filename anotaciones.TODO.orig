@@ -13,15 +13,27 @@
      -Entradas => Entradas de fruta <= que sea el padre de ese modulo
      -Cajas => Cajas campo <= ya no seria el padre de ese modulo
  ☐ Cambiar los siguientes textos
+<<<<<<< HEAD
+     ☐ (gama) En agregar/modificar productores, campo tipo cambiar por "Facturan fruta" => "Externos", "Facturan gasto" => "Internos"
+     ✔ (furby) En agregar/modificar entradas de fruta cambiar "No organico" => "Convencional" @done (13-05-22 08:26)
+ ✔ (furby) Traducir calendario datapiquer a español @done (13-05-22 08:54)
+ ✔ (gama y furby) Quitar deposito en los metodos de pago (cada quien lo quita en susu modulos) @done (13-05-22 09:35)
+ ☐ (gama) En facturacion quitar el proseso de agregar el abono automatico a bancos cuando se cree una factura
+ ✔ (furby) Cuentas por pagar quitar el abono automatico a las cuentas de banco (lo dejas comentado por si lo quieren despues) @done (13-05-22 11:38)
+ ✔ (furby) Cuentas por pagar si el importe de la entrada es 0 que no se muestre en el listado de las ceuntas por pagar, pero si en administrar entradas (como esta ahorita) @done (13-05-22 11:45)
+ ✔ (furby) Cuentas por pagar al hacer los abonos masivos dejar modificar la Cantidad, al ir abonando a cada entrada ir restando el saldo de la entrada a la cantidad que pusieron, de tal forma que si la cantidad que pusieron no cubre todas las entradas, la ultima se agregara un abono no todo el saldo. Me preguntas si tienes duda. @done (13-05-22 11:39)
+ ✔ (furby) En los flotantes de abonar (masivo y normal) dejar comentado el evento que hace que salga los campos cuando se selecciona cheque, eso se ocupa en banco @done (13-05-22 10:13)
+ ☐ (gama) En banco agregar operacion poner autocomplet al crear un cheque en el campo "a nombre de"
+=======
      ✔ (gama) En agregar/modificar productores, campo tipo cambiar por "Facturan fruta" => "Externos", "Facturan gasto" => "Internos" @done (13-05-22 08:56)
      ☐ (furby) En agregar/modificar entradas de fruta cambiar "No organico" => "Convencional"
- ✔ (furby) Traducir calendario datapiquer a español @done (13-05-22 11:54)
- ✔ (gama y furby) Quitar deposito en los metodos de pago (cada quien lo quita en susu modulos) @done (13-05-22 11:54)
+ ☐ (furby) Traducir calendario datapiquer a español
+ ☐ (gama y furby) Quitar deposito en los metodos de pago (cada quien lo quita en susu modulos)
  ✔ (gama) En facturacion quitar el proseso de agregar el abono automatico a bancos cuando se cree una factura @done (13-05-22 09:02)
- ✔ (furby) Cuentas por pagar quitar el abono automatico a las cuentas de banco (lo dejas comentado por si lo quieren despues) @done (13-05-22 11:54)
- ✔ (furby) Cuentas por pagar si el importe de la entrada es 0 que no se muestre en el listado de las ceuntas por pagar, pero si en administrar entradas (como esta ahorita) @done (13-05-22 11:54)
- ✔ (furby) Cuentas por pagar al hacer los abonos masivos dejar modificar la Cantidad, al ir abonando a cada entrada ir restando el saldo de la entrada a la cantidad que pusieron, de tal forma que si la cantidad que pusieron no cubre todas las entradas, la ultima se agregara un abono no todo el saldo. Me preguntas si tienes duda. @done (13-05-22 11:54)
- ✔ (furby) En los flotantes de abonar (masivo y normal) dejar comentado el evento que hace que salga los campos cuando se selecciona cheque, eso se ocupa en banco @done (13-05-22 11:54)
+ ☐ (furby) Cuentas por pagar quitar el abono automatico a las cuentas de banco (lo dejas comentado por si lo quieren despues)
+ ☐ (furby) Cuentas por pagar si el importe de la entrada es 0 que no se muestre en el listado de las ceuntas por pagar, pero si en administrar entradas (como esta ahorita)
+ ☐ (furby) Cuentas por pagar al hacer los abonos masivos dejar modificar la Cantidad, al ir abonando a cada entrada ir restando el saldo de la entrada a la cantidad que pusieron, de tal forma que si la cantidad que pusieron no cubre todas las entradas, la ultima se agregara un abono no todo el saldo. Me preguntas si tienes duda. 
+ ☐ (furby) En los flotantes de abonar (masivo y normal) dejar comentado el evento que hace que salga los campos cuando se selecciona cheque, eso se ocupa en banco
  ✔ (gama) En banco agregar operacion poner autocomplet al crear un cheque en el campo "a nombre de" @done (13-05-22 09:32)
 
 
@@ -46,6 +58,7 @@ sql:
 
 
 
+>>>>>>> origin/master
 
 
  ✔ en modificar entrada si no le pongo ningun tratamiento truena @done (13-05-08 14:31)

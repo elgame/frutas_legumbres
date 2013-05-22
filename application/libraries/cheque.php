@@ -68,9 +68,34 @@ class Cheque extends FPDF {
 	}
 
 	/**
-	 * Banbajio 2
+	 * Banamex 2
 	 */
 	public function generaCheque_2($nombre, $monto, $fecha=null, $moneda='M.N.', $abono_cuenta=0, $opc='I'){
+		parent::__construct($this->orientation, $this->unit, array(70, 165));
+
+		$fecha = $fecha==null? date("Y-m-d"): $fecha;
+		$this->AddPage('P', array(70, 165));
+		$this->SetFont('Arial','', 10);
+		
+		$this->SetDrawColor(0, 0, 0);
+		$this->SetLineWidth(0.1);
+		$this->Rect(0, 0, 70, 165, 'D');
+		
+		$this->RotatedText(58, 109, String::fechaATexto($fecha), -90);
+		
+		$this->RotatedText(42, 128, String::formatoNumero($monto), -90);
+		
+		$this->RotatedText(45, 10, $nombre, -90);
+		
+		$this->RotatedText(37, 10, String::num2letras($monto, $moneda), -90);
+		
+		$this->Output('cheque.pdf', $opc);
+	}
+
+	/**
+	 * Banbajio 
+	 */
+	public function generaCheque_($nombre, $monto, $fecha=null, $moneda='M.N.', $abono_cuenta=0, $opc='I'){
 		parent::__construct($this->orientation, $this->unit, array(70, 165));
 
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;

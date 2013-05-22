@@ -124,10 +124,10 @@ class productoresFac extends MY_Controller {
     $data                     = $this->productores_model->getInfoProductor($_GET['id']);
     $params['id_productor']   = isset($data['info']->id_productor)? $data['info']->id_productor: '';
     $params['nombre_fiscal']  = isset($data['info']->nombre_fiscal)? $data['info']->nombre_fiscal: '';
-    $params['cliente']        = 'Frutas y Legumbres de la costa sur de jalisco';
-    $params['cliente_rfc']    = 'FLC090210ED3';
-    $params['cliente_domic1'] = 'Barra de navidad #53 Col. Pelistermen';
-    $params['cliente_domic2'] = 'Barra, Jalisco. CP 31932';
+    $params['cliente']        = 'Frutas y Legumbres de la Costa Sur de Jalisco, SA de CV';
+    $params['cliente_rfc']    = 'FLC981229ID7';
+    $params['cliente_domic1'] = 'KM 4 CARRETERA A BARRA DE NAVIDAD S/N';
+    $params['cliente_domic2'] = 'BARRA DE NAVIDAD, JALISCO. CP 48987';
 
     $params['series'] = $this->productoresfac_model->getSeriesFolios(100);
     $params['fecha']  = date("Y-m-d");

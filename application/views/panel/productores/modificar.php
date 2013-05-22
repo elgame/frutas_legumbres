@@ -33,8 +33,8 @@
 										  <label class="control-label" for="dtipo">Tipo </label>
 										  <div class="controls">
 												<select name="dtipo" id="dtipo">
-													<option value="r" <?php echo set_select('dtipo', 'r', false, (isset($info['info']->tipo)? $info['info']->tipo: '')); ?>>Facturan fruta</option>
-													<option value="f" <?php echo set_select('dtipo', 'f', false, (isset($info['info']->tipo)? $info['info']->tipo: '')); ?>>Facturan gastos</option>
+													<option value="r" <?php echo set_select('dtipo', 'r', false, (isset($info['info']->tipo)? $info['info']->tipo: '')); ?>>Externos</option>
+													<option value="f" <?php echo set_select('dtipo', 'f', false, (isset($info['info']->tipo)? $info['info']->tipo: '')); ?>>Internos</option>
 												</select>
 										  </div>
 										</div>

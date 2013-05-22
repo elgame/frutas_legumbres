@@ -125,6 +125,33 @@ class banco_cuentas_model extends banco_model{
 		$this->db->delete('bancos_movimientos', 'id_movimiento = '.$id_movimiento);
 	}
 
+	/**
+	 * Obtiene el listado de productores para usar ajax
+	 */
+	public function getChequesNombresAjax(){
+		$sql = '';
+		if ($this->input->get('term') !== false)
+			$sql = " AND lower(anombre_de) LIKE '%".mb_strtolower($this->input->get('term'), 'UTF-8')."%'";
+		$res = $this->db->query("SELECT Distinct(anombre_de) 
+			FROM bancos_movimientos 
+			WHERE anombre_de IS NOT NULL ".$sql."
+			ORDER BY anombre_de ASC
+			LIMIT 20");
+
+		$response = array();
+		if($res->num_rows() > 0){
+			foreach($res->result() as $itm){
+				$response[] = array(
+						'id'    => $itm->anombre_de,
+						'label' => $itm->anombre_de,
+						'value' => $itm->anombre_de,
+						'item'  => $itm,
+				);
+			}
+		}
+
+		return $response;
+	}
 
 
 

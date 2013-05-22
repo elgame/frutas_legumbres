@@ -52,7 +52,7 @@
 						?>
 								<tr style="font-weight: bold;">
 									<td colspan="2" style="background-color: #e5e5e5"><?php echo $banco->nombre; ?></td>
-									<td style="background-color: #e5e5e5"><?php echo String::formatoNumero($banco->saldo); ?></td>
+									<td style="background-color: #e5e5e5"><?php //echo String::formatoNumero($banco->saldo); ?></td>
 								</tr>
 						<?php
 						if(is_array($banco->cuentas))
