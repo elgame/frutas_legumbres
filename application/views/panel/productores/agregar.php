@@ -32,8 +32,8 @@
 										  <label class="control-label" for="dtipo">Tipo </label>
 										  <div class="controls">
 												<select name="dtipo" id="dtipo" autofocus>
-													<option value="r" <?php echo set_select('dtipo', 'r', false, $this->input->post('dtipo')); ?>>Facturan fruta</option>
-													<option value="f" <?php echo set_select('dtipo', 'f', false, $this->input->post('dtipo')); ?>>Facturan gastos</option>
+													<option value="r" <?php echo set_select('dtipo', 'r', false, $this->input->post('dtipo')); ?>>Externos</option>
+													<option value="f" <?php echo set_select('dtipo', 'f', false, $this->input->post('dtipo')); ?>>Internos</option>
 												</select>
 										  </div>
 										</div>

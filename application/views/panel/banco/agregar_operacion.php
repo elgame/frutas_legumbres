@@ -91,7 +91,6 @@
 			                    <option value="cheque" <?php echo set_select('dmetodo_pago', 'cheque', false, $metodo_pago); ?>>Cheque</option>
 			                    <option value="tarjeta" <?php echo set_select('dmetodo_pago', 'tarjeta', false, $metodo_pago); ?>>Tarjeta</option>
 			                    <option value="transferencia" <?php echo set_select('dmetodo_pago', 'transferencia', false, $metodo_pago); ?>>Transferencia</option>
-			                    <option value="deposito" <?php echo set_select('dmetodo_pago', 'deposito', false, $metodo_pago); ?>>Deposito</option>
 			                  </select>
 			                </div>
 			              </div>

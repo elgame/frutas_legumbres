@@ -6,7 +6,8 @@ class banco extends MY_Controller {
 	 * Evita la validacion (enfocado cuando se usa ajax). Ver mas en privilegios_model
 	 * @var unknown_type
 	 */
-	private $excepcion_privilegio = array('banco/ajax_get_cuentas/', 'banco/print_cheque/', 'banco/estado_cuenta_pdf/');
+	private $excepcion_privilegio = array('banco/ajax_get_cuentas/', 'banco/print_cheque/', 'banco/estado_cuenta_pdf/',
+		'banco/ajax_get_cheque_pagos/');
 
 	public function _remap($method){
 		$this->load->model("usuarios_model");
@@ -184,6 +185,13 @@ class banco extends MY_Controller {
 			$cheque->generaCheque($_GET['id']);
     }else
       redirect(base_url('panel/banco'));
+	}
+
+	public function ajax_get_cheque_pagos(){
+		$this->load->model('banco_cuentas_model');
+		$params = $this->banco_cuentas_model->getChequesNombresAjax();
+
+		echo json_encode($params);
 	}
 
 	

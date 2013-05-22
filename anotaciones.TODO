@@ -1,9 +1,9 @@
 
 
 ******** Detalles *******
- ☐ (gama) Adaptar el cheque banamex
- ☐ (gama) En banco quitar la suma que tiene el banco de las diferentes cuentas
- ☐ (gama) Generar sql para cambiar los nombres de los siguientes privilegios
+ ✔ (gama) Adaptar el cheque banamex @done (13-05-22 10:35)
+ ✔ (gama) En banco quitar la suma que tiene el banco de las diferentes cuentas @done (13-05-22 08:31)
+ ✔ (gama) Generar sql para cambiar los nombres de los siguientes privilegios @done (13-05-22 08:53)
      -Agregar => Agregar cuenta
      -Agregar => Agregar productor
      -Agregar => Agregar variedad
@@ -13,16 +13,39 @@
      -Entradas => Entradas de fruta <= que sea el padre de ese modulo
      -Cajas => Cajas campo <= ya no seria el padre de ese modulo
  ☐ Cambiar los siguientes textos
-     ☐ (gama) En agregar/modificar productores, campo tipo cambiar por "Facturan fruta" => "Externos", "Facturan gasto" => "Internos"
+     ✔ (gama) En agregar/modificar productores, campo tipo cambiar por "Facturan fruta" => "Externos", "Facturan gasto" => "Internos" @done (13-05-22 08:56)
      ☐ (furby) En agregar/modificar entradas de fruta cambiar "No organico" => "Convencional"
  ☐ (furby) Traducir calendario datapiquer a español
  ☐ (gama y furby) Quitar deposito en los metodos de pago (cada quien lo quita en susu modulos)
- ☐ (gama) En facturacion quitar el proseso de agregar el abono automatico a bancos cuando se cree una factura
+ ✔ (gama) En facturacion quitar el proseso de agregar el abono automatico a bancos cuando se cree una factura @done (13-05-22 09:02)
  ☐ (furby) Cuentas por pagar quitar el abono automatico a las cuentas de banco (lo dejas comentado por si lo quieren despues)
  ☐ (furby) Cuentas por pagar si el importe de la entrada es 0 que no se muestre en el listado de las ceuntas por pagar, pero si en administrar entradas (como esta ahorita)
  ☐ (furby) Cuentas por pagar al hacer los abonos masivos dejar modificar la Cantidad, al ir abonando a cada entrada ir restando el saldo de la entrada a la cantidad que pusieron, de tal forma que si la cantidad que pusieron no cubre todas las entradas, la ultima se agregara un abono no todo el saldo. Me preguntas si tienes duda. 
  ☐ (furby) En los flotantes de abonar (masivo y normal) dejar comentado el evento que hace que salga los campos cuando se selecciona cheque, eso se ocupa en banco
- ☐ (gama) En banco agregar operacion poner autocomplet al crear un cheque en el campo "a nombre de"
+ ✔ (gama) En banco agregar operacion poner autocomplet al crear un cheque en el campo "a nombre de" @done (13-05-22 09:32)
+
+
+
+sql:
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar productor' WHERE  `privilegios`.`id` =11;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar variedad' WHERE  `privilegios`.`id` =16;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar factura' WHERE  `privilegios`.`id` =24;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar cuenta' WHERE  `privilegios`.`id` =43;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar cajas campo' WHERE  `privilegios`.`id` =34;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Cajas campo' WHERE  `privilegios`.`id` =33;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Entradas de fruta' WHERE  `privilegios`.`id` =35;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar folio' WHERE  `privilegios`.`id` =22;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `id_padre` =  '0' WHERE  `privilegios`.`id` =35;
+  UPDATE  `frutas_legumbres`.`privilegios` SET  `id_padre` =  '35' WHERE  `privilegios`.`id` =33;
+  ALTER TABLE  `bancos_movimientos` ADD INDEX (  `anombre_de` );
+  ALTER TABLE  `productores` ADD INDEX (  `nombre_fiscal` );
+  ALTER TABLE  `privilegios` ADD INDEX (  `url_accion` );
+
+
+
+
+
+
 
 
  ✔ en modificar entrada si no le pongo ningun tratamiento truena @done (13-05-08 14:31)
