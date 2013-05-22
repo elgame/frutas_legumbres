@@ -194,6 +194,7 @@ class Cuentas_pagar_model extends CI_Model {
                                ) AS tab ON tab.id_caja = cr.id_caja
 
                                WHERE cr.id_productor = {$_GET['id']} AND
+                                    cr.total_pagar_kc * cr.precio != 0 AND
                                      (Date(cr.fecha) >= '{$fecha1}' AND
                                       Date(cr.fecha) <= '{$fecha2}')
 

@@ -45,22 +45,24 @@ class abonos extends MY_Controller {
   public function ajax_guarda_abono_masivo()
   {
     $this->load->model('abonos_model');
-    $this->load->model('banco_cuentas_model');
+    // $this->load->model('banco_cuentas_model');
 
-    $cuenta_info = $this->banco_cuentas_model
-                        ->getCuentas(0, $_POST['id_cuenta']);
+    // $cuenta_info = $this->banco_cuentas_model
+    //                     ->getCuentas(0, $_POST['id_cuenta']);
 
-    if (floatval($_POST['monto']) > $cuenta_info['cuentas'][0]->saldo)
-      $response = array('passes'=>false,
-              'msg'=>'El monto especificado es mayor al saldo de la cuenta',
-              'ico'=>'error');
+    // if (floatval($_POST['monto']) > $cuenta_info['cuentas'][0]->saldo)
+    //   $response = array('passes'=>false,
+    //           'msg'=>'El monto especificado es mayor al saldo de la cuenta',
+    //           'ico'=>'error');
 
     if (!isset($response))
     {
       $ids = explode(',', $_POST['id_caja']);
       foreach ($ids as $key => $id)
       {
-        $masivo = $banco = (($key == (count($ids) - 1)) ? true : false);
+        // $masivo = $banco = (($key == (count($ids) - 1)) ? true : false);
+        $banco = false;
+        $masivo = true;
         $response = $this->abonos_model->addAbono($id, null, true, $banco, null, $masivo);
       }
     }

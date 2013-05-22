@@ -17,15 +17,15 @@
             </div>
           </div>
 
-          <div class="control-group">
+          <!-- <div class="control-group">
             <label class="control-label" for="dbanco">Banco</label>
             <div class="controls">
               <select name="dbanco" id="dbanco" class="span12" required>
                 <option value=""></option>
                 <?php
-                    foreach($bancos as $b) { ?>
-                      <option value="<?php echo $b->id_banco ?>"><?php echo $b->nombre ?></option>
-                <?php } ?>
+                    // foreach($bancos as $b) { ?>
+                      <option value="<?php // echo $b->id_banco ?>"><?php // echo $b->nombre ?></option>
+                <?php //} ?>
               </select>
             </div>
           </div>
@@ -37,7 +37,7 @@
                 <option value=""></option>
               </select>
             </div>
-          </div>
+          </div> -->
 
           <div class="control-group">
             <label class="control-label" for="dconcepto">Concepto</label>
@@ -57,7 +57,7 @@
             </div>
           </div>
 
-          <div class="control-group">
+          <!-- <div class="control-group">
             <label class="control-label" for="dtipo">Tipo</label>
             <div class="controls">
               <select name="dtipo" id="dtipo" class="span12" disabled>
@@ -65,9 +65,9 @@
                 <option value="r" selected>Retiro</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
-          <div class="control-group">
+          <!-- <div class="control-group">
             <label class="control-label" for="dmetodo">Metodo de Pago</label>
             <div class="controls">
               <select name="dmetodo" id="dmetodo" class="span12">
@@ -78,7 +78,7 @@
                 <option value="deposito">DEPOSITO</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
 
           <div class="well" id="well" style="display: none;">
@@ -116,4 +116,4 @@
     <button class="btn btn-success" id="add-abono">Abonar</button>
   </div>
 </div>
-<!-- /MODAL ABONOS -->
+<!-- /MODAL ABONOS

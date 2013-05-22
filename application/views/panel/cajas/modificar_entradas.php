@@ -161,7 +161,7 @@
                       <label class="control-label" for="des_organico">Es organico? </label>
                       <div class="controls">
                         <select name="des_organico" id="des_organico" class="span6">
-                          <option value="0" <?php echo set_select('des_organico', '0', false, (isset($info['info']->es_organico)?$info['info']->es_organico:'')); ?>>NO ORGANICO</option>
+                          <option value="0" <?php echo set_select('des_organico', '0', false, (isset($info['info']->es_organico)?$info['info']->es_organico:'')); ?>>CONVENCIONAL</option>
                           <option value="1" <?php echo set_select('des_organico', '1', false, (isset($info['info']->es_organico)?$info['info']->es_organico:'')); ?>>ORGANICO</option>
                         </select>
                       </div>

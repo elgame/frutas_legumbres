@@ -36,10 +36,16 @@ class abonos_model extends CI_Model{
     $saldo = $this->getSaldoCaja($caja_data); // Obtiene el saldo actual de la caja
 
     $monto = ($abono) ? floatval($abono['monto']) : floatval($_POST['monto']);
+
     if ($monto == 0)
+    {
+      if ($masivo) $msg = 'La cantidad especificada no fue suficiente para cubrir todos los abonos.';
+      else  $msg = 'El monto/cantidad a abonar no puede ser cero';
+
       return array('passes'=>false,
-            'msg'=>'El monto/cantidad a abonar no puede ser cero',
-            'ico'=>'error');
+        'msg'=>$msg,
+        'ico'=>'error');
+    }
 
     if ($saldo > 0)
     {
@@ -48,24 +54,24 @@ class abonos_model extends CI_Model{
       // En caso que se quiera realizar un abono mediante la cuenta de un banco
       // entra a esta condicion. Si el saldo de la cuenta no es suficiente para
       // cubrir el abono entonces retorna un error.
-      if ($banco)
-      {
-        $this->load->model('banco_cuentas_model');
-        $cuenta = ($bancoData) ? $bancoData['id_cuenta'] : $_POST['id_cuenta'];
+      // if ($banco)
+      // {
+      //   $this->load->model('banco_cuentas_model');
+      //   $cuenta = ($bancoData) ? $bancoData['id_cuenta'] : $_POST['id_cuenta'];
 
-        $cuenta_info = $this->banco_cuentas_model->getCuentas(0, $cuenta);
+      //   $cuenta_info = $this->banco_cuentas_model->getCuentas(0, $cuenta);
 
-        if ($monto > $cuenta_info['cuentas'][0]->saldo)
-          return array('passes'=>false,
-            'msg'=>'El monto especificado es mayor al saldo de la cuenta',
-            'ico'=>'error');
+      //   if ($monto > $cuenta_info['cuentas'][0]->saldo)
+      //     return array('passes'=>false,
+      //       'msg'=>'El monto especificado es mayor al saldo de la cuenta',
+      //       'ico'=>'error');
 
 
-        // if ($saldo > $cuenta_info['cuentas'][0]->saldo)
-        //   return array('passes'=>false,
-        //     'msg'=>'El saldo de la cuenta especificada es insuficiente',
-        //     'ico'=>'error');
-      }
+      //   // if ($saldo > $cuenta_info['cuentas'][0]->saldo)
+      //   //   return array('passes'=>false,
+      //   //     'msg'=>'El saldo de la cuenta especificada es insuficiente',
+      //   //     'ico'=>'error');
+      // }
 
       if ($abono === null)
       {
@@ -76,44 +82,48 @@ class abonos_model extends CI_Model{
                       'concepto'     => $this->input->post('concepto'),
                       'monto'        => $this->input->post('monto'));
 
-        if ($banco && $bancoData === null)
-        {
-          $bancoData = array('id_banco'   => $this->input->post('id_banco'),
-                            'id_cuenta'   => $this->input->post('id_cuenta'),
-                            'fecha'       => str_replace('T', ' ', $_POST['fecha']),
-                            'concepto'    => $this->input->post('concepto'),
-                            'monto'       => $this->input->post('monto'),
-                            'tipo'        => $this->input->post('tipo'),
-                            'metodo_pago' => $this->input->post('metodo'));
+        // if ($banco && $bancoData === null)
+        // {
+        //   $bancoData = array('id_banco'   => $this->input->post('id_banco'),
+        //                     'id_cuenta'   => $this->input->post('id_cuenta'),
+        //                     'fecha'       => str_replace('T', ' ', $_POST['fecha']),
+        //                     'concepto'    => $this->input->post('concepto'),
+        //                     'monto'       => $this->input->post('monto'),
+        //                     'tipo'        => $this->input->post('tipo'),
+        //                     'metodo_pago' => $this->input->post('metodo'));
 
-          if ($this->input->post('metodo') === 'cheque')
-          {
-            $bancoData['anombre_de'] = $this->input->post('anombrede');
-            $bancoData['moneda']     = $this->input->post('moneda');
-          }
-        }
+        //   if ($this->input->post('metodo') === 'cheque')
+        //   {
+        //     $bancoData['anombre_de'] = $this->input->post('anombrede');
+        //     $bancoData['moneda']     = $this->input->post('moneda');
+        //   }
+        // }
       }
 
-      // Si se va a liquidar el saldo de la caja o el monto es mayor al saldo de
-      // la caja
+      // Si se va a liquidar el saldo de la caja o el monto es mayor al saldo
       if ($liquidar || (floatval($abono['monto']) > $saldo))
       {
-        $abono['monto'] = $saldo;
-        if ($banco && !$masivo) $bancoData['monto'] = $abono['monto'];
+        if (floatval($abono['monto']) > $saldo)
+          $abono['monto'] = $saldo;
+
+        // if ($banco && !$masivo) $bancoData['monto'] = $abono['monto'];
       }
+
+      if ($masivo)
+        $_POST['monto'] = floatval($_POST['monto']) - floatval($abono['monto']);
 
       $this->db->insert('cajas_recibidas_abonos', $abono);
 
       $dataResponse['abonoInfo'] = $abono;
       $dataResponse['abonoInfo']['insert_id'] = $this->db->insert_id();
 
-      if ($banco)
-      {
-        $resp = $this->banco_cuentas_model->addOperacion($bancoData);
+      // if ($banco)
+      // {
+      //   $resp = $this->banco_cuentas_model->addOperacion($bancoData);
 
-        $dataResponse['bancoInfo'] = $bancoData;
-        $dataResponse['bancoInfo']['id_mov'] = $resp[3];
-      }
+      //   $dataResponse['bancoInfo'] = $bancoData;
+      //   $dataResponse['bancoInfo']['id_mov'] = $resp[3];
+      // }
 
       return array('passes' => true,
                    'msg'    => 'Abono realizado satisfactoriamente!',

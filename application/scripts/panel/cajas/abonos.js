@@ -1,11 +1,11 @@
 $(function(){
 
   // Evento Change al select del tipo de pago
-  $('#dmetodo').on('change', function(event) {
-    var selected = $('#dmetodo option:selected').val();
-    if (selected === 'cheque') $('#well').css({display: 'block'})
-    else $('#well').css({display: 'none'})
-  });
+  // $('#dmetodo').on('change', function(event) {
+  //   var selected = $('#dmetodo option:selected').val();
+  //   if (selected === 'cheque') $('#well').css({display: 'block'})
+  //   else $('#well').css({display: 'none'})
+  // });
 
   $('#add-abono').on('click', function(event) {
       validator.init('validator');
@@ -37,7 +37,7 @@ $(function(){
 
   if ($('#id_abono_masivo').length > 0) {
     var tbody = $('#table-tbody');
-    $('#dmonto').prop('disabled','disabled');
+    // $('#dmonto').prop('disabled','disabled');
     tbody.find('td#masivo').on('click', function(event) {
       var td = $(this),
           status = td.attr('data-status'),
@@ -84,17 +84,17 @@ var guardaAbono = function () {
   data.id_productor = $('#id_productor').val();
 
   data.fecha     = $('#dfecha').val();
-  data.id_banco  = $('#dbanco option:selected').val();
-  data.id_cuenta = $('#dcuenta option:selected').val();
+  // data.id_banco  = $('#dbanco option:selected').val();
+  // data.id_cuenta = $('#dcuenta option:selected').val();
   data.concepto  = $('#dconcepto').val();
   data.monto     = $('#dmonto').val();
-  data.tipo      = $('#dtipo').val();
-  data.metodo    = $('#dmetodo option:selected').val();
+  // data.tipo      = $('#dtipo').val();
+  // data.metodo    = $('#dmetodo option:selected').val();
 
-  if ($('#dmetodo option:selected').val() === 'cheque') {
-    data.anombrede = $('#danombrede').val();
-    data.moneda    = $('#dmoneda option:selected').val();
-  }
+  // if ($('#dmetodo option:selected').val() === 'cheque') {
+  //   data.anombrede = $('#danombrede').val();
+  //   data.moneda    = $('#dmoneda option:selected').val();
+  // }
 
   $.post(base_url + urlTipoAbono(), data,
     function(response) {
@@ -102,9 +102,10 @@ var guardaAbono = function () {
       noty({"text": response.msg, "layout":"topRight", "type": response.ico});
       if (response.passes) {
 
-        if (data.metodo === 'cheque') {
-          window.open(base_url + 'panel/banco/print_cheque/?id=' + response.info.bancoInfo.id_mov);
-        }
+        // if (data.metodo === 'cheque') {
+        //   window.open(base_url + 'panel/banco/print_cheque/?id=' + response.info.bancoInfo.id_mov);
+        // }
+
         setTimeout("location.reload(true);",1500);
       }
     },'json');
