@@ -104,6 +104,16 @@
 			                  </select>
 			                </div>
 			              </div>
+			              
+			              <div class="clearfix"></div>
+
+			              <div class="control-group span2 nomarg only_cheques hide" style="padding-top: 10px;">
+											<label class="control-label" for="dno_cheque">No de cheque:</label>
+											<div class="controls">
+												<input type="text" name="dno_cheque" id="dno_cheque" class="span11 vpos-int"
+													value="<?php echo set_value('dno_cheque'); ?>" maxlength="8">
+											</div>
+										</div>
 
 			              <div class="control-group span4 nomarg only_cheques hide" style="padding-top: 10px;">
 											<label class="control-label" for="dchk_anombre">A nombre de:</label>
@@ -198,7 +208,7 @@
 ?>
 <script type="text/javascript" charset="UTF-8">
 	<?php if($frm_errors['ico'] === 'success' && isset($_GET['met_pago'])) {
-		if($_GET['met_pago'] == 'cheque')
+		if($_GET['met_pago'] == 'cheque' && $_GET['to'] == 'r')
     	echo 'window.open("'.base_url('panel/banco/print_cheque/?id='.$_GET['id_mov']).'");';
   }?>
 

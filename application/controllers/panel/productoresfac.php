@@ -349,13 +349,13 @@ class productoresFac extends MY_Controller {
       if($resta < $str){
         $this->form_validation->set_message('val_total', 'El Total de la factura excede el limite permitido para el productor.');
         return false;
-      }else{
+      }/*else{
         $cuentas = $this->banco_cuentas_model->getCuentas(0, $this->input->post('dcuenta'));
         if($cuentas['cuentas'][0]->saldo < $this->input->post('total_totfac')){
           $this->form_validation->set_message('val_total', 'El Saldo de la cuenta es insuficiente para pagar la factura.');
           return false;
         }
-      }
+      }*/
     }
     return true;
   }

@@ -93,6 +93,7 @@ class banco_cuentas_model extends banco_model{
 				'metodo_pago'      => $this->input->post('dmetodo_pago'),
 			);
 			if ($this->input->post('dtipo_operacion') == 'r' && $this->input->post('dmetodo_pago') == 'cheque') {
+				$data['no_cheque']    = $this->input->post('dno_cheque');
 				$data['anombre_de']   = $this->input->post('dchk_anombre');
 				$data['moneda']       = $this->input->post('dmoneda');
 				$data['abono_cuenta'] = ($this->input->post('dabono_cuenta')==='1'? '1': '0');
@@ -118,7 +119,7 @@ class banco_cuentas_model extends banco_model{
 			$this->db->insert_batch('bancos_movimientos_conceptos', $data_cons);
 
 		$msg = 3;
-		return array(true, '', $msg, $id_mov, $this->input->post('dmetodo_pago'));
+		return array(true, '', $msg, $id_mov, $this->input->post('dmetodo_pago'), $this->input->post('dtipo_operacion'));
 	}
 
 	public function eliminarOperacion($id_movimiento){
@@ -153,6 +154,53 @@ class banco_cuentas_model extends banco_model{
 		return $response;
 	}
 
+
+	public function getListaCheques()
+  {
+    $sql = '';
+    //paginacion
+    $params = array(
+        'result_items_per_page' => '20',
+        'result_page' => (isset($_GET['pag'])? $_GET['pag']: 0)
+    );
+    if($params['result_page'] % $params['result_items_per_page'] == 0)
+      $params['result_page'] = ($params['result_page']/$params['result_items_per_page']);
+
+    //Filtros para buscar
+    if($this->input->get('fnombre') != '')
+      $sql = " AND ( lower(b.nombre) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+      	bm.no_cheque LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+      	lower(bm.anombre_de) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+      	lower(bc.alias) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' )";
+
+    $query = BDUtil::pagination("
+        SELECT bm.id_movimiento, bm.fecha, bm.monto, bm.no_cheque, bm.anombre_de, b.nombre AS banco, bc.alias, bm.status
+        FROM bancos_movimientos AS bm
+	        INNER JOIN bancos_cuentas AS bc ON bc.id_cuenta = bm.id_cuenta
+	        INNER JOIN bancos_bancos AS b ON b.id_banco = bm.id_banco
+        WHERE metodo_pago = 'cheque' AND tipo = 'r' ".$sql."
+        ORDER BY bm.fecha DESC
+        ", $params, true);
+    $res = $this->db->query($query['query']);
+
+    $response = array(
+      'cheques'          => array(),
+      'total_rows'     => $query['total_rows'],
+      'items_per_page' => $params['result_items_per_page'],
+      'result_page'    => $params['result_page']
+    );
+    $response['cheques'] = $res->result();
+    return $response;
+  }
+  /**
+   * Cansela o activa un cheque
+   * @param  [type]  $id_mov [description]
+   * @param  integer $status [description]
+   * @return [type]          [description]
+   */
+  public function cancelarCheque($id_mov, $status=0){
+  	$this->db->update('bancos_movimientos', array('status' => $status), 'id_movimiento = '.$id_mov);
+  }
 
 
 	/**
@@ -237,10 +285,10 @@ class banco_cuentas_model extends banco_model{
 				FROM bancos_cuentas AS bc 
 					LEFT JOIN (
 						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
-						WHERE tipo = 'd' AND Date(fecha) <= '".$fecha."' GROUP BY id_cuenta ) AS d ON d.id_cuenta = bc.id_cuenta 
+						WHERE status = 1 AND tipo = 'd' AND Date(fecha) <= '".$fecha."' GROUP BY id_cuenta ) AS d ON d.id_cuenta = bc.id_cuenta 
 					LEFT JOIN (
 						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
-						WHERE tipo = 'r' AND Date(fecha) <= '".$fecha."' GROUP BY id_cuenta ) AS r ON r.id_cuenta = bc.id_cuenta
+						WHERE status = 1 AND tipo = 'r' AND Date(fecha) <= '".$fecha."' GROUP BY id_cuenta ) AS r ON r.id_cuenta = bc.id_cuenta
 				WHERE bc.status = 'ac' AND bc.id_banco = ".$value->id_banco." 
 				GROUP BY id_cuenta")->result();	
 			foreach ($bancos[$key]->cuentas as $key1 => $cun) {
@@ -275,10 +323,10 @@ class banco_cuentas_model extends banco_model{
 				FROM bancos_cuentas AS bc 
 					LEFT JOIN (
 						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
-						WHERE tipo = 'd' AND Date(fecha) < '".$fecha1."' GROUP BY id_cuenta ) AS d ON d.id_cuenta = bc.id_cuenta 
+						WHERE status = 1 AND tipo = 'd' AND Date(fecha) < '".$fecha1."' GROUP BY id_cuenta ) AS d ON d.id_cuenta = bc.id_cuenta 
 					LEFT JOIN (
 						SELECT id_cuenta, Sum(monto) AS monto FROM bancos_movimientos 
-						WHERE tipo = 'r' AND Date(fecha) < '".$fecha1."' GROUP BY id_cuenta ) AS r ON r.id_cuenta = bc.id_cuenta
+						WHERE status = 1 AND tipo = 'r' AND Date(fecha) < '".$fecha1."' GROUP BY id_cuenta ) AS r ON r.id_cuenta = bc.id_cuenta
 				WHERE bc.id_cuenta = ".$id_cuenta." 
 				GROUP BY id_cuenta")->row();
 		$response['movimientos'][] = array(
@@ -295,7 +343,7 @@ class banco_cuentas_model extends banco_model{
 		$total_depositos = $total_retiros = $depositos = $retiros = 0;
 		$movimientos = $this->db->query("SELECT id_movimiento, Date(fecha) AS fecha, concepto, monto, tipo
 			FROM bancos_movimientos 
-			WHERE id_cuenta = ".$id_cuenta." AND Date(fecha) BETWEEN '".$fecha1."' AND '".$fecha2."' 
+			WHERE status = 1 AND id_cuenta = ".$id_cuenta." AND Date(fecha) BETWEEN '".$fecha1."' AND '".$fecha2."' 
 			ORDER BY id_movimiento ASC, fecha ASC")->result();
 		foreach ($movimientos as $key => $value) {
 			$depositos = $retiros = '';

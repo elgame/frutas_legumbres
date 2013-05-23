@@ -117,10 +117,12 @@ var tbl_conceptos = (function($){
 		var dmetodo_pago = $("#dmetodo_pago"), dtipo_operacion = $("#dtipo_operacion");
 		if (dtipo_operacion.val() == 'r' && dmetodo_pago.val() == 'cheque') {
 			$(".only_cheques").removeClass('hide');
-			$("#dchk_anombre").attr('required', 'true').focus();
+			$("#dchk_anombre").attr('required', 'true');
+			$("#dno_cheque").attr('required', 'true').focus();
 		}else{
 			$(".only_cheques").addClass('hide');
 			$("#dchk_anombre").removeAttr('required');
+			$("#dno_cheque").removeAttr('required');
 		}
 	}
 

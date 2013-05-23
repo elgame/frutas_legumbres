@@ -1,6 +1,10 @@
 
 
 ******** Detalles *******
+ ☐ (gama) En agregar operacion al crear cheque poner no de cheque (valor unico por cuenta), agregar un listado donde se vean los chequesy poderlos cancelar, si se cansela que se quite el abono (agregar un estado a la tabla de abonos)
+ ☐ (furby) falta q lo expliquen bien
+
+
  ✔ (gama) Adaptar el cheque banamex @done (13-05-22 10:35)
  ✔ (gama) En banco quitar la suma que tiene el banco de las diferentes cuentas @done (13-05-22 08:31)
  ✔ (gama) Generar sql para cambiar los nombres de los siguientes privilegios @done (13-05-22 08:53)
@@ -27,6 +31,10 @@
 
 
 sql:
+  ALTER TABLE  `bancos_movimientos` ADD  `status` BOOLEAN NOT NULL DEFAULT TRUE COMMENT  '1:activo, 0:cancelado';
+  ALTER TABLE  `bancos_movimientos` ADD  `no_cheque` INT UNSIGNED NULL DEFAULT NULL AFTER  `metodo_pago`;
+
+  *aplicados
   UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar productor' WHERE  `privilegios`.`id` =11;
   UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar variedad' WHERE  `privilegios`.`id` =16;
   UPDATE  `frutas_legumbres`.`privilegios` SET  `nombre` =  'Agregar factura' WHERE  `privilegios`.`id` =24;

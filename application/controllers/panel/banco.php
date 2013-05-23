@@ -38,7 +38,7 @@ class banco extends MY_Controller {
 
 		$params['info_empleado'] = $this->info_empleado['info']; //info empleado
 		$params['seo'] = array(
-			'titulo' => 'Estados de ceuntas'
+			'titulo' => 'Estados de cuentas'
 		);
 
 		$_GET['ffecha1'] = isset($_GET['ffecha1'])? $_GET['ffecha1']: date("Y-m").'-01';
@@ -103,6 +103,49 @@ class banco extends MY_Controller {
 			redirect(base_url('panel/banco/?'.String::getVarsLink(array('id', 'msg')) ));
 	}
 
+	public function cheques(){
+		$this->carabiner->js(array(
+      array('general/msgbox.js'),
+    ));
+
+    $this->load->model('banco_cuentas_model');
+    $this->load->library('pagination');
+
+    $params['info_empleado'] = $this->info_empleado['info']; //info empleado
+    $params['seo'] = array(
+      'titulo' => 'Cheques'
+    );
+
+    $params['cheques'] = $this->banco_cuentas_model->getListaCheques();
+
+    if(isset($_GET['msg']{0}))
+      $params['frm_errors'] = $this->showMsgs($_GET['msg']);
+
+    $this->load->view('panel/header', $params);
+    $this->load->view('panel/general/menu', $params);
+    $this->load->view('panel/banco/listado_cheques', $params);
+    $this->load->view('panel/footer');
+	}
+
+	public function cancelar_cheque(){
+		if(isset($_GET['id']{0})){
+      $this->load->model('banco_cuentas_model');
+      $this->banco_cuentas_model->cancelarCheque($_GET['id']);
+
+      redirect(base_url('panel/banco/cheques?msg=9&'.String::getVarsLink(array('id', 'msg')) ));
+    }else
+      redirect(base_url('panel/banco/cheques?msg=1&'.String::getVarsLink(array('id', 'msg')) ));
+	}
+	public function activar_cheque(){
+		if(isset($_GET['id']{0})){
+      $this->load->model('banco_cuentas_model');
+      $this->banco_cuentas_model->cancelarCheque($_GET['id'], 1);
+
+      redirect(base_url('panel/banco/cheques?msg=10&'.String::getVarsLink(array('id', 'msg')) ));
+    }else
+      redirect(base_url('panel/banco/cheques?msg=1&'.String::getVarsLink(array('id', 'msg')) ));
+	}
+
 	
 
 	/**
@@ -139,7 +182,7 @@ class banco extends MY_Controller {
 				if($_GET['redirec'] == '1') //redirecciona a facturacion de productores
 					redirect(base_url('panel/productoresfac/?'.String::getVarsLink(array('msg', 'id', 'tipo', 'redirec')).'&msg=10&id_mov='.$respons[3].'&met_pago='.$respons[4]));
 				else
-					redirect(base_url('panel/banco/agregar_operacion/?'.String::getVarsLink(array('msg', 'id_mov')).'&msg='.$respons[2].'&id_mov='.$respons[3].'&met_pago='.$respons[4]));
+					redirect( base_url('panel/banco/agregar_operacion/?'.String::getVarsLink(array('msg', 'id_mov')).'&msg='.$respons[2].'&id_mov='.$respons[3].'&met_pago='.$respons[4]."&to=".$respons[5]) );
 			}else
         $params['frm_errors'] = $this->showMsgs(2, $respons[1]);
 		}
@@ -385,6 +428,9 @@ class banco extends MY_Controller {
 						'label'	=> 'Tipo operacion',
 						'rules'	=> 'required|max_length[1]'),
 
+				array('field'	=> 'dno_cheque',
+						'label'	=> 'No de cheque',
+						'rules'	=> 'numeric|callback_val_no_cheque'),
 				array('field'	=> 'dchk_anombre',
 						'label'	=> 'A nombre de',
 						'rules'	=> 'max_length[100]'),
@@ -404,7 +450,8 @@ class banco extends MY_Controller {
 						'rules'	=> 'numeric'),
 			);
 		if ($this->input->post('dtipo_operacion') == 'r' && $this->input->post('dmetodo_pago') == 'cheque') {
-			$rules[7]['rules'] = 'required|max_length[100]';
+			$rules[7]['rules'] = 'required|numeric|callback_val_no_cheque';
+			$rules[8]['rules'] = 'required|max_length[100]';
 		}
 		$this->form_validation->set_rules($rules);
 	}
@@ -420,6 +467,20 @@ class banco extends MY_Controller {
         return false;
       }
     }
+    return true;
+  }
+
+  public function val_no_cheque($str){
+  	if ($this->input->post('dtipo_operacion') == 'r' && $this->input->post('dmetodo_pago') == 'cheque') {
+
+			$result = $this->db->query("SELECT Count(*) AS num FROM bancos_movimientos
+			                           WHERE id_cuenta = ".$this->input->post('dcuenta')." 
+			                           	AND no_cheque = ".$this->input->post('dno_cheque') )->row();
+			if($result->num > 0){
+				$this->form_validation->set_message('val_no_cheque', 'El numero del cheque ya esta asiganado.');
+      	return false;
+			}
+		}
     return true;
   }
 
@@ -482,6 +543,15 @@ class banco extends MY_Controller {
 
 			case 8:
 				$txt = 'La operación se elimino correctamente.';
+				$icono = 'success';
+			break;
+
+			case 9:
+				$txt = 'El cheque se cancelo correctamente.';
+				$icono = 'success';
+			break;
+			case 10:
+				$txt = 'El cheque se activo correctamente.';
 				$icono = 'success';
 			break;
 		}
