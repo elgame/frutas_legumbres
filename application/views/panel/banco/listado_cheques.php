@@ -27,14 +27,7 @@
               <div class="form-actions form-filters">
                 <label for="fnombre">Buscar</label>
                 <input type="text" name="fnombre" id="fnombre" value="<?php echo set_value_get('fnombre'); ?>"
-                  class="input-xlarge" placeholder="Gamaliel Mendoza" autofocus>
-
-                <!-- <label for="fstatus">Estado</label>
-                <select name="fstatus">
-                  <option value="ac" <?php echo set_select('fstatus', 'ac', false, $this->input->get('fstatus')); ?>>ACTIVOS</option>
-                  <option value="e" <?php echo set_select('fstatus', 'e', false, $this->input->get('fstatus')); ?>>ELIMINADOS</option>
-                  <option value="todos" <?php echo set_select('fstatus', 'todos', false, $this->input->get('fstatus')); ?>>TODOS</option>
-                </select> -->
+                  class="input-xlarge" placeholder="Banamex, Carlos Perez" autofocus>
 
                 <button type="submit" class="btn">Buscar</button>
               </div>

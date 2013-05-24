@@ -72,7 +72,7 @@ class banco extends MY_Controller {
 
 			$params['info_empleado'] = $this->info_empleado['info']; //info empleado
 			$params['seo'] = array(
-				'titulo' => 'Estados de ceuntas'
+				'titulo' => 'Estados de cuentas'
 			);
 
 			$_GET['ffecha1'] = isset($_GET['ffecha1'])? $_GET['ffecha1']: date("Y-m").'-01';
