@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-05-2013 a las 02:44:22
+-- Tiempo de generación: 28-05-2013 a las 03:02:58
 -- Versión del servidor: 5.5.27
 -- Versión de PHP: 5.4.7
 
@@ -84,43 +84,52 @@ CREATE TABLE IF NOT EXISTS `bancos_movimientos` (
   `monto` double NOT NULL,
   `tipo` enum('d','r') NOT NULL DEFAULT 'd' COMMENT 'd:deposito, r:retiro',
   `metodo_pago` varchar(20) NOT NULL,
+  `no_cheque` int(10) unsigned DEFAULT NULL,
   `anombre_de` varchar(100) DEFAULT NULL,
   `moneda` varchar(6) DEFAULT NULL,
   `abono_cuenta` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:no poner legenda; 1:pner legenda',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:activo, 0:cancelado',
   PRIMARY KEY (`id_movimiento`),
   KEY `id_banco` (`id_banco`),
   KEY `id_cuenta` (`id_cuenta`),
-  KEY `id_fac_productor` (`id_fac_productor`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=42 ;
+  KEY `id_fac_productor` (`id_fac_productor`),
+  KEY `anombre_de` (`anombre_de`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=50 ;
 
 --
 -- Volcado de datos para la tabla `bancos_movimientos`
 --
 
-INSERT INTO `bancos_movimientos` (`id_movimiento`, `id_banco`, `id_cuenta`, `id_fac_productor`, `fecha`, `concepto`, `monto`, `tipo`, `metodo_pago`, `anombre_de`, `moneda`, `abono_cuenta`) VALUES
-(4, 1, 1, NULL, '2013-05-06 20:42:00', 'dsadd', 1464, 'r', 'efectivo', NULL, NULL, 0),
-(5, 1, 1, NULL, '2013-05-07 15:36:00', 'metemos dinero', 4000, 'd', 'efectivo', NULL, NULL, 0),
-(6, 1, 1, NULL, '2013-05-07 15:36:00', 'metemos dinero', 4000, 'd', 'efectivo', NULL, NULL, 0),
-(7, 1, 1, NULL, '2013-05-07 15:46:00', 'Pago de la factura 5', 44, 'r', 'tarjeta', NULL, NULL, 0),
-(8, 1, 1, NULL, '2013-05-08 00:38:00', 'Pago de la factura 7', 46, 'r', 'cheque', NULL, NULL, 0),
-(10, 1, 1, NULL, '2013-05-08 00:45:00', 'dasd', 231, 'r', 'efectivo', NULL, NULL, 0),
-(11, 1, 1, 12, '2013-05-08 01:00:00', 'Pago de la factura 8', 396, 'r', 'efectivo', NULL, NULL, 0),
-(12, 1, 1, NULL, '2013-05-08 02:03:00', 'das', 500, 'r', 'cheque', 'asdas dasd asd', 'M.N.', 1),
-(13, 1, 1, NULL, '2013-05-08 22:51:00', 'dasdasd', 500, 'r', 'cheque', 'Gamaliel Mendoza Solis', 'USD', 0),
-(14, 1, 1, 13, '2013-05-08 22:57:00', 'Pago de la factura 9', 1056, 'r', 'cheque', 'Abrahan Jimenez Magaña', 'M.N.', 0),
-(18, 1, 1, NULL, '2013-05-11 03:08:00', 'das', 32, 'r', 'cheque', 'Abrahan Jimenez Magaña', 'M.N.', 1),
-(19, 1, 1, NULL, '2013-05-11 03:10:00', 'dasd', 43, 'r', 'cheque', 'Abrahan Jimenez Magaña', 'USD', 1),
-(20, 2, 3, NULL, '2013-05-11 03:10:00', 'fsdfsdf', 3432, 'd', 'efectivo', NULL, NULL, 0),
-(21, 2, 3, NULL, '2013-05-11 15:50:00', 'dasdas', 2322, 'd', 'efectivo', NULL, NULL, 0),
-(22, 1, 2, NULL, '2013-05-11 15:51:00', 'asdasd', 34221, 'd', 'transferencia', NULL, NULL, 0),
-(23, 1, 2, 14, '2013-05-11 15:52:00', 'Pago de la factura 10', 14042, 'r', 'efectivo', NULL, NULL, 0),
-(24, 2, 3, NULL, '2013-05-15 13:38:00', 'dasdas', 21221, 'd', 'efectivo', NULL, NULL, 0),
-(25, 2, 3, NULL, '2013-05-15 13:38:00', 'dddd', 2212, 'd', 'transferencia', NULL, NULL, 0),
-(26, 2, 3, NULL, '2013-05-15 13:38:00', 'easdasd', 22121, 'd', 'efectivo', NULL, NULL, 0),
-(30, 2, 3, NULL, '2013-05-15 14:11:00', 'das', 10000, 'd', 'efectivo', NULL, NULL, 0),
-(38, 2, 3, NULL, '2013-05-15 17:30:00', 'dd', 3000, 'r', 'efectivo', NULL, NULL, 0),
-(40, 2, 3, NULL, '2013-05-15 17:55:00', 'dasd', 46504, 'r', 'cheque', 'dasdasdasd', 'USD', 0),
-(41, 2, 3, 15, '2013-05-15 18:12:00', 'Pago de la factura 1-1', 2370, 'r', 'cheque', 'AngularJSui', 'M.N.', 1);
+INSERT INTO `bancos_movimientos` (`id_movimiento`, `id_banco`, `id_cuenta`, `id_fac_productor`, `fecha`, `concepto`, `monto`, `tipo`, `metodo_pago`, `no_cheque`, `anombre_de`, `moneda`, `abono_cuenta`, `status`) VALUES
+(4, 1, 1, NULL, '2013-05-06 20:42:00', 'dsadd', 1464, 'r', 'efectivo', NULL, NULL, NULL, 0, 1),
+(5, 1, 1, NULL, '2013-05-07 15:36:00', 'metemos dinero', 4000, 'd', 'efectivo', NULL, NULL, NULL, 0, 1),
+(6, 1, 1, NULL, '2013-05-07 15:36:00', 'metemos dinero', 4000, 'd', 'efectivo', NULL, NULL, NULL, 0, 1),
+(7, 1, 1, NULL, '2013-05-07 15:46:00', 'Pago de la factura 5', 44, 'r', 'tarjeta', NULL, NULL, NULL, 0, 1),
+(8, 1, 1, NULL, '2013-05-08 00:38:00', 'Pago de la factura 7', 46, 'r', 'cheque', NULL, NULL, NULL, 0, 1),
+(10, 1, 1, NULL, '2013-05-08 00:45:00', 'dasd', 231, 'r', 'efectivo', NULL, NULL, NULL, 0, 1),
+(11, 1, 1, 12, '2013-05-08 01:00:00', 'Pago de la factura 8', 396, 'r', 'efectivo', NULL, NULL, NULL, 0, 1),
+(12, 1, 1, NULL, '2013-05-08 02:03:00', 'das', 500, 'r', 'cheque', NULL, 'asdas dasd asd', 'M.N.', 1, 1),
+(13, 1, 1, NULL, '2013-05-08 22:51:00', 'dasdasd', 500, 'r', 'cheque', NULL, 'Gamaliel Mendoza Solis', 'USD', 0, 1),
+(14, 1, 1, 13, '2013-05-08 22:57:00', 'Pago de la factura 9', 1056, 'r', 'cheque', NULL, 'Abrahan Jimenez Magaña', 'M.N.', 0, 1),
+(18, 1, 1, NULL, '2013-05-11 03:08:00', 'das', 32, 'r', 'cheque', NULL, 'Abrahan Jimenez Magaña', 'M.N.', 1, 1),
+(19, 1, 1, NULL, '2013-05-11 03:10:00', 'dasd', 43, 'r', 'cheque', NULL, 'Abrahan Jimenez Magaña', 'USD', 1, 1),
+(20, 2, 3, NULL, '2013-05-11 03:10:00', 'fsdfsdf', 3432, 'd', 'efectivo', NULL, NULL, NULL, 0, 1),
+(21, 2, 3, NULL, '2013-05-11 15:50:00', 'dasdas', 2322, 'd', 'efectivo', NULL, NULL, NULL, 0, 1),
+(22, 1, 2, NULL, '2013-05-11 15:51:00', 'asdasd', 34221, 'd', 'transferencia', NULL, NULL, NULL, 0, 1),
+(23, 1, 2, 14, '2013-05-11 15:52:00', 'Pago de la factura 10', 14042, 'r', 'efectivo', NULL, NULL, NULL, 0, 1),
+(24, 2, 3, NULL, '2013-05-15 13:38:00', 'dasdas', 21221, 'd', 'efectivo', NULL, NULL, NULL, 0, 1),
+(25, 2, 3, NULL, '2013-05-15 13:38:00', 'dddd', 2212, 'd', 'transferencia', NULL, NULL, NULL, 0, 1),
+(26, 2, 3, NULL, '2013-05-15 13:38:00', 'easdasd', 22121, 'd', 'efectivo', NULL, NULL, NULL, 0, 1),
+(30, 2, 3, NULL, '2013-05-15 14:11:00', 'das', 10000, 'd', 'efectivo', NULL, NULL, NULL, 0, 1),
+(38, 2, 3, NULL, '2013-05-15 17:30:00', 'dd', 3000, 'r', 'efectivo', NULL, NULL, NULL, 0, 1),
+(40, 2, 3, NULL, '2013-05-15 17:55:00', 'dasd', 46504, 'r', 'cheque', NULL, 'dasdasdasd', 'USD', 0, 1),
+(41, 2, 3, 15, '2013-05-15 18:12:00', 'Pago de la factura 1-1', 2370, 'r', 'cheque', NULL, 'AngularJSui', 'M.N.', 1, 1),
+(42, 2, 3, NULL, '2013-05-22 15:30:00', 'asd', 22, 'r', 'cheque', NULL, 'Abrahan Jimenez Magaña', 'M.N.', 1, 1),
+(43, 2, 3, NULL, '2013-05-22 22:57:00', 'dasd', 2121, 'd', 'cheque', NULL, NULL, NULL, 0, 1),
+(46, 2, 3, NULL, '2013-05-22 23:08:00', 'dasdasdasd', 212, 'r', 'cheque', 1, 'Abrahan Jimenez Magaña', 'M.N.', 1, 1),
+(47, 2, 3, NULL, '2013-05-22 23:08:00', 'dasdas', 421, 'r', 'cheque', 2, 'AngularJSui', 'M.N.', 0, 1),
+(48, 1, 1, NULL, '2013-05-23 00:25:20', 'dasdas', 213, 'r', 'cheque', 1, 'asdas dasd asd', 'USD', 1, 0),
+(49, 2, 3, NULL, '2013-05-27 23:26:00', 'dasdasd', 50, 'r', 'cheque', 12, 'Pepito pito', 'M.N.', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -215,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `cajas_inventario` (
   KEY `id_productor` (`id_productor`),
   KEY `id_variedad` (`id_variedad`),
   KEY `id_caja` (`id_caja`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
 -- Volcado de datos para la tabla `cajas_inventario`
@@ -230,7 +239,29 @@ INSERT INTO `cajas_inventario` (`id_inventario`, `id_productor`, `id_variedad`, 
 (7, 2, 2, NULL, '2013-05-08 05:00:00', 'ddasdasd', 50, 'dasdasd', 's'),
 (8, 2, 1, 3, '2013-05-07 05:00:00', 'Registro de entradas cajas', 75, '', 'en'),
 (9, 2, 2, 4, '2013-05-08 05:00:00', 'Registro de entradas cajas', 50, '', 'en'),
-(10, 2, 2, 5, '2013-05-15 05:00:00', 'Registro de entradas cajas', 212, '', 'en');
+(10, 2, 2, 5, '2013-05-15 05:00:00', 'Registro de entradas cajas', 212, '', 'en'),
+(11, 3, 2, 6, '2013-05-22 05:00:00', 'Registro de entradas cajas', 120, '', 'en'),
+(12, 3, 1, 7, '2013-05-22 05:00:00', 'Registro de entradas cajas', 100, '', 'en');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cajas_inventario_carton`
+--
+
+CREATE TABLE IF NOT EXISTS `cajas_inventario_carton` (
+  `id_inventario_carton` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_empacador` bigint(20) unsigned DEFAULT NULL,
+  `id_marca` int(10) unsigned NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `concepto` varchar(254) NOT NULL,
+  `cantidad` double NOT NULL,
+  `es_desecho` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:no es desecho, 1:es desecho',
+  `tipo` enum('s','en') NOT NULL DEFAULT 's' COMMENT 's:salida, en:entrada de cajas',
+  PRIMARY KEY (`id_inventario_carton`),
+  KEY `id_empacador` (`id_empacador`),
+  KEY `id_marca` (`id_marca`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -262,7 +293,7 @@ CREATE TABLE IF NOT EXISTS `cajas_recibidas` (
   KEY `id_dueno` (`id_dueno`),
   KEY `id_productor` (`id_productor`),
   KEY `id_variedad` (`id_variedad`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 --
 -- Volcado de datos para la tabla `cajas_recibidas`
@@ -272,7 +303,9 @@ INSERT INTO `cajas_recibidas` (`id_caja`, `id_dueno`, `id_productor`, `id_varied
 (1, 3, 3, 1, '2013-05-05 05:00:00', '', 'LTW-22-123', 1, 100, 0, '', 0, 130, 0, 'Mercedes', 'Gama', 'Calando entradas de cajas', 0, 100),
 (3, 3, 2, 1, '2013-05-07 05:00:00', '2312', '21233', 4, 75, 5, '', 0, 120, 1, 'asdasdasad', 'd asd asdasdasd', 'a das da sda sdasdas', 0, 70),
 (4, 2, 2, 2, '2013-05-08 05:00:00', '3442', '4323', 5, 50, 2, '1', 9000, 4.5, 0, 'fsf sdf sdf', 'fsdf sdf sdf sdf', 'sdf sdf sdfsdf sdfsd f', 360, 8640),
-(5, 2, 2, 2, '2013-05-15 05:00:00', 'ss', 'ds', 2, 212, 10, '2', 2000, 4, 1, 'das', 'Dasdkajs dkjals dkjasdkl', '', 94, 1906);
+(5, 2, 2, 2, '2013-05-15 05:00:00', 'ss', 'ds', 2, 212, 10, '2', 2000, 4, 1, 'das', 'Dasdkajs dkjals dkjasdkl', '', 94, 1906),
+(6, 3, 3, 2, '2013-05-22 05:00:00', '3442', 'LTW-22-123', 1, 120, 5, '20', 20920, 4, 0, 'das', 'a', '', 872, 20048),
+(7, 2, 3, 1, '2013-05-22 05:00:00', 'dd', 'as', 2, 100, 3, '', 0, 150, 1, 'ssa', 'as', 'dasd', 0, 97);
 
 --
 -- Disparadores `cajas_recibidas`
@@ -325,7 +358,7 @@ CREATE TABLE IF NOT EXISTS `cajas_recibidas_abonos` (
   PRIMARY KEY (`id_abono`),
   KEY `id_productor` (`id_productor`),
   KEY `id_caja` (`id_caja`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=24 ;
 
 --
 -- Volcado de datos para la tabla `cajas_recibidas_abonos`
@@ -334,7 +367,10 @@ CREATE TABLE IF NOT EXISTS `cajas_recibidas_abonos` (
 INSERT INTO `cajas_recibidas_abonos` (`id_abono`, `id_caja`, `id_productor`, `fecha`, `concepto`, `monto`) VALUES
 (11, 3, 2, '2013-05-15 17:30:00', 'dd', 3000),
 (15, 4, 2, '2013-05-15 17:55:00', 'dasd', 38880),
-(16, 5, 2, '2013-05-15 17:55:00', 'dasd', 7624);
+(16, 5, 2, '2013-05-15 17:55:00', 'dasd', 7624),
+(17, 1, 3, '2013-05-22 20:25:00', 'dasdasd', 2000),
+(22, 1, 3, '2013-05-22 20:49:00', '', 11000),
+(23, 7, 3, '2013-05-22 20:49:00', '', 14550);
 
 -- --------------------------------------------------------
 
@@ -383,7 +419,7 @@ CREATE TABLE IF NOT EXISTS `ci_sessions` (
 --
 
 INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-('9ee49b283ec501a9fb35c3dc785769cc', '::1', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31 AlexaToolba', 1369182631, 'a:6:{s:9:"user_data";s:0:"";s:2:"id";s:1:"1";s:7:"usuario";s:5:"admin";s:5:"email";s:17:"dasdasd@gmail.com";s:4:"tipo";s:5:"admin";s:7:"idunico";s:24:"l519c0cb297e488.96705867";}');
+('be0422113a501a6af29943f117040a82', '::1', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36 AlexaToolba', 1369698629, 'a:6:{s:9:"user_data";s:0:"";s:2:"id";s:1:"1";s:7:"usuario";s:5:"admin";s:5:"email";s:17:"dasdasd@gmail.com";s:4:"tipo";s:5:"admin";s:7:"idunico";s:24:"l51a3e90818c669.26572159";}');
 
 -- --------------------------------------------------------
 
@@ -415,6 +451,33 @@ INSERT INTO `duenios_huertas` (`id_dueno`, `nombre`, `calle`, `no_exterior`, `no
 (1, 'Rodolfo Carretes Ferrera', 'Del medallin', '29', '', 'Los alcoholes', 'Sads', 'Colima', 6300, '', '', 'ac'),
 (2, 'Jorge Mejía Villa nueva', 'Capilla sixtina', '', '', '', '', '', 0, '', '', 'ac'),
 (3, 'Carlos Sepeda Perez', 'Guatemala', '490', '', 'Juan Jose Rios', 'TECOMAN', 'Colima', 28984, '313 32 48510', '3123123123', 'ac');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `empacadores`
+--
+
+CREATE TABLE IF NOT EXISTS `empacadores` (
+  `id_empacador` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(130) NOT NULL,
+  `status` enum('ac','e') NOT NULL DEFAULT 'ac',
+  PRIMARY KEY (`id_empacador`),
+  KEY `nombre` (`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `marcas`
+--
+
+CREATE TABLE IF NOT EXISTS `marcas` (
+  `id_marca` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(40) NOT NULL,
+  `status` enum('ac','e') NOT NULL DEFAULT 'ac' COMMENT 'ac:activo, e:eliminado',
+  PRIMARY KEY (`id_marca`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -451,8 +514,9 @@ CREATE TABLE IF NOT EXISTS `privilegios` (
   `url_accion` varchar(100) NOT NULL,
   `url_icono` varchar(100) NOT NULL,
   `target_blank` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=52 ;
+  PRIMARY KEY (`id`),
+  KEY `url_accion` (`url_accion`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=55 ;
 
 --
 -- Volcado de datos para la tabla `privilegios`
@@ -469,20 +533,20 @@ INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_acci
 (8, 'Eliminar', 5, 0, 'usuarios/eliminar/', 'remove', 0),
 (9, 'Activar', 5, 0, 'usuarios/activar/', 'ok', 0),
 (10, 'Productores', 0, 1, 'productores/', 'user', 0),
-(11, 'Agregar', 10, 1, 'productores/agregar/', 'plus', 0),
+(11, 'Agregar productor', 10, 1, 'productores/agregar/', 'plus', 0),
 (12, 'Modificar', 10, 0, 'productores/modificar/', 'edit', 0),
 (13, 'Eliminar', 10, 0, 'productores/eliminar/', 'remove', 0),
 (14, 'Activar', 10, 0, 'productores/activar/', 'ok', 0),
 (15, 'Variedades', 0, 1, 'variedades/', 'leaf', 0),
-(16, 'Agregar', 15, 1, 'variedades/agregar/', 'plus', 0),
+(16, 'Agregar variedad', 15, 1, 'variedades/agregar/', 'plus', 0),
 (17, 'Modificar', 15, 0, 'variedades/modificar/', 'edit', 0),
 (18, 'Eliminar', 15, 0, 'variedades/eliminar/', 'remove', 0),
 (19, 'Activar', 15, 0, 'variedades/activar/', 'ok', 0),
 (20, 'Facturacion', 10, 1, 'productoresfac/', 'file', 0),
 (21, 'Series y folios', 20, 1, 'productoresfac/series_folios/', 'list-alt', 0),
-(22, 'Agregar', 21, 1, 'productoresfac/agregar_serie_folio/', 'plus', 0),
+(22, 'Agregar folio', 21, 1, 'productoresfac/agregar_serie_folio/', 'plus', 0),
 (23, 'Modificar', 21, 0, 'productoresfac/modificar_serie_folio/', 'edit', 0),
-(24, 'Agregar', 20, 1, 'productoresfac/agregar/', 'plus', 0),
+(24, 'Agregar factura', 20, 1, 'productoresfac/agregar/', 'plus', 0),
 (25, 'Detalles facturas', 20, 0, 'productoresfac/detalles_facturas/', 'file', 0),
 (26, 'Cancelar', 20, 0, 'productoresfac/cancelar/', 'remove', 0),
 (27, 'Imprimir', 20, 0, 'productoresfac/imprimir/', 'print', 0),
@@ -491,9 +555,9 @@ INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_acci
 (30, 'Modificar', 28, 0, 'duenios_huertas/modificar/', 'edit', 0),
 (31, 'Eliminar', 28, 0, 'duenios_huertas/eliminar/', 'remove', 0),
 (32, 'Activar', 28, 0, 'duenios_huertas/activar/', 'ok', 0),
-(33, 'Cajas', 0, 1, 'cajas/', 'inbox', 0),
-(34, 'Agregar Movimiento', 33, 1, 'cajas/agregar/', 'plus', 0),
-(35, 'Entradas', 33, 1, 'cajas/entradas/', 'share-alt', 0),
+(33, 'Cajas campo', 35, 1, 'cajas/', 'inbox', 0),
+(34, 'Agregar cajas campo', 33, 1, 'cajas/agregar/', 'plus', 0),
+(35, 'Entradas de fruta', 0, 1, 'cajas/entradas/', 'share-alt', 0),
 (36, 'Agregar Entrada', 35, 1, 'cajas/agregar_entrada/', 'plus', 0),
 (37, 'Modificar', 33, 0, 'cajas/modificar_entrada/', 'edit', 0),
 (38, 'Eliminar', 33, 0, 'cajas/eliminar_entrada/', 'remove', 0),
@@ -501,7 +565,7 @@ INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_acci
 (40, 'Agregar operación', 39, 1, 'banco/agregar_operacion/', 'plus-sign', 0),
 (41, 'Cuentas por pagar', 33, 1, 'cajas/cuentas_pagar/', 'list-alt', 0),
 (42, 'Cuentas', 39, 1, 'banco/cuentas/', 'inbox', 0),
-(43, 'Agregar', 42, 1, 'banco/agregar_cuenta/', 'plus', 0),
+(43, 'Agregar cuenta', 42, 1, 'banco/agregar_cuenta/', 'plus', 0),
 (44, 'Modificar', 42, 0, 'banco/modificar_cuenta/', 'edit', 0),
 (45, 'Eliminar', 42, 0, 'banco/eliminar_cuenta/', 'remove', 0),
 (46, 'Activar', 42, 0, 'banco/activar_cuenta/', 'ok', 0),
@@ -509,7 +573,10 @@ INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_acci
 (48, 'Eliminar', 39, 0, 'banco/eliminar_operacion/', 'remove', 0),
 (49, 'Reporte Relacion Cajas Recibidas', 33, 1, 'cajas_reportes/rcr/', 'book', 0),
 (50, 'Reporte Relacion de Lavado por Lotes', 33, 1, 'cajas_reportes/rll/', 'book', 0),
-(51, 'Eliminar', 41, 0, 'abonos/eliminar/', 'remove', 0);
+(51, 'Eliminar', 41, 0, 'abonos/eliminar/', 'remove', 0),
+(52, 'Lista de cheques', 39, 1, 'banco/cheques/', 'th-list', 0),
+(53, 'Cancelar', 52, 0, 'banco/cancelar_cheque/', 'ban-circle', 0),
+(54, 'Activar', 52, 0, 'banco/activar_cheque/', 'ok', 0);
 
 -- --------------------------------------------------------
 
@@ -535,7 +602,8 @@ CREATE TABLE IF NOT EXISTS `productores` (
   `regimen_fiscal` varchar(200) NOT NULL DEFAULT '',
   `status` enum('ac','e') NOT NULL DEFAULT 'ac',
   `tipo` enum('r','f') NOT NULL DEFAULT 'r' COMMENT 'r:regular (venden fruta), f:ficticio (comprobar gastos)',
-  PRIMARY KEY (`id_productor`)
+  PRIMARY KEY (`id_productor`),
+  KEY `nombre_fiscal` (`nombre_fiscal`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
@@ -799,7 +867,10 @@ INSERT INTO `usuarios_privilegios` (`usuario_id`, `privilegio_id`) VALUES
 (1, 48),
 (1, 49),
 (1, 50),
-(1, 51);
+(1, 51),
+(1, 52),
+(1, 53),
+(1, 54);
 
 -- --------------------------------------------------------
 
@@ -873,6 +944,13 @@ ALTER TABLE `cajas_inventario`
   ADD CONSTRAINT `cajas_inventario_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `cajas_inventario_ibfk_2` FOREIGN KEY (`id_variedad`) REFERENCES `variedades` (`id_variedad`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `cajas_inventario_ibfk_3` FOREIGN KEY (`id_caja`) REFERENCES `cajas_recibidas` (`id_caja`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `cajas_inventario_carton`
+--
+ALTER TABLE `cajas_inventario_carton`
+  ADD CONSTRAINT `cajas_inventario_carton_ibfk_1` FOREIGN KEY (`id_empacador`) REFERENCES `empacadores` (`id_empacador`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cajas_inventario_carton_ibfk_2` FOREIGN KEY (`id_marca`) REFERENCES `marcas` (`id_marca`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `cajas_recibidas`
