@@ -1,0 +1,45 @@
+$(function(){
+  $('#dfecha').datepicker({
+    dateFormat: 'yy-mm-dd', //formato de la fecha - dd,mm,yy=dia,mes,año numericos  DD,MM=dia,mes en texto
+    //minDate: '-2Y', maxDate: '+1M +10D', //restringen a un rango el calendario - ej. +10D,-2M,+1Y,-3W(W=semanas) o alguna fecha
+    changeMonth: true, //permite modificar los meses (true o false)
+    changeYear: true, //permite modificar los años (true o false)
+    //yearRange: (fecha_hoy.getFullYear()-70)+':'+fecha_hoy.getFullYear(),
+    numberOfMonths: 1, //muestra mas de un mes en el calendario, depende del numero
+  });
+
+  $("#dempacador").autocomplete({
+    source: base_url + 'panel/cajas_carton/ajax_get_empacadores',
+    minLength: 1,
+    selectFirst: true,
+    select: function( event, ui ) {
+      $("#did_empacador").val(ui.item.id);
+      $("#dempacador").val(ui.item.label).css({'background-color': '#B0FFB0'});
+    }
+  }).keydown(function(e){
+    if (e.which === 8) {
+      $(this).css({'background-color': '#FFD9B3'});
+      $('#did_empacador').val('');
+    }
+  });
+
+  $('#dmovimiento').on('change', function(event) {
+    var opt = $(this).find('option:selected');
+
+    if (opt.val() === 'en') {
+      $('#bloq-emp').css({'display': 'none'});
+      $('#bloq-desecho').css({'display': 'none'});
+    } else {
+      $('#bloq-emp').css({'display': 'block'});
+      $('#bloq-desecho').css({'display': 'block'});
+    }
+
+  });
+
+  var sel = $('#dmovimiento').find('option:selected').val();
+  if (sel === 'en') {
+    $('#bloq-emp').css({'display': 'none'});
+    $('#bloq-desecho').css({'display': 'none'});
+  }
+
+});
