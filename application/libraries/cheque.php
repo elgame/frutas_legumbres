@@ -75,7 +75,7 @@ class Cheque extends FPDF {
 
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;
 		$this->AddPage('P', array(70, 165));
-		$this->SetFont('Arial','', 10);
+		$this->SetFont('Arial','', 7);
 		
 		$this->SetDrawColor(0, 0, 0);
 		$this->SetLineWidth(0.1);
@@ -85,12 +85,12 @@ class Cheque extends FPDF {
 		
 		$this->RotatedText(42, 128, String::formatoNumero($monto), -90);
 		
-		$this->RotatedText(45, 10, $nombre, -90);
+		$this->RotatedText(41, 2, $nombre, -90);
 		
-		$this->RotatedText(37, 10, String::num2letras($monto, $moneda), -90);
+		$this->RotatedText(34, 2, String::num2letras($monto, $moneda), -90);
 
 		if($abono_cuenta == 1){
-			$this->SetFont('Arial','', 8);
+			$this->SetFont('Arial','', 6);
 			$this->RotatedText(64, 50, 'PARA ABONO EN CUENTA', -90);
 		}
 		
