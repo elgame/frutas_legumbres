@@ -53,7 +53,7 @@ class Cajas_carton_model extends CI_Model {
                    marca,
                    SUM(salidas) AS salidas,
                    SUM(entradas) AS entradas,
-                   SUM(salidas) - SUM(entradas) AS total_debe
+                   SUM(entradas) - SUM(salidas) AS total_debe
 
             FROM
             (
@@ -111,7 +111,7 @@ class Cajas_carton_model extends CI_Model {
    */
   public function get_marca_inventario()
   {
-   $sql = '';
+   $sql = $sql2 = '';
 
     //Filtros para buscar
     $_GET['ffecha1'] = $this->input->get('ffecha1')==''? date("Y-m-").'01': $this->input->get('ffecha1');
@@ -120,30 +120,32 @@ class Cajas_carton_model extends CI_Model {
     $sql = "AND DATE(cic.fecha)>='".$_GET['ffecha1']."' AND DATE(cic.fecha)<='".$_GET['ffecha2']."'";
 
     if ( ! empty($_GET['ide']))
-      $sql .= " AND cic.id_empacador = {$_GET['ide']}";
+      $sql2 = " AND cic.id_empacador = {$_GET['ide']}";
 
     //  Obtiene las entradas, salidas anteriores a la fecha
     $query = $this->db->query("
                 SELECT COALESCE(SUM(salidas), 0) AS salidas,
                        COALESCE(SUM(entradas), 0) AS entradas,
-                       COALESCE(SUM(salidas), 0) - COALESCE(SUM(entradas), 0) AS total_anterior
+                       COALESCE(SUM(entradas), 0) - COALESCE(SUM(salidas), 0) AS total_anterior
                 FROM
 
                   (
                     SELECT id_marca, SUM(cantidad) AS salidas, 0 AS entradas
-                    FROM cajas_inventario_carton
+                    FROM cajas_inventario_carton AS cic
                     WHERE id_marca = ".$_GET['id']." AND
                           tipo = 's' AND
                           DATE(fecha) < '".$_GET['ffecha1']."'
+                          {$sql2}
                     GROUP BY id_marca
 
                     UNION ALL
 
                     SELECT id_marca, 0 AS salidas, SUM(cantidad) AS entradas
-                    FROM cajas_inventario_carton
+                    FROM cajas_inventario_carton AS cic
                     WHERE id_marca = ".$_GET['id']." AND
                           tipo = 'en' AND
                           DATE(fecha) < '".$_GET['ffecha1']."'
+                          {$sql2}
                     GROUP BY id_marca
                   ) AS ant
 
@@ -165,7 +167,7 @@ class Cajas_carton_model extends CI_Model {
                        e.nombre AS empacador
                 FROM cajas_inventario_carton AS cic
                 LEFT JOIN empacadores AS e ON e.id_empacador = cic.id_empacador
-                WHERE cic.id_marca = ".$_GET['id']." {$sql}
+                WHERE cic.id_marca = ".$_GET['id']." {$sql} {$sql2}
                 ORDER BY cic.id_inventario_carton, cic.fecha ASC");
 
     $response['inventario'] = array();
@@ -190,6 +192,8 @@ class Cajas_carton_model extends CI_Model {
       if ($_POST['dmovimiento'] === 's' && ! isset($_POST['ddesecho']))
         $data['id_empacador'] = $this->input->post('did_empacador');
 
+      if (isset($_POST['ddesecho']))
+        $data['es_desecho'] = 1;
     }
 
     $this->db->insert('cajas_inventario_carton', $data);

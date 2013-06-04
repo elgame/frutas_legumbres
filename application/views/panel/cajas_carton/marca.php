@@ -7,7 +7,7 @@
             <a href="<?php echo base_url('panel'); ?>">Inicio</a> <span class="divider">/</span>
           </li>
           <li>
-            <a href="<?php echo base_url('panel/cajas_carton/'); ?>" title="">Cajas</a> <span class="divider">/</span>
+            <a href="<?php echo base_url('panel/cajas_carton/'); ?>" title="">Cajas Cartón</a> <span class="divider">/</span>
           </li>
           <li>
             Productor
@@ -104,7 +104,7 @@
                     <td colspan="3" style="background-color: #ccc;"></td>
                     <td style="background-color: #ccc;"><?php echo $total_salidas; ?></td>
                     <td style="background-color: #ccc;"><?php echo $total_entradas; ?></td>
-                    <td style="background-color: #ccc;">Total: <?php echo floatval($total_salidas) - floatval($total_entradas); ?></td>
+                    <td style="background-color: #ccc;">Total: <?php echo floatval($total_entradas) - floatval($total_salidas); ?></td>
                   </tr>
               </tbody>
             </table>

@@ -1,9 +1,9 @@
 
 
 ******** Detalles *******
- ☐ En cajas carton se esta restando las salidas - las entradas, tiene que quedar al contrario entradas-salidas
- ☐ si agrego una salida y marco que es desecho no se guarda como desecho
- ☐ En el saldo anterior si se filtra por un empacador no se quitan las entradas y salidas de otros empacadores
+ ✔ En cajas carton se esta restando las salidas - las entradas, tiene que quedar al contrario entradas-salidas @done (13-06-04 10:00)
+ ✔ si agrego una salida y marco que es desecho no se guarda como desecho @done (13-06-04 09:58)
+ ✔ En el saldo anterior si se filtra por un empacador no se quitan las entradas y salidas de otros empacadores @done (13-06-04 10:16)
 
 
 
