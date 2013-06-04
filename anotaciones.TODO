@@ -83,7 +83,20 @@ ADD  `abono_cuenta` BOOLEAN NOT NULL DEFAULT FALSE COMMENT  '0:no poner legenda;
 
 
 
-
+PRIVILEGIOS MARCAS, EMPACADORES, CAJAS CARTON:
+INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES
+(55, 'Agregar cajas cartón', 66, 1, 'cajas_carton/agregar/', 'plus', 0),
+(56, 'Marcas', 0, 1, 'marcas/', 'certificate', 0),
+(57, 'Agregar', 56, 1, 'marcas/agregar/', 'plus', 0),
+(58, 'Editar', 56, 0, 'marcas/modificar/', 'edit', 0),
+(59, 'Eliminar', 56, 0, 'marcas/eliminar/', 'remove', 0),
+(60, 'Activar', 56, 0, 'marcas/activar/', 'refresh', 0),
+(61, 'Empacadores', 0, 1, 'empacadores/', 'user', 0),
+(62, 'Agregar', 61, 1, 'empacadores/agregar/', 'plus', 0),
+(63, 'Modificar', 61, 0, 'empacadores/modificar/', 'edit', 0),
+(64, 'Eliminar', 61, 0, 'empacadores/eliminar/', 'remove', 0),
+(65, 'Activar', 61, 0, 'empacadores/activar/', 'refresh', 0),
+(66, 'Cajas cartón', 35, 1, 'cajas_carton/', 'inbox', 0);
 
 /*********************** PRIVILEGIOS DE DUEÑOS HUERTAS Y CAJAS ********************************/
 
