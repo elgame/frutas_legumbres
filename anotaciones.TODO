@@ -1,8 +1,14 @@
 
 
 ******** Detalles *******
+ ☐ En cajas carton se esta restando las salidas - las entradas, tiene que quedar al contrario entradas-salidas
+ ☐ si agrego una salida y marco que es desecho no se guarda como desecho
+ ☐ En el saldo anterior si se filtra por un empacador no se quitan las entradas y salidas de otros empacadores
+
+
+
  ✔ (gama) En agregar operacion al crear cheque poner no de cheque (valor unico por cuenta), agregar un listado donde se vean los chequesy poderlos cancelar, si se cansela que se quite el abono (agregar un estado a la tabla de abonos) @done (13-05-24 12:43)
- ☐ (furby) falta q lo expliquen bien
+ ✔ (furby) falta q lo expliquen bien @done (13-06-04 09:38)
 
 
  ✔ (gama) Adaptar el cheque banamex @done (13-05-22 10:35)
@@ -84,19 +90,19 @@ ADD  `abono_cuenta` BOOLEAN NOT NULL DEFAULT FALSE COMMENT  '0:no poner legenda;
 
 
 PRIVILEGIOS MARCAS, EMPACADORES, CAJAS CARTON:
-INSERT INTO `privilegios` (`id`, `nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES
-(55, 'Agregar cajas cartón', 66, 1, 'cajas_carton/agregar/', 'plus', 0),
-(56, 'Marcas', 0, 1, 'marcas/', 'certificate', 0),
-(57, 'Agregar', 56, 1, 'marcas/agregar/', 'plus', 0),
-(58, 'Editar', 56, 0, 'marcas/modificar/', 'edit', 0),
-(59, 'Eliminar', 56, 0, 'marcas/eliminar/', 'remove', 0),
-(60, 'Activar', 56, 0, 'marcas/activar/', 'refresh', 0),
-(61, 'Empacadores', 0, 1, 'empacadores/', 'user', 0),
-(62, 'Agregar', 61, 1, 'empacadores/agregar/', 'plus', 0),
-(63, 'Modificar', 61, 0, 'empacadores/modificar/', 'edit', 0),
-(64, 'Eliminar', 61, 0, 'empacadores/eliminar/', 'remove', 0),
-(65, 'Activar', 61, 0, 'empacadores/activar/', 'refresh', 0),
-(66, 'Cajas cartón', 35, 1, 'cajas_carton/', 'inbox', 0);
+INSERT INTO `privilegios` (`nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES
+('Cajas cartón', 35, 1, 'cajas_carton/', 'inbox', 0),
+('Agregar cajas cartón', 55, 1, 'cajas_carton/agregar/', 'plus', 0),
+('Marcas', 0, 1, 'marcas/', 'certificate', 0),
+('Agregar', 57, 1, 'marcas/agregar/', 'plus', 0),
+('Editar', 57, 0, 'marcas/modificar/', 'edit', 0),
+('Eliminar', 57, 0, 'marcas/eliminar/', 'remove', 0),
+('Activar', 57, 0, 'marcas/activar/', 'refresh', 0),
+('Empacadores', 0, 1, 'empacadores/', 'user', 0),
+('Agregar', 62, 1, 'empacadores/agregar/', 'plus', 0),
+('Modificar', 62, 0, 'empacadores/modificar/', 'edit', 0),
+('Eliminar', 62, 0, 'empacadores/eliminar/', 'remove', 0),
+('Activar', 62, 0, 'empacadores/activar/', 'refresh', 0);
 
 /*********************** PRIVILEGIOS DE DUEÑOS HUERTAS Y CAJAS ********************************/
 

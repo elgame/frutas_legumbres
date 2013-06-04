@@ -100,7 +100,7 @@
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Guardar</button>
-          <a href="<?php echo base_url('panel/cajas/'); ?>" class="btn">Cancelar</a>
+          <a href="<?php echo base_url('panel/cajas_carton/'); ?>" class="btn">Cancelar</a>
         </div>
 
       </form>
