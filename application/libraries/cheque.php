@@ -45,22 +45,24 @@ class Cheque extends FPDF {
 
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;
 		$this->AddPage('P', array(70, 165));
-		$this->SetFont('Arial','', 10);
+		$this->SetFont('Arial','B', 9);
 		
 		$this->SetDrawColor(0, 0, 0);
 		$this->SetLineWidth(0.1);
-		$this->Rect(0, 0, 70, 165, 'D');
+		// $this->Rect(0, 0, 70, 165, 'D');
 		
 		$this->RotatedText(44, 64, String::fechaATexto($fecha), -90);
 		
-		$this->RotatedText(44, 124, String::formatoNumero($monto), -90);
+		$this->SetFont('Arial','B', 10);
+		$this->RotatedText(44, 124, String::formatoNumero($monto, 2, ''), -90);
 		
+		$this->SetFont('Arial','B', 9);
 		$this->RotatedText(38, 35, $nombre, -90);
 		
 		$this->RotatedText(28, 8, String::num2letras($monto, $moneda), -90);
 
 		if($abono_cuenta == 1){
-			$this->SetFont('Arial','', 8);
+			$this->SetFont('Arial','B', 8);
 			$this->RotatedText(55, 50, 'PARA ABONO EN CUENTA', -90);
 		}
 		
@@ -75,22 +77,24 @@ class Cheque extends FPDF {
 
 		$fecha = $fecha==null? date("Y-m-d"): $fecha;
 		$this->AddPage('P', array(70, 165));
-		$this->SetFont('Arial','', 7);
+		$this->SetFont('Arial','B', 9);
 		
 		$this->SetDrawColor(0, 0, 0);
 		$this->SetLineWidth(0.1);
-		$this->Rect(0, 0, 70, 165, 'D');
+		// $this->Rect(0, 0, 70, 165, 'D');
 		
 		$this->RotatedText(58, 109, String::fechaATexto($fecha), -90);
 		
-		$this->RotatedText(42, 128, String::formatoNumero($monto), -90);
+		$this->SetFont('Arial','B', 10);
+		$this->RotatedText(42, 130, String::formatoNumero($monto, 2, ''), -90);
 		
-		$this->RotatedText(41, 2, $nombre, -90);
+		$this->SetFont('Arial','B', 9);
+		$this->RotatedText(48, 6, $nombre, -90);
 		
-		$this->RotatedText(34, 2, String::num2letras($monto, $moneda), -90);
+		$this->RotatedText(39, 6, String::num2letras($monto, $moneda), -90);
 
 		if($abono_cuenta == 1){
-			$this->SetFont('Arial','', 6);
+			$this->SetFont('Arial','B', 8);
 			$this->RotatedText(64, 50, 'PARA ABONO EN CUENTA', -90);
 		}
 		
@@ -109,7 +113,7 @@ class Cheque extends FPDF {
 		
 		$this->SetDrawColor(0, 0, 0);
 		$this->SetLineWidth(0.1);
-		$this->Rect(0, 0, 70, 165, 'D');
+		// $this->Rect(0, 0, 70, 165, 'D');
 		
 		$this->RotatedText(50, 64, String::fechaATexto($fecha), -90);
 		

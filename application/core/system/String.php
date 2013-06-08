@@ -283,6 +283,7 @@ class String{
 		}
 
 		$end_num=ucfirst($tex).' '.$tipo_moneda.' '.$float[1].'/100 '.$moneda;
+		$end_num = mb_strtoupper($end_num);
 		return $end_num;
 	}
 
