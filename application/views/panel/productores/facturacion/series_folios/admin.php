@@ -41,8 +41,8 @@
                     'attrs' => array('style' => 'margin-bottom: 10px;') )
                 );
              ?>
-            <table class="table table-striped table-bordered bootstrap-datatable">
-              <thead>
+            <table class="table table-striped table-bordered bootstrap-datatable table-fixed-header">
+              <thead class="header">
                 <tr>
                   <th>Productor</th>
                   <th>Serie</th>

@@ -26,18 +26,21 @@
               <div class="form-actions form-filters">
 
                 <label for="ffecha1">Del:</label>
-                <input type="text" name="ffecha1" id="ffecha1" value="<?php echo $this->input->get('ffecha1'); ?>" size="10">
+                <input type="text" name="ffecha1" class="input-small" id="ffecha1" value="<?php echo $this->input->get('ffecha1'); ?>" size="10">
 
                 <label for="ffecha2">Al:</label>
-                <input type="text" name="ffecha2" id="ffecha2" value="<?php echo $this->input->get('ffecha2'); ?>" size="10">
+                <input type="text" name="ffecha2" class="input-small" id="ffecha2" value="<?php echo $this->input->get('ffecha2'); ?>" size="10"> | 
 
-                <label for="ide">Empacador</label>
+                <label for="ide">Maquilador</label>
                 <select name="ide">
                   <option value=""></option>}
                   <?php foreach ($empacadores as $e){ ?>
                     <option value="<?php echo $e->id_empacador ?>" <?php echo set_select('ide', $e->id_empacador, false, $this->input->get('ide')); ?>><?php echo $e->nombre ?></option>
                   <?php } ?>
-                </select>
+                </select> | 
+
+                <label for="fdesecho">Desecho</label>
+                <input type="checkbox" name="fdesecho" class="input-small" id="fdesecho" value="si" <?php echo ($this->input->get('fdesecho')=='si'? 'checked': ''); ?>>
 
                 <button type="submit" class="btn btn-info">Buscar</button>
 
@@ -52,8 +55,8 @@
             </form>
 
 
-            <table class="table table-striped table-bordered bootstrap-datatable">
-              <thead>
+            <table class="table table-striped table-bordered bootstrap-datatable table-fixed-header">
+              <thead class="header">
                 <tr>
                   <th>Marca</th>
                   <th>Cajas</th>

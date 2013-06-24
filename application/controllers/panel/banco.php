@@ -6,8 +6,9 @@ class banco extends MY_Controller {
 	 * Evita la validacion (enfocado cuando se usa ajax). Ver mas en privilegios_model
 	 * @var unknown_type
 	 */
-	private $excepcion_privilegio = array('banco/ajax_get_cuentas/', 'banco/print_cheque/', 'banco/estado_cuenta_pdf/',
-		'banco/ajax_get_cheque_pagos/');
+	private $excepcion_privilegio = array('banco/ajax_get_cuentas/', 'banco/print_cheque/', 
+		'banco/estado_cuenta_pdf/', 'banco/estado_cuenta_xls/',
+		'banco/ajax_get_cheque_pagos/', 'banco/cheques_xls/');
 
 	public function _remap($method){
 		$this->load->model("usuarios_model");
@@ -103,9 +104,22 @@ class banco extends MY_Controller {
 			redirect(base_url('panel/banco/?'.String::getVarsLink(array('id', 'msg')) ));
 	}
 
+	public function estado_cuenta_xls(){
+		if(isset($_GET['id']{0})){
+      $this->load->model('banco_cuentas_model');
+
+      $_GET['ffecha1'] = isset($_GET['ffecha1'])? $_GET['ffecha1']: date("Y-m").'-01';
+			$_GET['ffecha2'] = isset($_GET['ffecha2'])? $_GET['ffecha2']: date("Y-m-d");
+			
+      $this->banco_cuentas_model->xlsEstadoCuenta($_GET['id'], $_GET['ffecha1'], $_GET['ffecha2']);
+    }else
+			redirect(base_url('panel/banco/?'.String::getVarsLink(array('id', 'msg')) ));
+	}
+
 	public function cheques(){
 		$this->carabiner->js(array(
       array('general/msgbox.js'),
+      array('panel/cajas/inventario.js'),
     ));
 
     $this->load->model('banco_cuentas_model');
@@ -125,6 +139,12 @@ class banco extends MY_Controller {
     $this->load->view('panel/general/menu', $params);
     $this->load->view('panel/banco/listado_cheques', $params);
     $this->load->view('panel/footer');
+	}
+
+	public function cheques_xls(){
+    $this->load->model('banco_cuentas_model');
+		
+    $this->banco_cuentas_model->xlsListaCheques();
 	}
 
 	public function cancelar_cheque(){

@@ -38,8 +38,8 @@
               </div>
             </form>
 
-            <table class="table table-striped table-bordered bootstrap-datatable">
-              <thead>
+            <table class="table table-striped table-bordered bootstrap-datatable table-fixed-header">
+              <thead class="header">
                 <tr>
                   <th>Fecha</th>
                   <th>Serie</th>

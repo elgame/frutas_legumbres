@@ -790,7 +790,7 @@ class Cajas_model extends CI_Model {
                     '# DE LOTE', 'TOTAL CAJAS', 'CAJAS REZAGA',
                     'VARIEDAD', 'UNIDAD TRANSPORTE',
                     'NOMBRE PRODUCTOR', 'ORGANICO');
-
+    $total_cajas = $total_rezaga = 0;
     foreach($rcr['info'] as $key => $item)
     {
       if($pdf->GetY() >= $pdf->limiteY || $key==0) //salta de pagina si exede el max
@@ -821,6 +821,8 @@ class Cajas_model extends CI_Model {
                      $item->unidad_transporte,
                      $item->productor,
                      $item->es_organico==1 ? 'SI' : 'NO');
+      $total_cajas  += $item->cajas;
+      $total_rezaga += $item->cajas_rezaga;
 
       $pdf->SetX(6);
       $pdf->SetAligns($aligns);
@@ -828,7 +830,69 @@ class Cajas_model extends CI_Model {
       $pdf->Row($datos, false);
     }
 
+    $pdf->SetX(6);
+    $pdf->SetAligns($aligns);
+    $pdf->SetWidths($widths);
+    $pdf->Row(array('','','','','','',
+                     $total_cajas,
+                     $total_rezaga,
+                     '','','',''), true);
+
     $pdf->Output('RELACION_CAJAS_RECIBIDAS.pdf', 'I');
+  }
+
+  public function rcr_xls()
+  {
+    $rcr = $this->rcr_data();
+
+    $this->load->library('myexcel');
+    $xls = new myexcel();
+
+    $worksheet =& $xls->workbook->addWorksheet();
+
+    $xls->titulo2 = 'RELACION DE CAJAS RECIBIDAS';
+    $xls->titulo3 = 'DEL ' . $this->input->get('ffecha1') . " AL " .
+                      $this->input->get('ffecha2')."\n";
+    // $xls->titulo4 = 'Del: '.$this->input->get('ffecha1').' Al '.$this->input->get('ffecha2')."\n";
+
+    $row=0;
+    // //Header
+    $xls->excelHead($worksheet, $row, 5, array(
+                    array($xls->titulo2, 'format_title2'),
+                    array($xls->titulo3, 'format_title3'),
+                    array($xls->titulo4, 'format_title3')
+    ));
+
+    $data = array();
+    foreach ($rcr['info'] as $key => $value) {
+      $value->es_organico = $value->es_organico==1 ? 'SI' : 'NO';
+      $data[]             = $value;
+    }
+
+    $row +=3;
+    $xls->excelContent($worksheet, $row, $data, array(
+                    'head' => array('FECHA', '# CERTIFICADO O TARJETA', 'DUEÑO DE LA HUERTA',
+                                    'ORIGEN DE LA FRUTA',  'CODIGO DE LA HUERTA',
+                                    '# DE LOTE', 'TOTAL CAJAS', 'CAJAS REZAGA',
+                                    'VARIEDAD', 'UNIDAD TRANSPORTE',
+                                    'NOMBRE PRODUCTOR', 'ORGANICO'),
+                    'conte' => array(
+                                    array('name' => 'fecha', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'certificado_tarjeta', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'dueno_huerta', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'origen', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'codigo_huerta', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'no_lote', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'cajas', 'format' => 'format4', 'sum' => 0),
+                                    array('name' => 'cajas_rezaga', 'format' => 'format4', 'sum' => 0),
+                                    array('name' => 'variedad', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'unidad_transporte', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'productor', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'es_organico', 'format' => 'format4', 'sum' => -1) )
+    ));
+
+    $xls->workbook->send('cajas_recibidas.xls');
+    $xls->workbook->close();
   }
 
   /**

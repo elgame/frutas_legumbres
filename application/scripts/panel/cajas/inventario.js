@@ -5,4 +5,11 @@ $(function(){
      changeYear: true, //permite modificar los años (true o false)
      numberOfMonths: 1 //muestra mas de un mes en el calendario, depende del numero
    });
+
+  //reporte de cajas recibidas
+  if($("#rcr")){
+  	$("#ffecha1, #ffecha2").on("change", function(){
+  		$("#rcr").attr("href", ($("#rcr").attr("data-href")+"?ffecha1="+$("#ffecha1").val()+"&ffecha2="+$("#ffecha2").val()) );
+  	});
+  }
 });

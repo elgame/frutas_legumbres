@@ -36,7 +36,7 @@ class empacadores extends MY_Controller {
 
     $params['info_empleado'] = $this->info_empleado['info']; //info empleado
     $params['seo'] = array(
-      'titulo' => 'Administrar Empacadores'
+      'titulo' => 'Administrar Maquiladores'
     );
 
     $params['empacadores'] = $this->empacadores_model->getEmpacadores();
@@ -65,7 +65,7 @@ class empacadores extends MY_Controller {
 
     $params['info_empleado'] = $this->info_empleado['info']; //info empleado
     $params['seo'] = array(
-      'titulo' => 'Agregar Empacador'
+      'titulo' => 'Agregar Maquilador'
     );
 
     $this->configAddModEmpacador();
@@ -107,7 +107,7 @@ class empacadores extends MY_Controller {
 
     $params['info_empleado'] = $this->info_empleado['info']; //info empleado
     $params['seo'] = array(
-        'titulo' => 'Modificar Empacador'
+        'titulo' => 'Modificar Maquilador'
     );
 
     if(isset($_GET['id']{0})){
@@ -208,19 +208,19 @@ class empacadores extends MY_Controller {
         $icono = 'error';
       break;
       case 3:
-        $txt = 'El empacador se agrego correctamente.';
+        $txt = 'El Maquilador se agrego correctamente.';
         $icono = 'success';
       break;
       case 4:
-        $txt = 'El empacador se modifico correctamente.';
+        $txt = 'El Maquilador se modifico correctamente.';
         $icono = 'success';
         break;
       case 5:
-        $txt = 'El empacador se elimino correctamente.';
+        $txt = 'El Maquilador se elimino correctamente.';
         $icono = 'success';
         break;
       case 6:
-        $txt = 'El empacador se activo correctamente.';
+        $txt = 'El Maquilador se activo correctamente.';
         $icono = 'success';
       break;
       case 7:

@@ -44,8 +44,8 @@
             </form>
 
 
-            <table class="table table-striped table-bordered bootstrap-datatable">
-              <thead>
+            <table class="table table-striped table-bordered bootstrap-datatable table-fixed-header">
+              <thead class="header">
                 <tr>
                   <th>Productor</th>
                   <th>Cajas sin entregar</th>

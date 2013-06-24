@@ -8,7 +8,7 @@
             <a href="<?php echo base_url('panel'); ?>">Inicio</a> <span class="divider">/</span>
           </li>
           <li>
-            Empacadores
+            Maquiladores
           </li>
         </ul>
       </div>
@@ -16,7 +16,7 @@
       <div class="row-fluid">
         <div class="box span12">
           <div class="box-header well" data-original-title>
-            <h2><i class="icon-user"></i> Empacadores</h2>
+            <h2><i class="icon-user"></i> Maquiladores</h2>
             <div class="box-icon">
               <a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
             </div>
@@ -46,8 +46,8 @@
                     'attrs' => array('style' => 'margin-bottom: 10px;') )
                 );
              ?>
-            <table class="table table-striped table-bordered bootstrap-datatable">
-              <thead>
+            <table class="table table-striped table-bordered bootstrap-datatable table-fixed-header">
+              <thead class="header">
                 <tr>
                   <th>Nombre</th>
                   <th>Status</th>

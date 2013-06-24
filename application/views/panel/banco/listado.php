@@ -45,8 +45,8 @@
 										'attrs' => array('style' => 'margin-bottom: 10px;') )
 								);
 						 ?>
-						<table class="table table-striped table-bordered bootstrap-datatable">
-						  <tbody>
+						<table class="table table-striped table-bordered bootstrap-datatable table-fixed-header">
+						  <tbody class="header">
 						<?php 
 						foreach($bancos as $banco){ 
 						?>

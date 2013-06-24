@@ -83,19 +83,20 @@ class Cheque extends FPDF {
 		$this->SetLineWidth(0.1);
 		// $this->Rect(0, 0, 70, 165, 'D');
 		
-		$this->RotatedText(58, 109, String::fechaATexto($fecha), -90);
+		$this->RotatedText(58, 112, String::fechaATexto($fecha), -90);
 		
 		$this->SetFont('Arial','B', 10);
-		$this->RotatedText(42, 130, String::formatoNumero($monto, 2, ''), -90);
+		$this->RotatedText(42, 132, String::formatoNumero($monto, 2, ''), -90);
 		
 		$this->SetFont('Arial','B', 9);
-		$this->RotatedText(48, 6, $nombre, -90);
+		$this->RotatedText(46, 6, $nombre, -90);
 		
-		$this->RotatedText(39, 6, String::num2letras($monto, $moneda), -90);
+		$this->RotatedText(37, 6, String::num2letras($monto, $moneda), -90);
 
 		if($abono_cuenta == 1){
-			$this->SetFont('Arial','B', 8);
-			$this->RotatedText(64, 50, 'PARA ABONO EN CUENTA', -90);
+			$this->SetFont('Arial','B', 7);
+			$this->RotatedText(13, 120, "PARA ABONO EN CUENTA", -90);
+			$this->RotatedText(9, 120, "DEL BENEFICIARIO", -90);
 		}
 		
 		$this->Output('cheque.pdf', $opc);

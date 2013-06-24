@@ -1,3 +1,54 @@
+ ☐ 2013-06-24 SQL
+      CREATE TABLE IF NOT EXISTS `cajas_recibidas_abonosh` (
+        `id_abonoh` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        `id_productor` bigint(20) unsigned NOT NULL,
+        `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `cantidad` double NOT NULL,
+        `concepto` varchar(254) NOT NULL,
+        `status` tinyint(1) NOT NULL DEFAULT '1',
+        PRIMARY KEY (`id_abonoh`),
+        KEY `id_productor` (`id_productor`)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contiene el abono real como lo registraron y los abonos por caja' AUTO_INCREMENT=1 ;
+
+      DROP TRIGGER IF EXISTS `delete_abonos`;
+      DELIMITER //
+      CREATE TRIGGER `delete_abonos` BEFORE DELETE ON `cajas_recibidas_abonosh`
+       FOR EACH ROW BEGIN
+        DELETE FROM cajas_recibidas_abonos 
+              WHERE id_abono IN( 
+                SELECT id_abono FROM `cajas_recibidas_abonosh_abonos` 
+                      WHERE id_abonoh = OLD.id_abonoh);
+      END
+      //
+      DELIMITER ;
+
+      CREATE TABLE IF NOT EXISTS `cajas_recibidas_abonosh_abonos` (
+        `id_abonoh` bigint(20) unsigned NOT NULL,
+        `id_abono` bigint(20) unsigned NOT NULL,
+        PRIMARY KEY (`id_abonoh`,`id_abono`),
+        KEY `id_abono` (`id_abono`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+      ALTER TABLE `cajas_recibidas_abonos`
+        ADD CONSTRAINT `cajas_recibidas_abonos_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `cajas_recibidas_abonos_ibfk_2` FOREIGN KEY (`id_caja`) REFERENCES `cajas_recibidas` (`id_caja`) ON DELETE CASCADE ON UPDATE CASCADE;
+      ALTER TABLE `cajas_recibidas_abonosh`
+        ADD CONSTRAINT `cajas_recibidas_abonosh_ibfk_1` FOREIGN KEY (`id_productor`) REFERENCES `productores` (`id_productor`) ON DELETE CASCADE ON UPDATE CASCADE;
+      ALTER TABLE `cajas_recibidas_abonosh_abonos`
+        ADD CONSTRAINT `cajas_recibidas_abonosh_abonos_ibfk_2` FOREIGN KEY (`id_abono`) REFERENCES `cajas_recibidas_abonos` (`id_abono`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `cajas_recibidas_abonosh_abonos_ibfk_1` FOREIGN KEY (`id_abonoh`) REFERENCES `cajas_recibidas_abonosh` (`id_abonoh`) ON DELETE CASCADE ON UPDATE CASCADE;
+      ALTER TABLE  `cajas_recibidas_abonos` CHANGE  `fecha`  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+      ALTER TABLE  `cajas_recibidas_abonosh` CHANGE  `fecha`  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+      INSERT INTO `privilegios` (`nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES
+      ('Lista de abonos', 41, 1, 'abonos/reales/', 'list', 0), ---Cuentas por pagar
+      ('Eliminar', 68, 0, 'abonos/reales_eliminar/', 'remove', 0); ----Lista de abonos
+
+
+
+
+ALTER TABLE  `bancos_movimientos` CHANGE  `fecha`  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
 
 
 ******** Detalles *******

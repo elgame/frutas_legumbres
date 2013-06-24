@@ -155,7 +155,7 @@ class banco_cuentas_model extends banco_model{
 	}
 
 
-	public function getListaCheques()
+	public function getListaCheques($paginar=true)
   {
     $sql = '';
     //paginacion
@@ -167,8 +167,12 @@ class banco_cuentas_model extends banco_model{
       $params['result_page'] = ($params['result_page']/$params['result_items_per_page']);
 
     //Filtros para buscar
+    $_GET['ffecha1'] = isset($_GET['ffecha1'])? $_GET['ffecha1']: date("Y-m").'-01';
+		$_GET['ffecha2'] = isset($_GET['ffecha2'])? $_GET['ffecha2']: date("Y-m-d");
+		$sql = " AND Date(bm.fecha) BETWEEN '".$_GET['ffecha1']."' AND '".$_GET['ffecha2']."'";
+
     if($this->input->get('fnombre') != '')
-      $sql = " AND ( lower(b.nombre) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
+      $sql .= " AND ( lower(b.nombre) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
       	bm.no_cheque LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
       	lower(bm.anombre_de) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' OR 
       	lower(bc.alias) LIKE '%".mb_strtolower($this->input->get('fnombre'), 'UTF-8')."%' )";
@@ -181,7 +185,10 @@ class banco_cuentas_model extends banco_model{
         WHERE metodo_pago = 'cheque' AND tipo = 'r' ".$sql."
         ORDER BY bm.fecha DESC
         ", $params, true);
-    $res = $this->db->query($query['query']);
+    if($paginar)
+    	$res = $this->db->query($query['query']);
+    else
+    	$res = $query['resultset'];
 
     $response = array(
       'cheques'          => array(),
@@ -200,6 +207,47 @@ class banco_cuentas_model extends banco_model{
    */
   public function cancelarCheque($id_mov, $status=0){
   	$this->db->update('bancos_movimientos', array('status' => $status), 'id_movimiento = '.$id_mov);
+  }
+
+  public function xlsListaCheques(){
+  	$data = $this->getListaCheques();
+
+  	$this->load->library('myexcel');
+    $xls = new myexcel();
+
+    $worksheet =& $xls->workbook->addWorksheet();
+
+    $xls->titulo2 = 'Lista de cheques';
+    $xls->titulo3 = '';
+    $xls->titulo4 = 'Del: '.$this->input->get('ffecha1').' Al '.$this->input->get('ffecha2')."\n";
+
+    $row=0;
+    // //Header
+    $xls->excelHead($worksheet, $row, 8, array(
+                    array($xls->titulo2, 'format_title2'),
+                    array($xls->titulo3, 'format_title3'),
+                    array($xls->titulo4, 'format_title3')
+    ));
+
+
+    foreach ($data['cheques'] as $key => $value) {
+    	$data['cheques'][$key]->status = $value->status==0? 'Cancelado': '';
+    }
+    $row +=3;
+    $xls->excelContent($worksheet, $row, $data['cheques'], array(
+                    'head' => array('Fecha', 'Banco', 'Cuenta', 'Monto', '# Cheque', 'A nombre de', 'Status'),
+                    'conte' => array(
+                                    array('name' => 'fecha', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'banco', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'alias', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'monto', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'no_cheque', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'anombre_de', 'format' => 'format4', 'sum' => -1),
+                                    array('name' => 'status', 'format' => 'format4', 'sum' => -1))
+    ));
+
+    $xls->workbook->send('lista_cheques.xls');
+    $xls->workbook->close();
   }
 
 
@@ -341,25 +389,34 @@ class banco_cuentas_model extends banco_model{
 		
 		$saldo = $saldo_anterior->saldo;
 		$total_depositos = $total_retiros = $depositos = $retiros = 0;
-		$movimientos = $this->db->query("SELECT id_movimiento, Date(fecha) AS fecha, concepto, monto, tipo
+		$movimientos = $this->db->query("SELECT id_movimiento, Date(fecha) AS fecha, concepto, monto, tipo, metodo_pago, no_cheque, status
 			FROM bancos_movimientos 
-			WHERE status = 1 AND id_cuenta = ".$id_cuenta." AND Date(fecha) BETWEEN '".$fecha1."' AND '".$fecha2."' 
-			ORDER BY id_movimiento ASC, fecha ASC")->result();
+			WHERE id_cuenta = ".$id_cuenta." AND Date(fecha) BETWEEN '".$fecha1."' AND '".$fecha2."' 
+			ORDER BY fecha ASC, id_movimiento ASC")->result();
 		foreach ($movimientos as $key => $value) {
-			$depositos = $retiros = '';
+			$depositos = $retiros = $masconcepto = '';
 			if ($value->tipo == 'd') {
 				$depositos       = String::formatoNumero($value->monto);
-				$total_depositos += $value->monto;
-				$saldo           += $value->monto;
+				if ($value->status == 1){
+					$total_depositos += $value->monto;
+					$saldo           += $value->monto;
+				}
 			}else{
 				$retiros       = String::formatoNumero($value->monto);
-				$total_retiros += $value->monto;
-				$saldo         -= $value->monto;
+				if ($value->status == 1){
+					$total_retiros += $value->monto;
+					$saldo         -= $value->monto;
+				}
+				if($value->metodo_pago=='cheque'){
+					$masconcepto = '<strong style="'.($value->status==0? 'color:red;': '').'">'.
+						ucfirst($value->metodo_pago).' No '.($value->no_cheque!=''? $value->no_cheque: 'S/N').
+						($value->status==0? ' (Cancelado)': '').'</strong> | ';
+				}
 			}
 			$response['movimientos'][] = array(
 				'id_movimiento' => $value->id_movimiento,
 				'fecha'         => $value->fecha,
-				'concepto'      => $value->concepto,
+				'concepto'      => $masconcepto.$value->concepto,
 				'depositos'     => $depositos,
 				'retiros'       => $retiros,
 				'saldo'         => String::formatoNumero($saldo),
@@ -440,7 +497,7 @@ class banco_cuentas_model extends banco_model{
       $pdf->SetWidths($widths);
       $pdf->Row(array(
 					$value['fecha'],
-					$value['concepto'],
+					strip_tags($value['concepto']),
 					$value['depositos'],
 					$value['retiros'],
 					$value['saldo'],
@@ -478,5 +535,63 @@ class banco_cuentas_model extends banco_model{
 
     $pdf->Output('estado_ceunta.pdf', 'I');
 	}
+
+	public function xlsEstadoCuenta($id_cuenta, $fecha1, $fecha2)
+  {
+  	$data = $this->getDataEstadoCuenta($id_cuenta, $fecha1, $fecha2);
+
+    $this->load->library('myexcel');
+    $xls = new myexcel();
+
+    $worksheet =& $xls->workbook->addWorksheet();
+
+    $xls->titulo2 = 'Estado de ceutna';
+    $xls->titulo3 = $data['cuenta']->banco.' ('.$data['cuenta']->alias.')';
+    $xls->titulo4 = 'Del: '.$fecha1.' Al '.$fecha2."\n";
+
+
+    $row=0;
+    // //Header
+    $xls->excelHead($worksheet, $row, 8, array(
+                    array($xls->titulo2, 'format_title2'),
+                    array($xls->titulo3, 'format_title3'),
+                    array($xls->titulo4, 'format_title3')
+    ));
+
+    $row +=3;
+		$array_obj = array();
+
+		//header
+		$head = array('Fecha', 'Concepto', 'Retiros', 'Depositos', 'Saldo');
+		foreach ($head as $key => $value) {
+			$worksheet->write($row, $key, $value, $xls->formatsEx['format3']);
+		}
+		//movimientos
+    foreach ($data['movimientos'] as $key => $value) {
+    	$row++;
+
+    	$worksheet->write($row, 0, $value['fecha'], $xls->formatsEx['format4']);
+    	$worksheet->write($row, 1, strip_tags($value['concepto']), $xls->formatsEx['format4']);
+    	$worksheet->write($row, 2, String::float($value['retiros']), $xls->formatsEx['format4']);
+    	$worksheet->write($row, 3, String::float($value['depositos']), $xls->formatsEx['format4']);
+    	$worksheet->write($row, 4, String::float($value['saldo']), $xls->formatsEx['format4']);
+
+			foreach ($value['conceptos'] as $key2 => $value2) {
+				$row++;
+				$worksheet->write($row, 0, $value2->concepto, $xls->formatsEx['format6']);
+				$worksheet->write($row, 1, '', $xls->formatsEx['format6']);
+    		$worksheet->write($row, 2, String::float($value2->monto), $xls->formatsEx['format6']);
+    		$worksheet->write($row, 3, '', $xls->formatsEx['format6']);
+    		$worksheet->write($row, 4, '', $xls->formatsEx['format6']);
+			}
+		}
+
+    $row++;
+    $worksheet->write($row, 2, String::float($data['retiros']), $xls->formatsEx['format5']);
+    $worksheet->write($row, 3, String::float($data['depositos']), $xls->formatsEx['format5']);
+
+    $xls->workbook->send('estado_cuenta.xls');
+    $xls->workbook->close();
+  }
 
 }

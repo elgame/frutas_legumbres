@@ -7,6 +7,7 @@ class cajas_reportes extends MY_Controller {
    * @var unknown_type
    */
   private $excepcion_privilegio = array('cajas_reportes/rcr_pdf/',
+                                        'cajas_reportes/rcr_xls/',
                                         'cajas_reportes/rll_pdf/');
 
   public function _remap($method){
@@ -57,6 +58,16 @@ class cajas_reportes extends MY_Controller {
   {
     $this->load->model('cajas_model');
     $this->cajas_model->rcr_pdf();
+  }
+
+  /**
+   * Procesa los datos para mostrar el reporte rcr en pdf
+   * @return void
+   */
+  public function rcr_xls()
+  {
+    $this->load->model('cajas_model');
+    $this->cajas_model->rcr_xls();
   }
 
   /**

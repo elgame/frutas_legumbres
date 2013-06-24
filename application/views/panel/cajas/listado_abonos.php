@@ -8,26 +8,26 @@
             <a href="<?php echo base_url('panel'); ?>">Inicio</a> <span class="divider">/</span>
           </li>
           <li>
-            <a href="<?php echo base_url('panel/banco/'); ?>">Banco</a> <span class="divider">/</span>
+            <a href="<?php echo base_url('panel/cajas/cuentas_pagar/'); ?>">Cuentas por Pagar</a> <span class="divider">/</span>
           </li>
-          <li>Lista de cheques</li>
+          <li>Lista de Abonos</li>
         </ul>
       </div>
 
       <div class="row-fluid">
         <div class="box span12">
           <div class="box-header well" data-original-title>
-            <h2><i class="icon-th-list"></i> Cheques</h2>
+            <h2><i class="icon-th-list"></i> Abonos</h2>
             <div class="box-icon">
               <a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
             </div>
           </div>
           <div class="box-content">
-            <form action="<?php echo base_url('panel/banco/cheques/'); ?>" method="get" class="form-search">
+            <form action="<?php echo base_url('panel/abonos/reales/'); ?>" method="get" class="form-search">
               <div class="form-actions form-filters">
                 <label for="fnombre">Buscar</label>
                 <input type="text" name="fnombre" id="fnombre" value="<?php echo set_value_get('fnombre'); ?>"
-                  class="input-xlarge" placeholder="Banamex, Carlos Perez" autofocus>
+                  class="input-xlarge" placeholder="Productor, Concepto" autofocus>
 
                 <label for="ffecha1">Del:</label>
                 <input type="text" name="ffecha1" id="ffecha1" value="<?php echo $this->input->get('ffecha1'); ?>" size="1" style="width:14%;">
@@ -37,7 +37,7 @@
 
                 <button type="submit" class="btn">Buscar</button>
 
-                <a href="<?php echo base_url('panel/banco/cheques_xls?'.String::getVarsLink(array('msg'))); ?>" class="pull-right" title="Generar xls" target="_BLANK">
+                <a href="<?php echo base_url('panel/abonos/reales_xls?'.String::getVarsLink(array('msg'))); ?>" class="pull-right" title="Generar xls" target="_BLANK">
                   <img src="<?php echo base_url('application/images/otros/doc_xls.png'); ?>" width="64" height="64">
                 </a>
               </div>
@@ -47,46 +47,27 @@
               <thead class="header">
                 <tr>
                   <th>Fecha</th>
-                  <th>Banco</th>
-                  <th>Cuenta</th>
+                  <th>Productor</th>
                   <th>Monto</th>
-                  <th># Cheque</th>
-                  <th>A nombre de</th>
+                  <th>Concepto</th>
                   <th>Opc</th>
                 </tr>
               </thead>
               <tbody>
-            <?php foreach($cheques['cheques'] as $movi){ ?>
+            <?php foreach($abonos['abonos'] as $movi){ ?>
                 <tr>
-                  <td><?php echo substr($movi->fecha, 0, 10); ?></td>
-                  <td><?php echo $movi->banco; ?></td>
-                  <td><?php echo $movi->alias; ?></td>
-                  <td><?php echo String::formatoNumero($movi->monto); ?></td>
-                  <td><?php echo $movi->no_cheque; ?></td>
-                  <td><?php echo $movi->anombre_de; ?></td>
+                  <td><?php echo $movi->fecha; ?></td>
+                  <td><?php echo $movi->nombre_fiscal; ?></td>
+                  <td><?php echo String::formatoNumero($movi->cantidad); ?></td>
+                  <td><?php echo $movi->concepto; ?></td>
 
                   <td class="center">
-                    <a class="btn btn-info" target="_blank" href="<?php echo base_url('panel/banco/print_cheque/?id='.$movi->id_movimiento); ?>" title="Imprimir">
-                      <i class="icon-print icon-white"></i> <span class="hidden-tablet">Reimprimir</span></a>
                       <?php
-                      echo $this->usuarios_model->getLinkPrivSm('banco/print_cheque/', array(
-                          'params'   => 'id='.$movi->id_movimiento,
-                          'btn_type' => 'btn-danger',
-                          )
-                      );
-                      if($movi->status == 1){
-                        echo $this->usuarios_model->getLinkPrivSm('banco/cancelar_cheque/', array(
-                            'params'   => 'id='.$movi->id_movimiento,
+                        echo $this->usuarios_model->getLinkPrivSm('abonos/reales_eliminar/', array(
+                            'params'   => 'id='.$movi->id_abonoh,
                             'btn_type' => 'btn-danger',
-                            'attrs' => array('onclick' => "msb.confirm('Estas seguro de cancelar el cheque?', 'Banco', this); return false;"))
+                            'attrs' => array('onclick' => "msb.confirm('Estas seguro de eliminar el abono? <br>Se eliminaran los abonos hechos a cada entrada de caja.', 'Banco', this); return false;"))
                         );
-                      }else{
-                        echo $this->usuarios_model->getLinkPrivSm('banco/activar_cheque/', array(
-                            'params'   => 'id='.$movi->id_movimiento,
-                            'btn_type' => 'btn-danger',
-                            'attrs' => array('onclick' => "msb.confirm('Estas seguro de activar el cheque?', 'Banco', this); return false;"))
-                        );
-                      }
                       ?>
                   </td>
                 </tr>
@@ -98,9 +79,9 @@
             //Paginacion
             $this->pagination->initialize(array(
                 'base_url'      => base_url($this->uri->uri_string()).'?'.String::getVarsLink(array('pag')).'&',
-                'total_rows'    => $cheques['total_rows'],
-                'per_page'      => $cheques['items_per_page'],
-                'cur_page'      => $cheques['result_page']*$cheques['items_per_page'],
+                'total_rows'    => $abonos['total_rows'],
+                'per_page'      => $abonos['items_per_page'],
+                'cur_page'      => $abonos['result_page']*$abonos['items_per_page'],
                 'page_query_string' => TRUE,
                 'num_links'     => 1,
                 'anchor_class'  => 'pags corner-all',

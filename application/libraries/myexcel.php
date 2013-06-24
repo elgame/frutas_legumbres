@@ -2,7 +2,7 @@
 
 require_once APPPATH.'libraries/excel2/File.php';
 require_once APPPATH.'libraries/excel2/Root.php';
-include(APPPATH.'libraries/excel2/Writer.php');
+require_once (APPPATH.'libraries/excel2/Writer.php');
 
 class MYexcel {
 	var $titulo1 = 'FRUTAS Y LEGUMBRES DE LA ACOSTA SUR DE JALISCO S.A. DE C.V.';
@@ -10,7 +10,7 @@ class MYexcel {
 	var $titulo3 = '';
 	var $titulo4 = '';
 
-	private $formatsEx = array();
+	var $formatsEx = array();
 	var $workbook;
 
 	public function __construct(){
@@ -25,6 +25,7 @@ class MYexcel {
 		$this->formatsEx['format3'] =& $this->workbook->addFormat(array('Bold' => 1, 'Size' => 11, 'BgColor' => 'gray', 'FgColor' => 'white'));
 		$this->formatsEx['format4'] =& $this->workbook->addFormat(array('Size' => 10));
 		$this->formatsEx['format5'] =& $this->workbook->addFormat(array('Bold' => 1, 'Size' => 11, 'BgColor' => 'yellow'));
+		$this->formatsEx['format6'] =& $this->workbook->addFormat(array('Size' => 10, 'BgColor' => 'cyan'));
 	}
 
 	public function excelHead(&$worksheet, &$row, $col, $info){

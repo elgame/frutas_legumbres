@@ -167,6 +167,8 @@ class String{
 
 		if(!isset($float[1]))
 			$float[1] = '00';
+		else
+			$float[1] = (strlen($float[1])==1? $float[1].'0': $float[1]);
 
 		$num = trim((string)@$num);
 		if ($num[0] == '-') {

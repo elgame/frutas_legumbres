@@ -48,7 +48,10 @@
                         <?php foreach ($empacadores as $e){ ?>
                           <option value="<?php echo $e->id_empacador ?>" <?php echo set_select('ide', $e->id_empacador, false, $this->input->get('ide')); ?>><?php echo $e->nombre ?></option>
                         <?php } ?>
-                      </select>
+                      </select> | 
+
+                      <label for="fdesecho">Desecho</label>
+                      <input type="checkbox" name="fdesecho" class="input-small" id="fdesecho" value="si" <?php echo ($this->input->get('fdesecho')=='si'? 'checked': ''); ?>>
 
                       <button type="submit" class="btn">Buscar</button>
                     </div>
@@ -73,6 +76,7 @@
                   <th>Salidas</th>
                   <th>Entradas</th>
                   <th>Desecho</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -82,12 +86,13 @@
                     <td><?php echo $inventario['anteriores'][0]->salidas; ?></td>
                     <td><?php echo $inventario['anteriores'][0]->entradas; ?></td>
                     <td>Total: <?php echo $inventario['anteriores'][0]->total_anterior; ?></td>
+                    <td></td>
                   </tr>
 
             <?php
                 $total_salidas = floatval($inventario['anteriores'][0]->salidas);
                 $total_entradas = floatval($inventario['anteriores'][0]->entradas);
-                foreach($inventario['inventario'] as $inv) {
+                foreach($inventario['inventario'] as $key => $inv) {
                   if ($inv->tipo === 's') $total_salidas += $inv->cantidad;
                   else $total_entradas += $inv->cantidad;
                 ?>
@@ -98,13 +103,27 @@
                     <td><?php echo ($inv->tipo === 's') ? $inv->cantidad : '' ?></td>
                     <td><?php echo ($inv->tipo === 'en') ? $inv->cantidad : '' ?></td>
                     <td><?php echo ($inv->es_desecho == 1) ? 'Si' : 'No'; ?></td>
+                    <td>
+                    <?php
+                      echo $this->usuarios_model->getLinkPrivSm('cajas_carton/eliminar/', array(
+                          'params'    => 'id_mov='.$inv->id_inventario_carton.'&'.String::getVarsLink(array('id_mov', 'msg')),
+                          'btn_type'  => 'btn-danger',
+                          'text_link' => 'hide',
+                          'attrs' => array('onclick' => "msb.confirm('Estas seguro de eliminar?', '', this); return false;"))
+                      );
+                    ?>
+                    </td>
                   </tr>
-            <?php }?>
+            <?php }
+              $total_saldo = floatval($total_entradas) - floatval($total_salidas);
+              if ( ! empty($_GET['ide']) || ! empty($_GET['fdesecho']))
+                $total_saldo = abs($total_saldo);
+            ?>
                   <tr style="font-weight: bold; font-size: 1.1em;">
                     <td colspan="3" style="background-color: #ccc;"></td>
                     <td style="background-color: #ccc;"><?php echo $total_salidas; ?></td>
                     <td style="background-color: #ccc;"><?php echo $total_entradas; ?></td>
-                    <td style="background-color: #ccc;">Total: <?php echo floatval($total_entradas) - floatval($total_salidas); ?></td>
+                    <td style="background-color: #ccc;">Total: <?php echo $total_saldo; ?></td>
                   </tr>
               </tbody>
             </table>

@@ -47,6 +47,8 @@ class Cajas_carton_model extends CI_Model {
 
     if ( ! empty($_GET['ide']))
       $sql .= " AND cic.id_empacador = {$_GET['ide']}";
+    if ( ! empty($_GET['fdesecho']))
+      $sql .= " AND cic.es_desecho = 1";
 
     $query = BDUtil::pagination("
             SELECT id_marca,
@@ -93,11 +95,21 @@ class Cajas_carton_model extends CI_Model {
                     'ttotal'         => 0
     );
 
-    if($res->num_rows() > 0)
-            $response['inventario'] = $res->result();
+    if($res->num_rows() > 0){
+      $data = $res->result();
+      if ( ! empty($_GET['ide']) || ! empty($_GET['fdesecho'])){ //si se selecciona un maquilador
+        foreach ($data as $key => $value) {
+          $data[$key]->total_debe = abs($data[$key]->total_debe);
+        }
+      }
+      $response['inventario'] = $data;
+    }
 
     foreach ($query['resultset']->result() as $marca) {
-            $response['ttotal'] += $marca->total_debe;
+      $response['ttotal'] += $marca->total_debe;
+    }
+    if ( ! empty($_GET['ide']) || ! empty($_GET['fdesecho'])){
+      $response['ttotal'] = abs($response['ttotal']);
     }
 
     return $response;
@@ -121,6 +133,9 @@ class Cajas_carton_model extends CI_Model {
 
     if ( ! empty($_GET['ide']))
       $sql2 = " AND cic.id_empacador = {$_GET['ide']}";
+
+    if ( ! empty($_GET['fdesecho']))
+      $sql .= " AND cic.es_desecho = 1";
 
     //  Obtiene las entradas, salidas anteriores a la fecha
     $query = $this->db->query("
@@ -201,6 +216,10 @@ class Cajas_carton_model extends CI_Model {
     return array(true, '', 3,$id);
   }
 
+  public function eliminarCaja($id_caja){
+    $this->db->delete('cajas_inventario_carton', 'id_inventario_carton = '.$id_caja);
+  }
+
   /*************** FUNCIONES PARA GENERAR PDF'S Y XLS'S  *****************/
 
   /**
@@ -232,6 +251,8 @@ class Cajas_carton_model extends CI_Model {
         $pdf->titulo2 .= 'Empacador '.$empacador['info']->nombre;
 
     $pdf->titulo3 = 'Del: '.$this->input->get('ffecha1')." Al ".$this->input->get('ffecha2')."\n";
+    if ( ! empty($_GET['fdesecho']))
+      $pdf->titulo3 = 'Desecho '.$pdf->titulo3;
 
     $pdf->AliasNbPages();
     //$pdf->AddPage();

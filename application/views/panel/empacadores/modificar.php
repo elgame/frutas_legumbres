@@ -8,9 +8,9 @@
             <a href="<?php echo base_url('panel'); ?>">Inicio</a> <span class="divider">/</span>
           </li>
           <li>
-            <a href="<?php echo base_url('panel/empacadores/'); ?>">Empacador</a> <span class="divider">/</span>
+            <a href="<?php echo base_url('panel/empacadores/'); ?>">Maquiladores</a> <span class="divider">/</span>
           </li>
-          <li>Modificar Empacador</li>
+          <li>Modificar Maquilador</li>
         </ul>
       </div>
 

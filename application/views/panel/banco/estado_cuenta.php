@@ -11,7 +11,7 @@
 						<a href="<?php echo base_url('panel/banco?'.String::getVarsLink(array('id', 'msg'))); ?>">Banco</a> <span class="divider">/</span>
 					</li>
 					<li>
-						Estado de ceunta
+						Estado de cuentas
 					</li>
 				</ul>
 			</div>
@@ -19,7 +19,7 @@
 			<div class="row-fluid">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
-						<h2><i class="icon-hdd"></i> Estado de ceutna | <?php echo $movimientos['cuenta']->banco.' ('.$movimientos['cuenta']->alias.')' ?></h2>
+						<h2><i class="icon-hdd"></i> Estado de cuenta | <?php echo $movimientos['cuenta']->banco.' ('.$movimientos['cuenta']->alias.')' ?></h2>
 						<div class="box-icon">
 							<a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
 						</div>
@@ -41,6 +41,9 @@
 
 								<a href="<?php echo base_url('panel/banco/estado_cuenta_pdf?'.String::getVarsLink(array('msg'))); ?>" class="pull-right" title="Generar PDF" target="_BLANK">
                   <img src="<?php echo base_url('application/images/otros/doc_pdf.png'); ?>" width="64" height="64">
+                </a>
+                <a href="<?php echo base_url('panel/banco/estado_cuenta_xls?'.String::getVarsLink(array('msg'))); ?>" class="pull-right" title="Generar PDF" target="_BLANK">
+                  <img src="<?php echo base_url('application/images/otros/doc_xls.png'); ?>" width="64" height="64">
                 </a>
 							</div>
 						</form>

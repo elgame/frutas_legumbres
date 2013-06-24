@@ -113,6 +113,16 @@ class cajas_carton extends MY_Controller {
     $this->load->view('panel/footer', $params);
   }
 
+  public function eliminar(){
+    if(isset($_GET['id_mov']{0})){
+      $this->load->model('cajas_carton_model');
+      $this->cajas_carton_model->eliminarCaja($_GET['id_mov']);
+
+      redirect(base_url('panel/cajas_carton/marca?msg=6&'.String::getVarsLink(array('id_mov', 'msg')) ));
+    }else
+      redirect(base_url('panel/cajas_carton/marca?msg=1&'.String::getVarsLink(array('id_mov', 'msg')) ));
+  }
+
   /**
    * Muestra el historial de cajas (entradas y salidas) de una marca
    * @return void
@@ -261,7 +271,7 @@ class cajas_carton extends MY_Controller {
         $icono = 'success';
         break;
       case 6:
-        $txt = 'El entrada se elimino correctamente.';
+        $txt = 'Se elimino correctamente.';
         $icono = 'success';
       break;
       case 7:

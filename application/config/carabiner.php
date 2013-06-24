@@ -154,6 +154,7 @@ $config['groups']['base_panel'] = array(
     array('bootstrap/jquery-ui-1.9.2.custom.min.css', 'screen'),
 		array('bootstrap/user-miscs.css', 'screen'),
 		array('bootstrap/charisma-app.css', 'screen'),
+		array('bootstrap/bootstrap-table-fixed-header.css', 'screen'),
 		array('libs/jquery.noty.css', 'screen'),
 		array('panel/menu.css', 'screen'),
 	),
@@ -165,6 +166,7 @@ $config['groups']['base_panel'] = array(
     array('bootstrap/jquery-ui-1.9.2.custom.min.js'),
     array('bootstrap/jquery-ui-i18n.js'),
 		array('bootstrap/bootstrap.min.js'),
+		array('bootstrap/bootstrap-table-fixed-header.js'),
 		array('libs/jquery.noty.js'),
 		array('general/general-panel.js')
 	)

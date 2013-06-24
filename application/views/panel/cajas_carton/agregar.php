@@ -38,7 +38,7 @@
                     </div>
 
                     <div class="control-group req_field" id="bloq-emp">
-                      <label class="control-label" for="dempacador">Empacador:</label>
+                      <label class="control-label" for="dempacador">Maquilador:</label>
                       <div class="controls">
                         <input type="text" name="dempacador" id="dempacador" class="span12"
                           value="<?php echo set_value('dempacador'); ?>" maxlength="120" autofocus>

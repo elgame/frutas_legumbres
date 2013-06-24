@@ -17,6 +17,12 @@
 
                 <button type="submit" class="btn">Buscar</button>
 
+                
+                <a id="rcr" href="<?php echo base_url('panel/cajas_reportes/rcr_xls?'.String::getVarsLink(array('msg'))); ?>" 
+                    data-href="<?php echo base_url('panel/cajas_reportes/rcr_xls'); ?>" class="pull-right" title="Generar XLS" target="_BLANK">
+                  <img src="<?php echo base_url('application/images/otros/doc_xls.png'); ?>" width="30" height="30">
+                </a>
+
               </div>
             </form>
 
