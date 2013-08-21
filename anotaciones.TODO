@@ -1,3 +1,7 @@
+
+
+
+
  ☐ 2013-06-24 SQL
       CREATE TABLE IF NOT EXISTS `cajas_recibidas_abonosh` (
         `id_abonoh` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -41,8 +45,9 @@
       ALTER TABLE  `cajas_recibidas_abonosh` CHANGE  `fecha`  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
       INSERT INTO `privilegios` (`nombre`, `id_padre`, `mostrar_menu`, `url_accion`, `url_icono`, `target_blank`) VALUES
-      ('Lista de abonos', 41, 1, 'abonos/reales/', 'list', 0), ---Cuentas por pagar
-      ('Eliminar', 68, 0, 'abonos/reales_eliminar/', 'remove', 0); ----Lista de abonos
+      ('Eliminar', 55, 0, 'cajas_carton/eliminar/', 'remove', 0),
+      ('Lista de abonos', 41, 1, 'abonos/reales/', 'list', 0),
+      ('Eliminar', 68, 0, 'abonos/reales_eliminar/', 'remove', 0);
 
 
 

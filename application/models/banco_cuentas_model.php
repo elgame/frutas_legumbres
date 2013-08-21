@@ -36,8 +36,8 @@ class banco_cuentas_model extends banco_model{
 
 
 		$res = $this->db->query("SELECT bc.id_cuenta, bb.id_banco, bb.nombre AS banco, bc.numero, bc.alias, bc.status,
-					(SELECT Sum(monto) FROM bancos_movimientos WHERE id_cuenta = bc.id_cuenta AND tipo = 'd') AS depositos,
-					(SELECT Sum(monto) FROM bancos_movimientos WHERE id_cuenta = bc.id_cuenta AND tipo = 'r') AS retiros
+					(SELECT Sum(monto) FROM bancos_movimientos WHERE id_cuenta = bc.id_cuenta AND status = 1 AND tipo = 'd') AS depositos,
+					(SELECT Sum(monto) FROM bancos_movimientos WHERE id_cuenta = bc.id_cuenta AND status = 1 AND tipo = 'r') AS retiros
 				FROM bancos_cuentas AS bc 
 					INNER JOIN bancos_bancos AS bb ON bc.id_banco = bb.id_banco 
 				".$sql."
@@ -498,8 +498,8 @@ class banco_cuentas_model extends banco_model{
       $pdf->Row(array(
 					$value['fecha'],
 					strip_tags($value['concepto']),
-					$value['depositos'],
 					$value['retiros'],
+					$value['depositos'],
 					$value['saldo'],
       	));
 
@@ -528,8 +528,8 @@ class banco_cuentas_model extends banco_model{
     $pdf->Row(array(
 				'',
 				'Total:',
-				$data['depositos'],
 				$data['retiros'],
+				$data['depositos'],
 				'',
     	), true);
 

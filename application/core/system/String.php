@@ -106,6 +106,8 @@ class String{
 
 	*/
 	public static function num2letras($num, $moneda='M.N.', $fem = false, $dec = true) {
+		return numToLetra::to_word($num, $moneda);
+	/*
 		$matuni[2]  = "dos";
 		$matuni[3]  = "tres";
 		$matuni[4]  = "cuatro";
@@ -286,7 +288,7 @@ class String{
 
 		$end_num=ucfirst($tex).' '.$tipo_moneda.' '.$float[1].'/100 '.$moneda;
 		$end_num = mb_strtoupper($end_num);
-		return $end_num;
+		return $end_num;*/
 	}
 
 
